@@ -1,0 +1,29 @@
+{
+  "name": "video-tagging-tool",
+  "version": "1.0.0",
+  "description": "video tagging tool",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CatalystCode/VideoTaggingTool.git"
+  },
+  "keywords": [
+    "video",
+    "tagging"
+  ],
+  "author": "Ami Turgman",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/CatalystCode/VideoTaggingTool/issues"
+  },
+  "homepage": "https://github.com/CatalystCode/VideoTaggingTool#readme",
+  "dependencies": {
+    "body-parser": "^1.14.1",
+    "express": "^4.13.3",
+    "tedious": "^1.13.1"
+  }
+}

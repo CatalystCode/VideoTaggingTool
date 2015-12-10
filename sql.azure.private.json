@@ -1,0 +1,9 @@
+{
+    "server": "videotagging.database.windows.net",
+    "userName": "video",
+    "password": "Pa$$word1",
+    "options": {
+        "database": "videotagging2",
+        "encrypt": true
+    }
+}
