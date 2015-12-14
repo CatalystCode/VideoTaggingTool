@@ -6,7 +6,6 @@ var db = require('./db');
 var port = process.env.PORT || 3003;
 
 var app = express();
-
 app.use(bodyParser.json());
 
 app.use(function(req, res, next) {
@@ -18,7 +17,6 @@ app.use(function(req, res, next) {
 app.get('/', function(req, res){
     res.end('welcome to video tagging tool');
 });
-
 
 app.post('/job', function(req, res){
     db.createOrModifyJob(req.body, function(err, result){
@@ -38,7 +36,9 @@ app.get('/jobs/:id', function(req, res){
 });
 
 app.post('/jobs/:id/frames/:index', function(req, res){
-    var options = req.body;
+    var options = {
+        tagsJson: req.body.tags
+    };
     options.jobId = req.params.id;
     options.frameIndex = req.params.index;
 
@@ -60,7 +60,6 @@ app.get('/users/:id/jobs', function(req, res){
     });
 });
 
-
 app.get('/videos', function(req, res){
     console.log('getting videos');
     db.getVideos(function(err, resp) {
@@ -69,8 +68,6 @@ app.get('/videos', function(req, res){
         res.json(resp);
     });
 });
-
-
 
 http.createServer(app).listen(port, function(err){
     if (err) return console.error('error creating server', err);
