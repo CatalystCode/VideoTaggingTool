@@ -339,6 +339,27 @@ GO
 
 
 
+/****** Object:  StoredProcedure [dbo].[GetVideoFrames]    Script Date: 12/14/2015 4:32:57 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[GetVideoFrames]
+@VideoId int
+AS
+
+BEGIN
+
+	SELECT f.*
+	FROM Jobs j
+	JOIN Frames f
+	ON j.Id = f.JobId
+	WHERE j.VideoId = @VideoId
+
+
+END
+
 
 INSERT INTO [dbo].[Roles]
            ([Id]

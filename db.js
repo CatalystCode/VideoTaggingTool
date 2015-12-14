@@ -250,6 +250,35 @@ function getUserJobs(userId, cb) {
     });
 }
 
+function getVideoFrames(id, cb) {
+    return getDataSets({
+        sproc: 'GetVideoFrames',
+        sets: ['frames'],
+        params: [{name: 'VideoId', type: TYPES.Int, value: id}]
+    }, function(err, result){
+        if (err) return cb(err);
+
+        var newResult = {
+            frames: []
+        };
+
+        try {
+            for (var i=0; i<result.frames.length; i++) {
+                var frame = normalizeFrameRow(result.frames[i]);
+                newResult.frames.push({
+                    frameIndex: frame.FrameIndex,
+                    tags: frame.Tags
+                });
+            }
+        }
+        catch (err) {
+            console.error('error:', err);
+            return cb(err);
+        }
+
+        return cb(null, newResult);
+    });
+}
 
 module.exports = {
     connect: connect,
@@ -257,5 +286,6 @@ module.exports = {
     getJobDetails: getJobDetails,
     getVideos: getVideos,
     createOrModifyFrame: createOrModifyFrame,
-    getUserJobs: getUserJobs
+    getUserJobs: getUserJobs,
+    getVideoFrames: getVideoFrames
 }

@@ -8,6 +8,8 @@ var port = process.env.PORT || 3003;
 var app = express();
 app.use(bodyParser.json());
 
+app.use(express.static(__dirname + '/public'));
+
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
@@ -18,12 +20,21 @@ app.get('/', function(req, res){
     res.end('welcome to video tagging tool');
 });
 
+// TODO: remove after Uzi fix
 app.post('/job', function(req, res){
     db.createOrModifyJob(req.body, function(err, result){
         if(err) return res.status(500).json({ error: err });
         res.json(result);
     });
 });
+
+app.post('/jobs', function(req, res){
+    db.createOrModifyJob(req.body, function(err, result){
+        if(err) return res.status(500).json({ error: err });
+        res.json(result);
+    });
+});
+
 
 app.get('/jobs/:id', function(req, res){
     var id = req.params.id;
@@ -68,6 +79,17 @@ app.get('/videos', function(req, res){
         res.json(resp);
     });
 });
+
+app.get('/videos/:id/frames', function(req, res){
+    var id = req.params.id;
+    console.log('getting frames for video', id);
+    db.getVideoFrames(id, function(err, resp) {
+        if(err) return res.status(500).json({ error: err });
+        console.log('resp:', resp);
+        res.json(resp);
+    });
+});
+
 
 http.createServer(app).listen(port, function(err){
     if (err) return console.error('error creating server', err);
