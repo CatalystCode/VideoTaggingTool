@@ -118,7 +118,7 @@ CREATE TABLE [dbo].[Videos](
 	[Url] [varchar](1024) NOT NULL,
 	[Width] [int] NOT NULL,
 	[Height] [int] NOT NULL,
-	[DurationSeconds] [bigint] NOT NULL,
+	[DurationSeconds] [real] NOT NULL,
 	[FramesPerSecond] [real] NOT NULL,
 	[VideoJson] [ntext] NULL,
  CONSTRAINT [PK_Videos] PRIMARY KEY CLUSTERED 

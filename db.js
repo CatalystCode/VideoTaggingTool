@@ -26,6 +26,22 @@ function connect(cb) {
     });
 }
 
+function normalizeVideoRow(video) {
+    if(video.VideoJson)
+        video.Data = JSON.parse(video.VideoJson);
+    delete video.VideoJson;
+}
+function normalizeFrameRow(frame) {
+    if(frame.TagsJson)
+        frame.Tags = JSON.parse(frame.TagsJson);
+    delete frame.TagsJson;
+}
+function normalizeJobRow(job) {
+    if(job.ConfigJson)
+        job.Config = JSON.parse(job.ConfigJson);
+    delete job.ConfigJson;
+}
+
 function getJobDetails(id, cb) {
     return getDataSets({
         sproc: 'GetJob',
@@ -41,28 +57,10 @@ function getJobDetails(id, cb) {
         };
 
         try {
-
-            // TODO: remove when fixed in db
-            if(newResult.video.name){
-                newResult.video.Name = newResult.video.name;
-                delete newResult.video.name;
-            }
-
-            if(newResult.job.ConfigJson)
-                newResult.job.Config = JSON.parse(newResult.job.ConfigJson);
-            delete newResult.job.ConfigJson;
-
-            if(newResult.video.VideoJson)
-                newResult.Data = JSON.parse(newResult.video.VideoJson);
-            delete newResult.video.VideoJson;
-
+            normalizeJobRow(newResult.job);
+            normalizeVideoRow(newResult.video);
             for (var i=0; i<result.frames.length; i++) {
-                var frame = result.frames[i];
-                if(frame.TagsJson) {
-                    frame.Tags = JSON.parse(frame.TagsJson);
-                }
-                delete frame.TagsJson;
-                newResult.frames.push(frame);
+                newResult.frames.push(normalizeFrameRow(result.frames[i]));
             }
         }
         catch (err) {
@@ -89,18 +87,7 @@ function getVideos(cb) {
 
         try {
             for (var i=0; i<result.videos.length; i++) {
-                var video = result.videos[i];
-                if(video.VideoJson)
-                    video.Data = JSON.parse(video.VideoJson);
-                delete video.VideoJson;
-
-                // TODO: remove when fixed in db
-                if(video.name){
-                    video.Name = video.name;
-                    delete video.name;
-                }
-
-                newResult.videos.push(video);
+                newResult.videos.push(normalizeVideoRow(result.videos[i]));
             }
         }
         catch (err) {
@@ -247,13 +234,7 @@ function getUserJobs(userId, cb) {
 
         try {
             for (var i=0; i<result.jobs.length; i++) {
-                var job = result.jobs[i];
-
-                if(job.ConfigJson)
-                    job.Config = JSON.parse(job.ConfigJson);
-                delete job.ConfigJson;
-
-                newResult.jobs.push(job);
+                newResult.jobs.push(normalizeJobRow(result.jobs[i]));
             }
         }
         catch (err) {
