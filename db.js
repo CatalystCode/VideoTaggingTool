@@ -116,35 +116,43 @@ function createOrModifyJob(req, cb) {
     connect(function(err, connection){
         if (err) return cb(err);
 
-        var resultJobId;
+        try
+        {
+            var resultJobId;
 
-        var request = new tedious.Request('UpsertJob', function(err) {
-            if (err) {
-                console.error('error calling Upsert stored procedure', err);
-                return cb(err);
-            }
+            var request = new tedious.Request('UpsertJob', function(err) {
+                if (err) {
+                    console.error('error calling Upsert stored procedure', err);
+                    return cb(err);
+                }
 
-            cb(null, {jobId: resultJobId});
-        });
+                cb(null, {jobId: resultJobId});
+            });
 
-        if(req.id)
-            request.addParameter('Id', TYPES.Int, req.id);
+            if(req.id)
+                request.addParameter('Id', TYPES.Int, req.id);
 
-        request.addParameter('VideoId', TYPES.Int, req.videoId);
-        request.addParameter('UserId', TYPES.Int, req.userId);
-        request.addParameter('Description', TYPES.VarChar, req.description);
-        request.addParameter('CreatedById', TYPES.Int, req.createdById);
-        request.addParameter('ConfigJson', TYPES.NVarChar, req.configJson);
+            request.addParameter('VideoId', TYPES.Int, req.videoId);
+            request.addParameter('UserId', TYPES.Int, req.userId);
+            request.addParameter('Description', TYPES.VarChar, req.description);
+            request.addParameter('CreatedById', TYPES.Int, req.createdById);
 
-        request.addOutputParameter('JobId', TYPES.Int);
+            if(req.configJson)
+                request.addParameter('ConfigJson', TYPES.NVarChar, JSON.stringify(req.configJson));
 
-        request.on('returnValue', function(parameterName, value, metadata) {
-            if (parameterName == 'JobId') {
-                resultJobId = value;
-            }
-        });
+            request.addOutputParameter('JobId', TYPES.Int);
 
-        connection.callProcedure(request);
+            request.on('returnValue', function(parameterName, value, metadata) {
+                if (parameterName == 'JobId') {
+                    resultJobId = value;
+                }
+            });
+
+            connection.callProcedure(request);
+        }
+        catch(err) {
+            return cb(err);
+        }
 
     });
 }
