@@ -31,7 +31,48 @@ function getJobDetails(id, cb) {
         sproc: 'GetJob',
         sets: ['job', 'video', 'user', 'frames'],
         params: [{name: 'Id', type: TYPES.Int, value: id}]
-    }, cb);
+    }, function(err, result){
+        if (err) return cb(err);
+        var newResult = {
+            job: result.job[0],
+            video: result.video[0],
+            user: result.user[0],
+            frames: []
+        };
+
+        try {
+
+            // TODO: remove when fixed in db
+            if(newResult.video.name){
+                newResult.video.Name = newResult.video.name;
+                delete newResult.video.name;
+            }
+
+
+            if(newResult.job.ConfigJson)
+                newResult.job.Config = JSON.parse(newResult.job.ConfigJson);
+            delete newResult.job.ConfigJson;
+
+            if(newResult.video.VideoJson)
+                newResult.Data = JSON.parse(newResult.video.VideoJson);
+            delete newResult.video.VideoJson;
+
+            for (var i=0; i<result.frames.length; i++) {
+                var frame = result.frames[i];
+                if(frame.TagsJson) {
+                    frame.Tags = JSON.parse(frame.TagsJson);
+                }
+                delete frame.TagsJson;
+                newResult.frames.push(frame);
+            }
+        }
+        catch (err) {
+            console.error('error:', err);
+            return cb(err);
+        }
+
+        return cb(null, newResult);
+    });
 }
 
 function createOrModifyJob(req, cb) {

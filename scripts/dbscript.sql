@@ -114,7 +114,7 @@ SET ANSI_PADDING ON
 GO
 CREATE TABLE [dbo].[Videos](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[name] [nvarchar](100) NOT NULL,
+	[Name] [nvarchar](100) NOT NULL,
 	[Url] [varchar](1024) NOT NULL,
 	[Width] [int] NOT NULL,
 	[Height] [int] NOT NULL,
@@ -284,7 +284,7 @@ GO
 
 
 INSERT INTO [dbo].[Videos]
-           ([name]
+           ([Name]
            ,[Url]
            ,[Width]
            ,[Height]
