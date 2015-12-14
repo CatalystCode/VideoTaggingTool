@@ -30,16 +30,19 @@ function normalizeVideoRow(video) {
     if(video.VideoJson)
         video.Data = JSON.parse(video.VideoJson);
     delete video.VideoJson;
+    return video;
 }
 function normalizeFrameRow(frame) {
     if(frame.TagsJson)
         frame.Tags = JSON.parse(frame.TagsJson);
     delete frame.TagsJson;
+    return frame;
 }
 function normalizeJobRow(job) {
     if(job.ConfigJson)
         job.Config = JSON.parse(job.ConfigJson);
     delete job.ConfigJson;
+    return job;
 }
 
 function getJobDetails(id, cb) {
@@ -241,7 +244,6 @@ function getUserJobs(userId, cb) {
             console.error('error:', err);
             return cb(err);
         }
-
         return cb(null, newResult);
     });
 }

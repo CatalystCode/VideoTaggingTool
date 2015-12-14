@@ -3,7 +3,7 @@
     "userName": "video",
     "password": "Pa$$word1",
     "options": {
-        "database": "videotagging2",
+        "database": "videotagging3",
         "encrypt": true
     }
 }
