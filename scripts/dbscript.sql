@@ -276,6 +276,68 @@ BEGIN
 END
 GO
 
+/****** Object:  StoredProcedure [dbo].[GetUserJobs]    Script Date: 12/10/2015 1:58:55 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetUserJobs]
+	@UserId int
+AS
+
+BEGIN
+
+	SELECT *  FROM [dbo].[Jobs]
+	WHERE UserId = @UserId
+
+END
+GO
+
+
+
+/****** Object:  StoredProcedure [dbo].[UpsertFrame]    Script Date: 12/10/2015 1:58:55 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[UpsertFrame]
+	@JobId int,
+	@FrameIndex bigint,
+	@TagsJson ntext
+AS
+BEGIN
+
+	SET NOCOUNT ON;
+
+
+	BEGIN TRANSACTION T1
+
+
+	IF EXISTS (SELECT * FROM Frames WHERE JobId = @JobId AND FrameIndex = @FrameIndex)
+	BEGIN
+		UPDATE [Frames]
+		SET	TagsJson = @TagsJson
+		WHERE JobId = @JobId AND FrameIndex = @FrameIndex
+	END
+	ELSE
+	BEGIN
+
+	INSERT INTO [dbo].[Frames]
+           ([JobId]
+           ,[FrameIndex]
+		   ,[TagsJson])
+     VALUES
+           (@JobId
+           ,@FrameIndex
+		   ,@TagsJson)
+	END
+
+	COMMIT TRANSACTION T1
+
+END
+GO
+
+
 
 
 INSERT INTO [dbo].[Roles]

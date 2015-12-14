@@ -37,22 +37,23 @@ app.get('/jobs/:id', function(req, res){
     });
 });
 
-app.post('/jobs/:id/frame/:frameId', function(req, res){
-    var id = req.params.id;
-    console.log('getting jobs for user id', id);
-    // **************
-    db.getJobDetails(id, function(err, resp) {
+app.post('/jobs/:id/frames/:index', function(req, res){
+    var options = req.body;
+    options.jobId = req.params.id;
+    options.frameIndex = req.params.index;
+
+    console.log('posing frame index', options.frameIndex, 'for job', options.jobId);
+    db.createOrModifyFrame(options, function(err, resp) {
         if(err) return res.status(500).json({ error: err });
         console.log('resp:', resp);
         res.json(resp);
     });
 });
 
-app.get('users/:id/jobs', function(req, res){
-    var id = req.params.id;
-    console.log('getting jobs for user id', id);
-    // **************
-    db.getJobDetails(id, function(err, resp) {
+app.get('/users/:id/jobs', function(req, res){
+    var userId = req.params.id;
+    console.log('getting jobs for user id', userId);
+    db.getUserJobs(userId, function(err, resp) {
         if(err) return res.status(500).json({ error: err });
         console.log('resp:', resp);
         res.json(resp);

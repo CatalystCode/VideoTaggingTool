@@ -126,7 +126,7 @@ function createOrModifyJob(req, cb) {
                     return cb(err);
                 }
 
-                cb(null, {jobId: resultJobId});
+                return cb(null, {jobId: resultJobId});
             });
 
             if(req.id)
@@ -156,6 +156,7 @@ function createOrModifyJob(req, cb) {
 
     });
 }
+
 
 function getDataSets(opts, cb) {
     connect(function(err, connection){
@@ -204,9 +205,72 @@ function getDataSets(opts, cb) {
     });
 }
 
+function createOrModifyFrame(req, cb) {
+    connect(function(err, connection){
+        if (err) return cb(err);
+
+        try
+        {
+            var request = new tedious.Request('UpsertFrame', function(err) {
+                if (err) {
+                    console.error('error calling UpsertFrame stored procedure', err);
+                    return cb(err);
+                }
+
+                return cb();
+            });
+
+            request.addParameter('JobId', TYPES.Int, req.jobId);
+            request.addParameter('FrameIndex', TYPES.BigInt, req.frameIndex);
+            request.addParameter('TagsJson', TYPES.NVarChar, JSON.stringify(req.tagsJson));
+
+            connection.callProcedure(request);
+        }
+        catch(err) {
+            return cb(err);
+        }
+
+    });
+}
+
+function getUserJobs(userId, cb) {
+    return getDataSets({
+        sproc: 'GetUserJobs',
+        sets: ['jobs'],
+        params: [{name: 'UserId', type: TYPES.Int, value: userId}]
+    }, function(err, result){
+        if (err) return cb(err);
+
+        var newResult = {
+            jobs: []
+        };
+
+        try {
+            for (var i=0; i<result.jobs.length; i++) {
+                var job = result.jobs[i];
+
+                if(job.ConfigJson)
+                    job.Config = JSON.parse(job.ConfigJson);
+                delete job.ConfigJson;
+
+                newResult.jobs.push(job);
+            }
+        }
+        catch (err) {
+            console.error('error:', err);
+            return cb(err);
+        }
+
+        return cb(null, newResult);
+    });
+}
+
+
 module.exports = {
     connect: connect,
     createOrModifyJob: createOrModifyJob,
     getJobDetails: getJobDetails,
-    getVideos: getVideos
+    getVideos: getVideos,
+    createOrModifyFrame: createOrModifyFrame,
+    getUserJobs: getUserJobs
 }
