@@ -37,6 +37,16 @@ app.get('/jobs/:id', function(req, res){
     });
 });
 
+app.get('/videos', function(req, res){
+    console.log('getting videos');
+    db.getVideos(function(err, resp) {
+        if(err) return res.status(500).json({ error: err });
+        console.log('resp:', resp);
+        res.json(resp);
+    });
+});
+
+
 
 http.createServer(app).listen(port, function(err){
     if (err) return console.error('error creating server', err);

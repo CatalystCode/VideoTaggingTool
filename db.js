@@ -48,7 +48,6 @@ function getJobDetails(id, cb) {
                 delete newResult.video.name;
             }
 
-
             if(newResult.job.ConfigJson)
                 newResult.job.Config = JSON.parse(newResult.job.ConfigJson);
             delete newResult.job.ConfigJson;
@@ -64,6 +63,44 @@ function getJobDetails(id, cb) {
                 }
                 delete frame.TagsJson;
                 newResult.frames.push(frame);
+            }
+        }
+        catch (err) {
+            console.error('error:', err);
+            return cb(err);
+        }
+
+        return cb(null, newResult);
+    });
+}
+
+
+function getVideos(cb) {
+    return getDataSets({
+        sproc: 'GetVideos',
+        sets: ['videos'],
+        params: []
+    }, function(err, result){
+        if (err) return cb(err);
+
+        var newResult = {
+            videos: []
+        };
+
+        try {
+            for (var i=0; i<result.videos.length; i++) {
+                var video = result.videos[i];
+                if(video.VideoJson)
+                    video.Data = JSON.parse(video.VideoJson);
+                delete video.VideoJson;
+
+                // TODO: remove when fixed in db
+                if(video.name){
+                    video.Name = video.name;
+                    delete video.name;
+                }
+
+                newResult.videos.push(video);
             }
         }
         catch (err) {
@@ -162,5 +199,6 @@ function getDataSets(opts, cb) {
 module.exports = {
     connect: connect,
     createOrModifyJob: createOrModifyJob,
-    getJobDetails: getJobDetails
+    getJobDetails: getJobDetails,
+    getVideos: getVideos
 }

@@ -261,6 +261,23 @@ END
 GO
 
 
+/****** Object:  StoredProcedure [dbo].[GetVideos]    Script Date: 12/10/2015 1:58:55 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetVideos]
+AS
+
+BEGIN
+
+	SELECT *  FROM [dbo].[Videos]
+
+END
+GO
+
+
+
 INSERT INTO [dbo].[Roles]
            ([Id]
 		   ,[Name]
