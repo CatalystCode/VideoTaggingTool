@@ -5,9 +5,11 @@ var _sqlConnection;
 
 function connect(cb) {
 
+    /*
     if(_sqlConnection && !_sqlConnection.closed) {
         return cb(null, _sqlConnection);
     }
+    */
 
     var configSql = require("./sql.azure.private.json");
     console.log('connecting to server', configSql.server);
