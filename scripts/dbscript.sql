@@ -356,7 +356,7 @@ BEGIN
 	JOIN Frames f
 	ON j.Id = f.JobId
 	WHERE j.VideoId = @VideoId
-
+    ORDER BY f.FrameIndex ASC
 
 END
 
