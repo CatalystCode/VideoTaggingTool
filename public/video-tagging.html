@@ -1,0 +1,453 @@
+<link rel="import" href="../polymer/polymer.html">
+
+
+<!--
+`<video-tagging>` control for video tagging.
+-->
+
+<dom-module id="video-tagging">
+
+  <template>
+    
+    <link rel="stylesheet" href="/css/video-tagging.css" />
+    <link rel="stylesheet" href="/css/imgareaselect-animated.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css" />
+    
+    <div id="controlWrapper" style="width:100%;height:100%;border-width: 0px;border-style: solid;border-color: green;">
+        <div id='videoWrapper'  style="border-width: 0px;border-style: solid;border-color: blue;">
+
+          <div id="title_container" class="hide" style="z-index: 3">
+
+          
+</div>
+          <canvas id="overlay"  on-click='videoClicked' class = "overlaystyle" >
+                  Your browser does not support the HTML5 canvas tag.</canvas>
+          <video id='vid'>
+                     
+                   Your browser does not support the video tag.</video>
+        </div>
+    
+    <div id="video-controls" >
+
+      <div id='first-row' class="control-row">
+          <button type="button" on-click='stepbwdclicked' class='btn btn-primary' id="stepbwd" >&laquo;</button>
+
+          <button type="button" on-click='playclicked' class='btn btn-primary btn3d' style="width:80px" id="play-pause">Play</button>
+          <button type="button" on-tap='stepfwdclicked'  class='btn btn-primary' id="stepfwd" >&raquo;</button>
+          <span id='framespan' style='padding-left:20px'>Frame :</span>
+          <span id='frameText' style='padding-right:20px;color:blue'>0</span>
+          <button type="button" class='btn btn-primary' id="autostep" on-click='autostepclicked' >Enable Auto Step</button>
+          <span id='stepspan' style='padding-left:20px'>Step :</span>
+          <span id='stepText' style='padding-right:20px;color:blue'>0</span>
+
+          <button type="button" class='btn btn-primary' id="emptyTagButton" on-click='emptyTagClicked' >Empty Tag</button>
+      </div>
+      <div id="playback">
+        <span>Playback Rate :</span>
+        <input type="radio" name='playbackRate'  checked  class='radio-inline' value=1 on-click='playback' style='margin-left:40px'> x 1</input>
+        <input type="radio" name='playbackRate' class='radio-inline' value=.5 on-click='playback'> x 0.5 </input>
+        <input type="radio" name='playbackRate' class='radio-inline' value=.25 on-click='playback'> x 0.25 </input>
+        <input type="radio" name='playbackRate' class='radio-inline' value=.1 on-click='playback'> x 0.1 </input>
+        <input type="radio" name='playbackRate' class='radio-inline' value=.05 on-click='playback'> x 0.05 </input>
+
+      </div>
+  <fieldset class="fields">
+    <div class="form-inline"> 
+        <span class="input_button"><output for="seek-bar" id="curtimespan">0</output></span>
+        <input id="seek-bar" type="range" min='0' value="0" step=.01 required />      
+        <span class="input_button"><output for="seek-bar" id="remainingtimespan">30</output></span>
+    
+    </div>
+  </fieldset>
+  <div id = "freeTextDiv" class="control-row"> 
+        <span style='margin-left:100px'>Description :</span>
+        <input  id="freetext" type="text" style="width:395px;margin-left:20px"/>
+        <input  id="submitTagTextButton" type="button" value = "Submit" style="width50px;margin-left:20px" on-click= "submitTextClicked"/>  
+    </div>
+    <div id = "tagsManagementDiv" class="control-row" style="margin-top:20px"> 
+        <select id="tagsList" style='margin-left:100px' on-change = 'tagSelected'></select>
+        <input  id="deleteTagButton" type="button" value = "Delete" style="width50px;margin-left:20px" on-click= "deleteTag"/> 
+    </div>
+         
+   </div> 
+  </div> 
+</template>
+
+<script>
+
+  Polymer({
+
+    is: 'video-tagging',
+
+    properties: {
+
+      framerate: Number,
+      videoduration: Number,
+      videowidth: Number,
+      videoheight: Number,
+      shape: String,
+      tagtype: String,
+      multitags: Number,
+      tagsize: Number, 
+      labels:Number, 
+      inputFrames: Object,   
+      count: {
+        type: Number,
+        readOnly: true,
+        notify: true
+      },
+      src: {
+        type: String,
+        value: '',
+        observer: 'srcChanged'
+      }
+
+    },
+    // Element Lifecycle
+    ready: function() {
+      this.frames = {};
+
+      this.fbfinterval = null;
+      this.fbf = false;
+      this.seeking = false;
+      this.currentTag = null;
+    
+      this.autoStepEnabled = false;
+      this.step = 29;
+
+      this.videoWrapper= document.getElementById('videoWrapper');
+      this.overlay = document.getElementById('overlay');
+      this.video= document.getElementById('vid');
+      this.freeTextDiv= document.getElementById('freeTextDiv');
+      this.tagsManagementDiv= document.getElementById('tagsManagementDiv');
+
+      this.currentTimeSpan = document.getElementById("curtimespan");
+      this.remainingTimeSpan = document.getElementById("remainingtimespan");
+      this.stepText = document.getElementById("stepText");
+      this.frameText = document.getElementById("frameText");
+      this.freeText = document.getElementById("freetext");
+      this.tagsList = document.getElementById("tagsList");
+
+      // Buttons
+      this.playButton = document.getElementById("play-pause");
+      this.framefwdButton = document.getElementById("framefwd");
+      this.framebwdButton = document.getElementById("framebwd");
+      this.autoStepButton = document.getElementById("autostep");
+      this.deleteTagButton = document.getElementById("deleteTagButton");
+
+      // Sliders
+      this.seekBar = document.getElementById("seek-bar");
+
+      this.playing = null;
+      this.ctx = this.overlay.getContext("2d");
+
+    },
+    srcChanged: function(newValue, oldValue) { 
+
+          if(this.video)
+          {
+              this.video.src = newValue;
+
+          }
+     },
+    attached: function() {
+
+      
+      
+      //this.video.src = this.src;
+      //Calculate size of canvas to fit video.
+      var self = this;
+      this.video.addEventListener( "loadedmetadata", function (e) {
+            
+            self.overlay.width = $('#vid').width();
+            self.overlay.height = $('#vid').height();
+            self.seekBar.max = self.video.duration;
+            self.remainingTimeSpan.innerHTML = self.video.duration.toPrecision(4);
+            self.video.volume = 0;
+            self.frames = self.inputFrames? self.inputFrames:{};
+
+            self.frameTime = 1/self.framerate;
+  
+            self.autoStepButton.style.visibility = self.multitags == "0"?'visible':'hidden';
+            self.freeTextDiv.style.visibility = self.labels == "1"?'visible':'hidden';
+            self.tagsManagementDiv.style.visibility = self.labels == "1"?'visible':'hidden';
+            self.enableAreaSelect();
+
+      }, false );
+      
+      this.seekBar.addEventListener("mousedown", function() {
+            
+            self.seeking = true;
+          });
+      this.seekBar.addEventListener("mouseup", function() {
+            
+            self.seeking = false;
+          });
+      
+      this.seekBar.addEventListener("change", function() {
+            self.seeking = false;
+            self.video.currentTime = self.seekBar.value;
+            self.playingCallback();
+
+          });
+
+              
+    },
+    enableAreaSelect: function() {
+      if(this.tagtype == "Area"){
+
+          $('canvas#overlay').imgAreaSelect({
+                        disable: false, //enable/disable tagging
+                        handles: true, //grab handels when selecting the area
+                        keys: { arrows: 15, shift: 5 }, //keyboard support
+                        aspectRatio: '1:1',
+                        maxWidth: 62, //adjust the max tag width
+                        maxHeight: 62, //adjust the max tag height
+                        fadeSpeed: 200,
+                        show:true,
+                        onSelectEnd: function(img, selection){console.log(selection)//after you have selected an area, show the form and insert tag location values into a form
+                          //$('input#x1').val(selection.x1);
+                          //$('input#y1').val(selection.y1);
+                          //$('input#x2').val(selection.x2);
+                          //$('input#y2').val(selection.y2);
+                          //$('input#w').val(selection.width);
+                          //$('input#h').val(selection.height);
+                          //$('#title_container').css('left', selection.x1);
+                          //$('#title_container').css('top', selection.y2);
+                          //$('#title_container').removeClass("hide");
+                          //if (selection.width == 0 && selection.height == 0) { $('#title_container').addClass("hide"); } //if there is no selection, hide the form
+                         },
+                         onSelectStart: function(img, selection){console.log(selection)
+                          //$('#title_container').addClass("hide"); //if reselecting, hide the form
+                         },
+                      }); 
+          }
+    },
+    detached: function() {
+    },
+    tagSelected: function() {
+      this.addText(this.tagsList.value)
+    },
+    populateTagsList: function() {
+
+          var option = document.createElement("option");
+          option.text = this.currentTag.label;
+          option.value = this.currentTag.label;
+          this.tagsList.add(option);
+    },
+    deleteTag: function(e) {
+          var text = this.tagsList.options[this.tagsList.selectedIndex].value;
+          this.tagsList.remove(this.tagsList.selectedIndex);
+          this.tagSelected();//Call event handler on-change
+          
+          var frameIndex = this.getCurrentFrame();
+          var arr = this.frames[frameIndex];
+          var deletedIndex = 0;
+          for(var index = 0;index < arr.length;index++)
+          {
+                if(arr[index].label == text)
+                {
+                    this.ctx.clearRect(arr[index].x-this.tagsize/2, arr[index].y-this.tagsize/2, this.tagsize, this.tagsize);
+                    arr.splice(index, 1);
+                    break;
+                }
+          }
+          this.sendTagToHost(frameIndex);//Update server
+    },
+    submitTextClicked: function(e) {
+        var frameIndex = this.getCurrentFrame();
+        if(this.currentTag !== null && this.frames[frameIndex] !== null)
+        {
+              this.currentTag.label = this.freeText.value;//Add the text to the tag
+              this.addText('');
+              this.populateTagsList();
+              this.sendTagToHost(frameIndex);
+        }
+    },
+    sendTagToHost: function(frameIndex) {
+          this.fire('ontagged', {tag: {frameIndex:frameIndex, tags:this.frames[frameIndex]}});
+    },
+    playback: function(e) {
+      this.video.playbackRate = e.toElement.value;
+    },
+    playclicked: function() {
+      this.video.paused?this.playState():this.pauseState();
+    },
+    stepfwdclicked: function() {
+      this.pauseState();
+      this.video.currentTime = Math.min(this.video.duration, this.video.currentTime + this.frameTime);
+      this.playingCallback();
+    },
+    stepbwdclicked: function() {
+        this.pauseState();
+        if (this.video.currentTime > 0) {
+            //one frame back
+            this.video.currentTime -= this.frameTime;
+            this.playingCallback();
+        }
+    },
+    autostepclicked: function() {
+
+          if (this.autoStepEnabled) {
+            this.autoStepEnabled = false;
+            this.autoStepButton.innerHTML = "Enable Auto Step";
+            
+          } else {
+            this.pauseState();
+            this.autoStepButton.innerHTML = "Disable Auto Step";
+            this.autoStepEnabled = true;
+          }
+    },
+    videoClicked: function(e) {
+            
+            var offset = $(this).offset();
+            var relativeX = (e.pageX - offset.left);
+            var relativeY = (e.pageY - offset.top);
+            //Add to tags collection
+            this.addTag(relativeX, relativeY, this.shape, this.multitags == 1);
+            //Draws the shape
+            this.drawTag(relativeX, relativeY);
+            if(this.autoStepEnabled)
+            {
+                var self = this;
+                setTimeout(function(){ self.stepfwdclicked(); }, 100);
+            }
+    },
+    emptyTagClicked: function(e)
+    {
+           this.clearOverlay();
+           this.addTag(null, null, 'empty', false);
+    },
+    findTag: function() {
+            this.clearOverlay();//Clear canvas
+            var offset = $(this).offset();
+            var frameIndex = this.getCurrentFrame();
+            
+            if(this.frames[frameIndex] && this.frames[frameIndex].length > 0)
+            {
+              console.log('found')
+              //Draw all tags for this frame
+              for (i = 0; i < this.frames[frameIndex].length; i++) {
+
+                  var arr = this.frames[frameIndex][i]; 
+                  //Calculate x, y relative to current width and height          
+                  var widthRatio = arr.width / $('#vid').width();
+                  var x = (arr.x * widthRatio);
+                  var heightRatio = arr.height / $('#vid').height();
+                  var y = (arr.y * heightRatio);
+                  
+                  this.drawTag( x, y);
+                  this.currentTag = arr;
+                  this.populateTagsList();
+
+              }
+              this.addText(this.frames[frameIndex][0].label)
+            }
+    }, 
+    addText: function(text) {
+
+      this.freeText.value = text;
+    },  
+    clearOverlay: function() {
+
+      this.ctx.clearRect(0, 0, this.overlay.width, this.overlay.height);
+      this.addText('');
+      this.tagsList.options.length = 0;
+    },
+    getCurrentFrame: function() {
+      return Math.round(this.video.currentTime * this.framerate);
+    },
+    playState: function() {
+        this.video.play();
+        
+        this.playButton.innerHTML = "Pause";
+        this.autoStepEnabled = false;
+        this.autoStepButton.innerHTML = "Enable Auto Step";    
+        var self = this;
+        this.playing = setInterval(function() {
+            self.playingCallback();
+        }, 10);
+    },
+    pauseState: function() {
+            this.video.pause();
+            this.playButton.innerHTML = "Play";         
+            clearInterval(this.playing);
+    },
+    addTag: function(x, y, type, allowMultiple) {
+            
+            console.log(x + "_" + y )
+
+            var arr = {};
+            arr.x = x;
+            arr.y = y;
+            arr.width = $('#vid').width();
+            arr.height = $('#vid').height();
+            arr.type = type;
+            
+            this.currentTag = arr;            
+            var frameIndex = this.getCurrentFrame();
+            if(allowMultiple && this.frames[frameIndex] != null)
+            {
+                this.frames[frameIndex].push(arr);
+
+            }
+            else
+            {
+                this.clearOverlay();
+                var tagArray = [];
+                tagArray.push(arr);
+                this.frames[frameIndex] = tagArray;
+            }
+            if(this.labels == 0)//Frame is tagged, Send to host
+            {
+                this.sendTagToHost(frameIndex);
+            }
+            
+    },
+    drawTag: function(x, y) {
+
+            if(this.shape.toLowerCase() == "rectangle")
+            {
+                this.ctx.strokeRect(x - this.tagsize/2, y - this.tagsize/2, this.tagsize, this.tagsize);
+            }
+            if(this.shape.toLowerCase() == "circle")
+            {
+                this.ctx.beginPath();
+                this.ctx.arc(x,y,this.tagsize,0,2*Math.PI, false);
+                this.ctx.stroke();
+                this.ctx.closePath();
+            }
+            if(this.shape.toLowerCase() == "x")
+            {
+                this.ctx.beginPath();
+                this.ctx.moveTo(x + this.tagsize/2, y + this.tagsize/2);
+                this.ctx.lineTo(x - this.tagsize/2, y - this.tagsize/2);
+                this.ctx.moveTo(x + this.tagsize/2, y - this.tagsize/2);
+                this.ctx.lineTo(x - this.tagsize/2, y + this.tagsize/2);
+                this.ctx.stroke();
+                this.ctx.closePath();
+            }
+            if(this.shape.toLowerCase() == "tag")
+            {
+              
+
+            }
+    },
+    playingCallback: function() {
+            
+            this.frameText.innerHTML = this.getCurrentFrame();
+            this.currentTimeSpan.innerHTML = this.video.currentTime.toFixed(2);
+            this.remainingTimeSpan.innerHTML = (this.video.duration - this.video.currentTime).toPrecision(3);
+            if(!this.seeking)
+            {
+                this.seekBar.value = this.video.currentTime;
+            }
+            this.findTag();
+        }
+  });
+
+</script>
+<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script> 
+<script src="/js/jquery.imgareaselect.js"></script>
+</dom-module>
