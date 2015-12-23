@@ -13,8 +13,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
     <title>Video Tagging</title>
-    
-    <link rel="import" href="video-tagging.html">
+
   </head>
   <body>
 
@@ -32,14 +31,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <input id='user' style='float:right;'></input>
 </div>
 <div style="height:30px;">
-        <span style='padding-left:20px' for="tagTypeList">Tag Type :</span>
+        <span style='padding-left:20px' for="tagTypeList">Location Type :</span>
         <select id='tagTypeList' style='float:right;width:170px'>
               <option>Point</option>
               <option>Area</option>
         </select>
     </div>
     <div style="height:30px;">
-        <span style='padding-left:20px' for="tagShapeList">Tag Shape :</span>
+        <span style='padding-left:20px' for="tagShapeList">Location Shape :</span>
         <select id='tagShapeList' style='float:right;width:170px'>
               <option>X</option>
               <option>Rectangle</option>
@@ -49,25 +48,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </div>
       <div style="height:30px;">
 
-        <span style='padding-left:20px;padding-right:20px'>Tag Size :</span>
+        <span style='padding-left:20px;padding-right:20px'>Location Size :</span>
         <input id='tagSizeInput' style='float:right;'></input>
       </div>
       <div style="height:30px;">
       <div style="height:30px;">
 
-        <span style='padding-left:20px;padding-right:20px' >Multiple Tags :</span>
+        <span style='padding-left:20px;padding-right:20px' >Multiple Locations :</span>
         <input type="radio" name='multiTags' checked class='radio-inline' value=1 > Yes </input>
         <input type="radio" name='multiTags' class='radio-inline' value=0 > No </input>
       </div>
       <div style="height:30px;">
 
-        <span style='padding-left:20px;padding-right:20px'>Tag Labels :</span>
-        <input type="radio" name='tagLabels' checked class='radio-inline' value=1 > Yes </input>
-        <input type="radio" name='tagLabels' class='radio-inline' value=0 > No </input>
+        <span style='padding-left:20px;padding-right:20px' >Possible Tags :</span>
+        <input id='tags' style='float:right;'></input>
       </div>
-      
-
-        
         <input type="button" value="Create Job" id='createJobButton' onclick='createJobClicked()' style='float:right;'></input>
       </div>
     </div>
@@ -79,18 +74,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <option>Select Job...</option>
       </select>
     </div>
-    
-    
+
+
     <div style="width:700px;height:600px;border-width: 0px;border-style: solid;border-color: orange;margin:50px 0px 0px 200px;">
 
-      <video-tagging id='video-tagging'>
-         </video-tagging>
 
+          <input type=button value="VideoTaggingControl" onclick="controlClicked()"></input>
     </div>
-    
-   <script src="/bower_components/webcomponentsjs/webcomponents.js"></script>
+
+<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.3.min.js"></script>
    <script>
-     var jobsForUser = [];     
+     var jobsForUser = [];
 
       $(window).load(function() {
 
@@ -109,9 +103,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             type: "GET",
             url: "http://videotagging.azurewebsites.net/users/2/jobs",
-            
+
             success: function(data) {
-                
+
                 var arr = data.jobs;
                 for(var index = 0;index < arr.length;index++)
                 {
@@ -122,9 +116,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 }
             },
             error: function(err) {
-                console.log(err); 
+                console.log(err);
             }
-        });     
+        });
     }
 
     function populateVideos()
@@ -135,9 +129,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             type: "GET",
             url: "http://videotagging.azurewebsites.net/videos",
-            
+
             success: function(data) {
-                
+
                 var arr = data.videos;
                 for(var index = 0;index < arr.length;index++)
                 {
@@ -145,14 +139,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                       option.text = arr[index].Name;
                       option.value = arr[index].Id;
                       videoList.add(option);
-                }      
+                }
             },
             error: function(err) {
-                console.log(err); 
+                console.log(err);
             }
-        });  
+        });
     }
-    
+
     function jobSelectionChanged()
     {
         var sel = document.getElementById("jobslist");
@@ -167,46 +161,50 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             type: "GET",
             url: "http://videotagging.azurewebsites.net/jobs/" + jobId,
-            
+
             success: function(data) {
-                
+
                 var videotagging = document.getElementById('video-tagging');
-                videotagging.src = data.video.Url;
-                videotagging.videoduration = data.video.DurationSeconds;
-                videotagging.videowidth = data.video.Width;
-                videotagging.videoheight = data.video.Height;
-                videotagging.framerate = data.video.FramesPerSecond;
+
+                //videotagging.videoduration = data.video.DurationSeconds;
+                //videotagging.videowidth = data.video.Width;
+                //videotagging.videoheight = data.video.Height;
+                //videotagging.framerate = data.video.FramesPerSecond;
 
                 //Convert frames to dictionary
                 var frames = {};
-                
+
                 var arr = data.frames;
                 for(var index = 0;index < arr.length;index++)
                 {
                     frames[arr[index].FrameIndex] = [];
                     var tagArray = arr[index].Tags;
-                      
+
                     for(var index2 = 0;index2 < tagArray.length;index2++)
                     {
                         frames[arr[index].FrameIndex].push( tagArray[index2])
-                          
+
                     }
-                } 
-                videotagging.inputFrames = frames;
+                }
+                //videotagging.inputFrames = frames;
 
                 var jobConfig = data.job.Config;
-                videotagging.shape = jobConfig.tagShape;
-                videotagging.tagtype = jobConfig.tagType;
-                videotagging.multitags = jobConfig.multipleTags;
-                videotagging.labels = jobConfig.labels;
-                videotagging.tagsize = jobConfig.tagSize;
+                //videotagging.locationshape = jobConfig.locationshape;
+                //videotagging.locationtype = jobConfig.locationtype;
+                //videotagging.multilocations = jobConfig.multilocations;
+                //videotagging.locationsize = jobConfig.locationsize;
+                //videotagging.inputtagsarray = jobConfig.tags;
+
+                //videotagging.src = '';
+                //videotagging.src = data.video.Url;
+
             },
             error: function(err) {
-                console.log(err); 
+                console.log(err);
             }
-        });  
+        });
     }
-    
+
     function createJobClicked()
     {
         var job = {};
@@ -216,11 +214,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         job.userId = $('#user').val();
         job.createdById = job.userId;
         job.configJson = {};
-        job.configJson.tagType =  $('#tagTypeList')[0].options[$('#tagTypeList')[0].selectedIndex].text;
-        job.configJson.tagShape =  $('#tagShapeList')[0].options[$('#tagShapeList')[0].selectedIndex].text;
-        job.configJson.multipleTags =  $('input[name = multiTags]:checked')[0].value;
-        job.configJson.labels =  $('input[name = tagLabels]:checked')[0].value;
-        job.configJson.tagSize =  $('#tagSizeInput').val();
+        job.configJson.locationtype =  $('#tagTypeList')[0].options[$('#tagTypeList')[0].selectedIndex].text;
+        job.configJson.locationshape =  $('#tagShapeList')[0].options[$('#tagShapeList')[0].selectedIndex].text;
+        job.configJson.multilocations =  $('input[name = multiTags]:checked')[0].value;
+        job.configJson.locationsize =  $('#tagSizeInput').val();
+        job.configJson.tags = [];
+        var tagsArray = $('#tags').val().split(',');
+        for(var index = 0;index < tagsArray.length;index++)
+        {
+            job.configJson.tags.push(tagsArray[index])
+        }
 
         //POST
         $.ajax({
@@ -232,23 +235,52 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             contentType: "application/json; charset=utf-8",
 
             success: function(data) {
-            
-                getJobsForUser(); //Refresh  
+
+                getJobsForUser(); //Refresh
             },
             error: function(err) {
-                console.log(err); 
+                console.log(err);
             }
-          });       
+          });
     }
-    window.addEventListener('ontagged', function (e) {
-            
+    function controlClicked()
+    {
+          var jobslist = document.getElementById("jobslist");
+          var jobId = jobslist.options[jobslist.selectedIndex].value;
+          //var inputObject = e.detail.location;
+          var inputObject = {};
+          inputObject.frameIndex = 23;
+          //var msg = {};
+          //msg.tags = null;//inputObject.locations;
+          var json = '{"tags":[{"x1":163,"y1":112,"x2":252,"y2":201,"width":696,"height":401,"type":"Area","locationshape":"Rectangle","tags":["bird"],"name":1},{"x1":323,"y1":165,"x2":434,"y2":276,"width":696,"height":401,"type":"Area","locationshape":"Rectangle","tags":["horse"],"name":2}]}';//JSON.stringify(msg)
+
+          console.log(json);
+
+          //POST
+          $.ajax({
+
+              type: "POST",
+              url: "http://videotagging.azurewebsites.net/jobs/" + jobId + "/frames/" + inputObject.frameIndex,
+              dataType: "json",
+              data: json,
+              contentType: "application/json; charset=utf-8",
+              error: function(err) {
+                  console.log(err);
+              }
+          });
+    }
+    window.addEventListener('onlocationchanged', function (e) {
+
             var jobslist = document.getElementById("jobslist");
             var jobId = jobslist.options[jobslist.selectedIndex].value;
-            var inputObject = e.detail.tag;
+            var inputObject = e.detail.location;
+
             var msg = {};
-            msg.tags = inputObject.tags;
+            msg.tags = null;//inputObject.locations;
             var json = JSON.stringify(msg)
-            
+
+            console.log(json);
+
             //POST
             $.ajax({
 
@@ -258,12 +290,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 data: json,
                 contentType: "application/json; charset=utf-8",
                 error: function(err) {
-                    console.log(err); 
+                    console.log(err);
                 }
-            });   
+            });
         });
-              
+
    </script>
-   <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.3.min.js"></script>
+
   </body>
 </html>
