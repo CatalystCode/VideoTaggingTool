@@ -1,29 +1,21 @@
 {
-  "name": "video-tagging-tool",
-  "version": "1.0.0",
-  "description": "video tagging tool",
-  "main": "server.js",
+  "name": "VideoTaggingTool",
+  "version": "0.0.0",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/CatalystCode/VideoTaggingTool.git"
+  "description": "Tool for tagging videos frame by frame",
+  "author": {
+    "name": "Ami Turgman",
+    "email": "ami.turgman@microsoft.com"
   },
-  "keywords": [
-    "video",
-    "tagging"
-  ],
-  "author": "Ami Turgman",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/CatalystCode/VideoTaggingTool/issues"
-  },
-  "homepage": "https://github.com/CatalystCode/VideoTaggingTool#readme",
   "dependencies": {
-    "body-parser": "^1.14.1",
-    "express": "^4.13.3",
+    "azure-storage": "^0.7.0",
+    "body-parser": "~1.8.1",
+    "debug": "~2.0.0",
+    "express": "~4.9.0",
+    "multiparty": "^4.1.2",
     "tedious": "^1.13.1"
   }
 }

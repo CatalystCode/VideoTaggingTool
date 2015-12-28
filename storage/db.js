@@ -1,6 +1,8 @@
 var tedious = require('tedious');
 var TYPES = tedious.TYPES;
 
+var blob = require('./blob');
+
 var _sqlConnection;
 
 function connect(cb) {
@@ -32,6 +34,8 @@ function normalizeVideoRow(video) {
     if(video.VideoJson)
         video.Data = JSON.parse(video.VideoJson);
     delete video.VideoJson;
+    
+    video.Url = blob.getVideoUrl(video.Id);
     return video;
 }
 function normalizeFrameRow(frame) {
@@ -54,19 +58,16 @@ function getJobDetails(id, cb) {
         params: [{name: 'Id', type: TYPES.Int, value: id}]
     }, function(err, result){
         if (err) return cb(err);
+
         var newResult = {
             job: result.job[0],
             video: result.video[0],
-            user: result.user[0],
-            frames: []
+            user: result.user[0]
         };
 
         try {
             normalizeJobRow(newResult.job);
             normalizeVideoRow(newResult.video);
-            for (var i=0; i<result.frames.length; i++) {
-                newResult.frames.push(normalizeFrameRow(result.frames[i]));
-            }
         }
         catch (err) {
             console.error('error:', err);
@@ -76,6 +77,34 @@ function getJobDetails(id, cb) {
         return cb(null, newResult);
     });
 }
+
+
+function getUsers(cb) {
+    return getDataSets({
+        sproc: 'GetUsers',
+        sets: ['users'],
+        params: []
+    }, function (err, result) {
+        if (err) return cb(err);
+        
+        var newResult = {
+            users: []
+        };
+        
+        try {
+            for (var i = 0; i < result.users.length; i++) {
+                newResult.users.push(result.users[i]);
+            }
+        }
+        catch (err) {
+            console.error('error:', err);
+            return cb(err);
+        }
+        
+        return cb(null, newResult);
+    });
+}
+
 
 
 function getVideos(cb) {
@@ -104,6 +133,70 @@ function getVideos(cb) {
     });
 }
 
+
+function getVideo(id, cb) {
+    return getDataSets({
+        sproc: 'GetVideo',
+        sets: ['videos'],
+        params: [{ name: 'Id', type: TYPES.Int, value: id }]
+    }, function (err, result) {
+        if (err) return cb(err);
+               
+        if (result.videos.length) {
+            return cb(null, normalizeVideoRow(result.videos[0]));
+        }
+        
+        return cb(null, {});
+    });
+}
+
+
+function createOrModifyVideo(req, cb) {
+    connect(function (err, connection) {
+        if (err) return cb(err);
+        
+        try {
+            var resultVideoId;
+            
+            var request = new tedious.Request('UpsertVideo', function (err) {
+                if (err) {
+                    console.error('error calling Upsert stored procedure', err);
+                    return cb(err);
+                }
+                
+                return cb(null, { videoId: resultVideoId });
+            });
+            
+            if (req.id)
+                request.addParameter('Id', TYPES.Int, req.id);
+            
+            request.addParameter('Name', TYPES.NVarChar, req.name);
+            request.addParameter('Width', TYPES.Int, req.width);
+            request.addParameter('Height', TYPES.Int, req.height);
+            request.addParameter('DurationSeconds', TYPES.Real, req.durationSeconds);
+            request.addParameter('FramesPerSecond', TYPES.Real, req.framesPerSecond);
+            
+            if (req.videoJson)
+                request.addParameter('VideoJson', TYPES.NVarChar, JSON.stringify(req.videoJson));
+            
+            request.addOutputParameter('VideoId', TYPES.Int);
+            
+            request.on('returnValue', function (parameterName, value, metadata) {
+                if (parameterName == 'VideoId') {
+                    resultVideoId = value;
+                }
+            });
+            
+            connection.callProcedure(request);
+        }
+        catch (err) {
+            return cb(err);
+        }
+
+    });
+}
+
+
 function createOrModifyJob(req, cb) {
     connect(function(err, connection){
         if (err) return cb(err);
@@ -126,6 +219,7 @@ function createOrModifyJob(req, cb) {
 
             request.addParameter('VideoId', TYPES.Int, req.videoId);
             request.addParameter('UserId', TYPES.Int, req.userId);
+            request.addParameter('StatusId', TYPES.TinyInt, req.statusId);
             request.addParameter('Description', TYPES.VarChar, req.description);
             request.addParameter('CreatedById', TYPES.Int, req.createdById);
 
@@ -250,6 +344,32 @@ function getUserJobs(userId, cb) {
     });
 }
 
+
+function getAllJobs(cb) {
+    return getDataSets({
+        sproc: 'GetAllJobs',
+        sets: ['jobs'],
+        params: []
+    }, function (err, result) {
+        if (err) return cb(err);
+        
+        var newResult = {
+            jobs: []
+        };
+        
+        try {
+            for (var i = 0; i < result.jobs.length; i++) {
+                newResult.jobs.push(normalizeJobRow(result.jobs[i]));
+            }
+        }
+        catch (err) {
+            console.error('error:', err);
+            return cb(err);
+        }
+        return cb(null, newResult);
+    });
+}
+
 function getVideoFrames(id, cb) {
     return getDataSets({
         sproc: 'GetVideoFrames',
@@ -280,12 +400,46 @@ function getVideoFrames(id, cb) {
     });
 }
 
+
+function getVideoFramesByJob(id, cb) {
+    return getDataSets({
+        sproc: 'GetVideoFramesByJob',
+        sets: ['frames'],
+        params: [{name: 'JobId', type: TYPES.Int, value: id}]
+    }, function(err, result){
+        if (err) return cb(err);
+
+        var newResult = {
+            frames: {}
+        };
+
+        try {
+            for (var i=0; i<result.frames.length; i++) {
+                var frame = normalizeFrameRow(result.frames[i]);
+                newResult.frames[frame.FrameIndex] = frame.Tags;
+            }
+        }
+        catch (err) {
+            console.error('error:', err);
+            return cb(err);
+        }
+
+        return cb(null, newResult);
+    });
+}
+
+
 module.exports = {
     connect: connect,
     createOrModifyJob: createOrModifyJob,
+    createOrModifyVideo: createOrModifyVideo,
     getJobDetails: getJobDetails,
     getVideos: getVideos,
+    getVideo: getVideo,
     createOrModifyFrame: createOrModifyFrame,
     getUserJobs: getUserJobs,
-    getVideoFrames: getVideoFrames
+    getAllJobs: getAllJobs,
+    getVideoFrames: getVideoFrames,
+    getVideoFramesByJob: getVideoFramesByJob,
+    getUsers: getUsers
 }

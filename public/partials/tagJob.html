@@ -1,0 +1,24 @@
+﻿
+<section ng-controller="TagJobController">
+    <div>
+        <h1>{{ jobData.job.Description }}</h1>
+        <h6>Id: {{jobData.job.Id}}, Created {{jobData.job.CreateDate | date:'dd-MM-yyyy'}}</h6>
+
+        <div class="row">
+            <video-tagging id='video-tagging'></video-tagging>
+        </div>
+
+
+        <div class="form-group">
+            <div class="alert alert-danger col-sm-offset-2 col-sm-10" role="alert" ng-hide="!error">{{error}}</div>
+        </div>
+
+        <div class="form-group">
+            <div class="alert alert-success col-sm-offset-2 col-sm-10" role="alert" ng-hide="!info">{{info}}</div>
+        </div>
+
+
+    </div>
+
+  
+</section>

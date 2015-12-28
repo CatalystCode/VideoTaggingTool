@@ -1,0 +1,517 @@
+/*sliders*/
+/*Video slider*/
+.seek {
+  display: block;
+  margin: 2.5em auto;
+  border: solid .5em transparent;
+  padding: 0;
+  width: 15.5em;
+  height: 1em;
+  border-radius: .25em;
+  background: transparent;
+  font-size: 1em;
+  cursor: pointer;
+}
+.seek, 
+.seek::-webkit-slider-runnable-track, 
+.seek::-webkit-slider-thumb {
+  -webkit-appearance: none;
+}
+.seek::-webkit-slider-runnable-track {
+  width: 15.5em;
+  height: 0.5em;
+  border-radius: 0.25em;
+  background: rgb(89,89,89);
+}
+.seek::-webkit-slider-runnable-track {
+  background: linear-gradient(#e44e4f, #e44e4f) no-repeat #fff;
+}
+input[type='range']::-moz-range-track {
+  width: 15.5em;
+  height: 0.5em;
+  border-radius: 0.25em;
+  background: rgb(89,89,89);
+}
+input[type='range']::-moz-range-track {
+  background: linear-gradient(#e44e4f, #e44e4f) no-repeat rgb(89,89,89);
+}
+input[type='range']::-ms-track {
+  border: none;
+  width: 15.5em;
+  height: 0.5em;
+  border-radius: 0.25em;
+  background: #fff;
+  color: transparent;
+}
+input[type='range']::-ms-fill-lower {
+  border-radius: 0.25em;
+  background: #e44e4f;
+}
+.seek::-webkit-slider-runnable-track {
+  background-size: 50% 100%;
+}
+input[type='range']::-moz-range-track {
+  background-size: 50% 100%;
+}
+.seek::-webkit-slider-thumb {
+  margin-top: -0.125em;
+  border: none;
+  width: 1em;
+  height: 0.75em;
+  border-radius: 50%;
+  
+  background: transparent;
+  display: block;
+}
+
+.seek::-webkit-slider-runnable-track {
+  width: 15.5em;
+  height: 0.5em;
+  border-radius: 0.25em;
+  background: #fff;
+}
+.seek::-webkit-slider-runnable-track {
+  background: linear-gradient(#e44e4f, #e44e4f) no-repeat rgb(89,89,89);
+}
+
+/*Volume slider*/
+.volume {
+  display: block;
+  margin: 2.5em auto;
+  border: solid .5em transparent;
+  padding: 0;
+  width: 15.5em;
+  height: 1em;
+  border-radius: .25em;
+  background: transparent;
+  font-size: 1em;
+  cursor: pointer;
+}
+
+.volume, 
+.volume::-webkit-slider-runnable-track, 
+.volume::-webkit-slider-thumb {
+  -webkit-appearance: none;
+}
+.volume::-webkit-slider-runnable-track {
+  width: 15.5em;
+  height: 0.5em;
+  border-radius: 0.25em;
+  background: #fff;
+}
+.volume::-webkit-slider-runnable-track {
+  background-size: 50% 100%;
+}
+.volume::-webkit-slider-runnable-track {
+  background: linear-gradient(#e44e4f, #e44e4f) no-repeat rgb(89,89,89);
+}
+input[type='range']::-moz-range-track {
+  width: 15.5em;
+  height: 0.5em;
+  border-radius: 0.25em;
+  background: #fff;
+}
+input[type='range']::-moz-range-track {
+  background: linear-gradient(#e44e4f, #e44e4f) no-repeat #fff;
+}
+input[type='range']::-ms-track {
+  border: none;
+  width: 15.5em;
+  height: 0.5em;
+  border-radius: 0.25em;
+  background: #fff;
+  color: transparent;
+}
+input[type='range']::-ms-fill-lower {
+  border-radius: 0.25em;
+  background: #e44e4f;
+}
+
+input[type='range']::-moz-range-track {
+  background-size: 50% 100%;
+}
+.volume::-webkit-slider-thumb {
+  margin-top: -0.125em;
+  border: none;
+  width: 0.75em;
+  height: 0.75em;
+  border-radius: 50%;
+  box-shadow: 0 0 0.125em #333;
+  background: #fff;
+}
+
+input[type='range']::-moz-range-thumb {
+  border: none;
+  width: 0.75em;
+  height: 0.75em;
+  border-radius: 50%;
+  box-shadow: 0 0 0.125em #333;
+  background: #fff;
+}
+input[type='range']::-ms-thumb {
+  border: none;
+  width: 0.75em;
+  height: 0.75em;
+  border-radius: 50%;
+  box-shadow: 0 0 0.125em #333;
+  background: #fff;
+}
+input[type='range']::-ms-tooltip {
+  display: none;
+}
+input[type='range']:focus {
+  outline: none;
+  
+}
+
+
+/*General*/
+.fields{
+    margin:0;
+    padding:0;
+}
+
+:host {
+      display: block;
+      box-sizing: border-box;
+    }
+
+
+#controlWrapper
+{
+    width:100%;
+    height:100%;
+    border-width: 1px;
+    border-style: solid;
+    border-color: green;
+}
+
+
+/*Video area*/
+#video-wrapper  {
+    
+    width:100%;
+    height:65%;
+    border-width: 1px;
+    border-style: solid;
+    border-color: black;
+    background-color: #e6e6e6;
+}
+
+.overlaystyle {
+  position: absolute; 
+  display:block;
+  background-color: transparent;
+  
+  padding:  0;
+  z-index: 20;
+
+}
+
+#vid {
+  z-index: 2;
+  padding:  0;
+  margin:0px 0px 0px 0px;
+  width: 100%;
+  height:100%;
+  position: relative; 
+
+}
+
+
+
+
+
+/*playback*/
+
+#playbackControl  {
+    
+    background:black;
+    z-index:20000;
+    color:white;
+    position: absolute;
+    border:1px solid white;
+    display: none;
+    width: 60px;
+    height: 170px;
+    
+}
+
+.playbackValues
+{
+    padding-bottom:8px;
+    color: rgb(191,191,191);
+    cursor:pointer;
+    font-size: 130%;
+    text-align: center;
+}
+
+#playbackContainer
+{
+    background:black;
+    position: absolute;
+    z-index:20000;
+    color:rgb(191, 191, 191);
+    width:35px;
+    height:100px;
+    display: none;
+    border:1px solid white;
+}
+
+
+
+
+/*location label*/
+#locationLabelDiv
+{
+    background:gray; 
+    position:absolute; 
+    z-index:50000;
+    display: none;  
+   
+    border:1px solid #000;
+    
+    color:white;
+    font-family: "Arial";
+    font-size: 15px;
+}
+
+#locationLabelSpan
+{
+    padding-left: 5px;
+}
+
+#locationLabelClose
+{
+    color:red;
+    float: right;
+    padding-right: 2px;
+    cursor: pointer;
+}
+
+#closeLocationImage
+{
+    cursor:pointer; 
+    float:right; 
+}
+
+
+/*video controls*/
+
+#videoControls  {
+    
+    width:100%;
+    height:18%;
+    border: rgb(38,38,38,0.25);
+    background-color: black;
+    
+    display: block;
+    margin-top: 0px;
+    position: relative;
+}
+
+#seekBar  {
+    position: absolute;
+    border:0px solid red;
+    margin:2% 0px 0px 3%;
+    width:93%;
+    z-index: 2;
+    cursor: pointer;
+    display: none;
+}
+
+#stepbwd
+{
+    display: none;
+    width:7%;
+    margin-top:40px;
+    border: 0px solid red;
+    padding-left: 2%;
+    text-align: center;
+}
+
+#play-pause
+{
+    display: none;
+    width:4%;
+    margin-top:40px;
+    border: 0px solid red;
+    padding-left: 0%;
+    text-align: center;
+}
+
+#stepfwd
+{
+    display: none;
+    width:4%;
+    margin-top:40px;
+    border: 0px solid red;
+    text-align: center;
+}
+
+#frameText
+{
+    display: inline-block;
+    font-family:arial;
+    width:15%;
+    
+    color:white;
+    padding-bottom: 0px;
+    text-align: center;
+    font-size: 170%;
+    border: 0px solid red;
+    margin-bottom: 0px;
+}
+
+#playbackSpan
+{
+    display: none;
+    font-size: 150%;
+    width:8%;
+    border: 0px solid red;
+    text-align: center;
+}
+
+#timeSpan  {
+    width: 30%;
+    display: inline-block;
+    
+    margin-top: 0px;
+    margin-left: 0px;
+    text-align: center;
+    color:white;
+    font-size: 150%;
+    
+    border: 0px solid red;
+}
+
+#mute  {
+    width: 5%;
+    display: none;
+    
+    margin-top: 0px;
+    margin-left: 2%;
+    
+    color:white;
+    text-align: center;
+    border: 0px solid red;
+}
+
+#volumeSlider  {
+    width: 16.2%;
+    text-align: center;
+    margin-top: 0px;
+    margin-left: .5%;
+    color:white;
+    border: 0px solid red;
+    padding-bottom: 10px;
+    background-color: black;
+    cursor: pointer;
+    display:none;
+}
+
+
+
+/*tagging controls*/
+#lockTag
+{
+    margin-left: 20px;
+    display:none;
+}
+
+#tagsContainer
+{
+    background-color: transparent;
+    overflow-y: auto;
+    width:100%;
+    height: 100%;
+}
+
+#videoTagControls  {
+    
+    width:100%;
+    height:150px;
+    border: rgb(38,38,38,0.25);
+    background-color: black;
+    
+    display: block;
+    margin-top:3px;
+    position: relative;
+}
+
+.taggingControls
+{
+    color: white;
+    font-size: 200%;
+    cursor:pointer; 
+}
+
+.taggingControlsText
+{
+    margin-top: 10px;
+}
+
+#nextuntagged
+{
+    margin-left: 5%;
+    margin-top: 0px;
+    display: none;
+}
+
+#optionalTags
+{
+    background:transparent; 
+    position:relative; 
+}
+
+#movenext
+{
+    display: none;
+}
+
+.tagButtons
+{
+    cursor:pointer; 
+    margin: 0px 6px 10px 5px; 
+    background : rgb(50,50,50);
+    color:gray;
+    width : 100px;
+    height : 25px;
+    border-radius: 5px;
+
+}
+
+
+/*Table for tags section*/
+
+.table {
+  display: table;
+}
+.row {
+  display: table-row;
+}
+.cell {
+  display: table-cell;
+  border: 0px solid red;
+  padding: 1em;
+  width:10%;
+}
+.cell.right{
+  display: table-cell;
+  border: 0px solid red;
+  padding: 1em;
+  width:20%;
+}
+.cell.empty
+{
+  border: none;
+  width: 70%;
+}
+.cell.rowspanned {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 70%;
+}
+
+

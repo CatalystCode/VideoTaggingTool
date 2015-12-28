@@ -1,0 +1,57 @@
+﻿
+<section ng-controller="JobsController">
+    <div id="jobs">
+        <h1>Jobs</h1>
+        <div class="btn-group" role="group">
+            <button ng-class="{active: btnMeOrAll === 'all'}" ng-click="filterFetch('all')" type="button" class="btn btn-default">All</button>
+            <button ng-class="{active: btnMeOrAll === 'me'}" ng-click="filterFetch('me')" type="button" class="btn btn-default">Assigned to me</button>
+        </div>
+
+        <div class="btn-group" role="group">
+            <button ng-class="{active: btnStatus === 'all'}"  ng-click="filter('all')" type="button" class="btn btn-default">All ({{ count() }})</button>
+            <button ng-class="{active: btnStatus === status.name}" ng-click="filter(status.name)" ng-repeat="status in jobStatuses" type="button" class="btn btn-default">{{ status.name }} ({{ count(status.id) }})</button>
+        </div>
+
+        <div class="btn-group" role="group">
+            <button ng-click="edit(0)" type="button" class="btn btn-default"><span class="glyphicon glyphicon-plus"> </span> Add Job</button>
+        </div>
+
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>edit</th>
+                    <th>job id</th>
+                    <th>description</th>
+                    <th>status</th>
+                    <th>creation date</th>
+                    <th>created by</th>
+                    <th>assigned to</th>
+                    <th>reviewed by</th>
+                    <th>video</th>
+                    <th>metadata</th>
+                    <th>progress</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <tr ng-repeat="job in jobs">
+                    <td><span ng-click="edit(job.JobId)" class="glyphicon glyphicon-edit" /></td>
+                    <td><a href="#/jobs/{{job.JobId}}/tag">{{ job.JobId }}</a></td>
+                    <td>{{ job.Description }}</td>
+                    <td>{{ job.StatusName }}</td>
+                    <td>{{ job.CreateDate | date:'dd-MM-yyyy' }}</td>
+                    <td>{{ job.CreatedByName }}</td>
+                    <td>{{ job.UserName }}</td>
+                    <td>{{ job.ReviewedByName }}</td>
+                    <td>{{ job.VideoName }}</td>
+                    <!--<td>{{ job.Config && job.Config.labels && job.Config.labels.join(',') }}</td> -->
+                    <td>{{ getConfig(job) }}</td>
+                    <td>{{ job.Progress }}%</td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+  
+</section>

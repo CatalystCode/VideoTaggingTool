@@ -1,0 +1,44 @@
+﻿
+<section ng-controller="VideosController">
+    <div id="videos">
+        <h1>Videos</h1>
+       
+
+        <div class="btn-group" role="group">
+            <button ng-click="edit(0)" type="button" class="btn btn-default"><span class="glyphicon glyphicon-plus"> </span> Add Video</button>
+        </div>
+
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>edit</th>
+                    <th>video id</th>
+                    <th>name</th>
+                    <th>url</th>
+                    <th>width</th>
+                    <th>height</th>
+                    <th>duration (seconds)</th>
+                    <th>FPS</th>
+                    <th>metadata</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <tr ng-repeat="video in videos">
+                    <td><span ng-click="edit(video.Id)" class="glyphicon glyphicon-edit" /></td>
+                    <td>{{ video.Id }}</td>
+                    <td>{{ video.Name }}</td>
+                    <td>{{ video.Url }}</td>
+                    <td>{{ video.Width }}</td>
+                    <td>{{ video.Height }}</td>
+                    <td>{{ video.DurationSeconds}}</td>
+                    <td>{{ video.FramesPerSecond }}</td>
+                    <td>{{ getMetadata(video) }}</td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+  
+</section>

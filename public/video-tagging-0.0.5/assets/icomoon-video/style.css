@@ -1,0 +1,78 @@
+@font-face {
+	font-family: 'icomoon-video';
+	src:url('fonts/icomoon-video.eot?9arj1f');
+	src:url('fonts/icomoon-video.eot?9arj1f#iefix') format('embedded-opentype'),
+		url('fonts/icomoon-video.ttf?9arj1f') format('truetype'),
+		url('fonts/icomoon-video.woff?9arj1f') format('woff'),
+		url('fonts/icomoon-video.svg?9arj1f#icomoon-video') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+    /* use !important to prevent issues with browser extensions that change fonts */
+	font-family: 'icomoon-video' !important;
+	speak: none;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+
+	/* Better Font Rendering =========== */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.icon-play3:before {
+	content: "\e907";
+}
+.icon-pause2:before {
+	content: "\e908";
+}
+.icon-stop2:before {
+	content: "\e909";
+}
+.icon-backward2:before {
+	content: "\e90a";
+}
+.icon-forward3:before {
+	content: "\e90b";
+}
+.icon-first:before {
+	content: "\e90c";
+}
+.icon-last:before {
+	content: "\e90d";
+}
+.icon-previous2:before {
+	content: "\e90e";
+}
+.icon-next2:before {
+	content: "\e90f";
+}
+.icon-eject:before {
+	content: "\e910";
+}
+.icon-volume-high:before {
+	content: "\e911";
+}
+.icon-volume-medium:before {
+	content: "\e912";
+}
+.icon-volume-low:before {
+	content: "\e913";
+}
+.icon-volume-mute:before {
+	content: "\e914";
+}
+.icon-volume-mute2:before {
+	content: "\e915";
+}
+.icon-volume-increase:before {
+	content: "\e916";
+}
+.icon-volume-decrease:before {
+	content: "\e917";
+}
+

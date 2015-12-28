@@ -1,0 +1,9 @@
+{
+    "server": "localhost",
+    "userName": "sa",
+    "password": "Pa$$word1",
+    "options": {
+        "database": "videotagging2",
+        "encrypt": true
+    }
+}

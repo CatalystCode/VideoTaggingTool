@@ -1,100 +1,58 @@
-var http = require('http');
-var express = require('express');
-var bodyParser = require('body-parser')
-var db = require('./db');
+﻿var express = require('express');
+var path = require('path');
+var bodyParser = require('body-parser');
 
-var port = process.env.PORT || 3003;
+var api = require('./routes/api');
 
 var app = express();
+
+
+app.use('/favicon.ico', function(req, res){
+    return res.end();
+});
+
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(express.static(__dirname + '/public'));
+app.use('/api', api);
 
-app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next();
+// catch 404 and forward to error handler
+app.use(function (req, res, next) {
+    var err = new Error('Not Found');
+    err.status = 404;
+    next(err);
 });
 
-app.get('/', function(req, res){
-    res.end('welcome to video tagging tool');
-});
+// error handlers
 
-// TODO: remove after Uzi fix
-app.post('/job', function(req, res){
-    db.createOrModifyJob(req.body, function(err, result){
-        if(err) return res.status(500).json({ error: err });
-        res.json(result);
+// development error handler
+// will print stacktrace
+if (app.get('env') === 'development') {
+    app.use(function (err, req, res, next) {
+        console.error(err);      
+        res.status(err.status || 500);
+        res.render('error', {
+            message: err.message,
+            error: err
+        });
     });
-});
+}
 
-app.post('/jobs', function(req, res){
-    db.createOrModifyJob(req.body, function(err, result){
-        if(err) return res.status(500).json({ error: err });
-        res.json(result);
-    });
-});
-
-
-app.get('/jobs/:id', function(req, res){
-    var id = req.params.id;
-    console.log('getting job id', id);
-    db.getJobDetails(id, function(err, resp) {
-        if(err) return res.status(500).json({ error: err });
-        console.log('resp:', resp);
-        res.json(resp);
-    });
-});
-
-app.post('/jobs/:id/frames/:index', function(req, res){
-    var options = {
-        tagsJson: req.body.tags
-    };
-    options.jobId = req.params.id;
-    options.frameIndex = req.params.index;
-
-    console.log('posing frame index', options.frameIndex, 'for job', options.jobId);
-    db.createOrModifyFrame(options, function(err, resp) {
-        if(err) return res.status(500).json({ error: err });
-        console.log('resp:', resp);
-        res.json(resp);
-    });
-});
-
-app.get('/users/:id/jobs', function(req, res){
-    var userId = req.params.id;
-    console.log('getting jobs for user id', userId);
-    db.getUserJobs(userId, function(err, resp) {
-        if(err) return res.status(500).json({ error: err });
-        console.log('resp:', resp);
-        res.json(resp);
-    });
-});
-
-app.get('/videos', function(req, res){
-    console.log('getting videos');
-    db.getVideos(function(err, resp) {
-        if(err) return res.status(500).json({ error: err });
-        console.log('resp:', resp);
-        res.json(resp);
-    });
-});
-
-app.get('/videos/:id/frames', function(req, res){
-    var id = req.params.id;
-    console.log('getting frames for video', id);
-    db.getVideoFrames(id, function(err, resp) {
-        if(err) return res.status(500).json({ error: err });
-        console.log('resp:', resp);
-        res.json(resp);
+// production error handler
+// no stacktraces leaked to user
+app.use(function (err, req, res, next) {
+    res.status(err.status || 500);
+    res.render('error', {
+        message: err.message,
+        error: {}
     });
 });
 
 
-http.createServer(app).listen(port, function(err){
-    if (err) return console.error('error creating server', err);
-    console.log('listening on port', port);
+app.set('port', process.env.PORT || 3000);
+
+var server = app.listen(app.get('port'), function() {
+    console.log('Express server listening on port ' + server.address().port);
 });
-
-
 
