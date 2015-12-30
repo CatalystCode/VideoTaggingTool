@@ -14,7 +14,6 @@
                     <th>edit</th>
                     <th>video id</th>
                     <th>name</th>
-                    <th>url</th>
                     <th>width</th>
                     <th>height</th>
                     <th>duration (seconds)</th>
@@ -27,8 +26,7 @@
                 <tr ng-repeat="video in videos">
                     <td><span ng-click="edit(video.Id)" class="glyphicon glyphicon-edit" /></td>
                     <td>{{ video.Id }}</td>
-                    <td>{{ video.Name }}</td>
-                    <td>{{ video.Url }}</td>
+                    <td><a href="{{ video.Url }}">{{ video.Name }}</a></td>
                     <td>{{ video.Width }}</td>
                     <td>{{ video.Height }}</td>
                     <td>{{ video.DurationSeconds}}</td>

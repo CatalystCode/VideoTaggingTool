@@ -238,7 +238,10 @@ videoTaggingAppControllers
                     .success(function (result) {
                         videoCtrl.inputFrames = result.frames;
                         videoCtrl.src = '';
-                        videoCtrl.src = jobData.video.Url;
+                        var url = jobData.video.Url; + '?' + jobData.video._blobSasToken;
+                        url = '/api/videos/' + jobData.video.Id + '/movie';
+                        console.log('video url', url);
+                        videoCtrl.src = url;
                     });
         });
 
@@ -405,4 +408,18 @@ videoTaggingAppControllers
             $scope.info = '';
         }
        
-    }]);
+    }])
+
+    .controller('UsersController', ['$scope', '$route', 'state', '$http', '$location', '$routeParams', function ($scope, $route, state, $http, $location, $routeParams) {
+    var users = [];
+
+    $http({ method: 'GET', url: '/api/users' })
+        .success(function (result) {
+            users = $scope.users = result.users;
+        });
+
+    $scope.edit = function (id) {
+        $location.path('/users/' + id);
+    }
+
+}]);

@@ -1,0 +1,36 @@
+﻿
+<section ng-controller="UsersController">
+    <div>
+        <h1>Users</h1>
+       
+
+        <div>
+            <button ng-click="edit(0)" type="button" class="btn btn-default pull-right"><span class="glyphicon glyphicon-plus"> </span> Add User</button>
+        </div>
+
+        <table class="table table-hover m-t-2">
+            <thead>
+                <tr>
+                    <th>edit</th>
+                    <th>id</th>
+                    <th>name</th>
+                    <th>email</th>
+                    <th>role</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <tr ng-repeat="user in users">
+                    <td><span ng-click="edit(user.Id)" class="glyphicon glyphicon-edit" /></td>
+                    <td>{{ user.Id }}</td>
+                    <td>{{ user.Name }}</a></td>
+                    <td>{{ user.Email }}</td>
+                    <td>{{ user.RoleName }}</td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+  
+</section>

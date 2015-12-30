@@ -13,7 +13,7 @@ function connect(cb) {
     }
     */
 
-    var configSql = require("./sql.azure.private.json");
+    var configSql = require("./sql.amitu.private.json");
     console.log('connecting to server', configSql.server);
 
     var Connection = tedious.Connection;
@@ -102,6 +102,48 @@ function getUsers(cb) {
         }
         
         return cb(null, newResult);
+    });
+}
+
+
+
+function createOrModifyUser(req, cb) {
+    connect(function (err, connection) {
+        if (err) return cb(err);
+
+        try {
+            var resultUserId;
+
+            var request = new tedious.Request('UpsertUser', function (err) {
+                if (err) {
+                    console.error('error calling Upsert stored procedure', err);
+                    return cb(err);
+                }
+
+                return cb(null, { userId: resultUserId });
+            });
+
+            if (req.id)
+                request.addParameter('Id', TYPES.Int, req.id);
+
+            request.addParameter('Name', TYPES.NVarChar, req.name);
+            request.addParameter('Email', TYPES.NVarChar, req.email);
+            request.addParameter('RoleId', TYPES.Int, req.id);
+
+            request.addOutputParameter('UserId', TYPES.Int);
+
+            request.on('returnValue', function (parameterName, value, metadata) {
+                if (parameterName == 'UserId') {
+                    resultUserId = value;
+                }
+            });
+
+            connection.callProcedure(request);
+        }
+        catch (err) {
+            return cb(err);
+        }
+
     });
 }
 
@@ -441,5 +483,6 @@ module.exports = {
     getAllJobs: getAllJobs,
     getVideoFrames: getVideoFrames,
     getVideoFramesByJob: getVideoFramesByJob,
-    getUsers: getUsers
+    getUsers: getUsers,
+    createOrModifyUser: createOrModifyUser
 }

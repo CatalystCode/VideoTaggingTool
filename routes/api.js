@@ -5,8 +5,20 @@ var path = require('path');
 var db = require('../storage/db');
 var blob = require('../storage/blob');
 
+
+
 router.post('/jobs', function (req, res) {
     db.createOrModifyJob(req.body, function (err, result) {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ error: err.message });
+        }
+        res.json(result);
+    });
+});
+
+router.post('/users', function (req, res) {
+    db.createOrModifyUser(req.body, function (err, result) {
         if (err) {
             console.error(err);
             return res.status(500).json({ error: err.message });
@@ -107,6 +119,11 @@ router.get('/jobs/:id', function (req, res) {
             console.error(err);
             return res.status(500).json({ error: err.message });
         }
+
+        resp.video._blobSasToken = blob.getSAS({name: id});
+
+        console.log('url:', resp.video.Url + '?' + resp.video._blobSasToken);
+
         console.log('resp:', resp);
         res.json(resp);
     });
@@ -171,6 +188,39 @@ router.get('/videos/:id', function (req, res) {
         console.log('resp:', resp);
         res.json(resp);
     });
+});
+
+router.get('/videos/:id/movie', function (req, res) {
+    var id = req.params.id;
+    console.log('getting video file', id);
+
+    return blob.getVideoStream({ name: id },
+        function (err, result) {
+            if (err) {
+                console.error(err);
+                return res.status(500).json({ error: err.message });
+            }
+
+            console.log('stream', result);
+
+            res.setHeader('content-type', result.contentType);
+            res.setHeader('content-length', result.contentLength);
+            res.setHeader('etag', result.etag);
+
+            result.stream.on('error', function(err){
+                console.error(err);
+                return res.status(500).json({ error: err.message });
+            });
+
+            result.stream.pipe(res);
+    });
+});
+
+router.get('/videos/:id/movie2', function (req, res) {
+    var id = req.params.id;
+    console.log('getting video file*', id);
+
+    return blob._getVideoStream({ name: id, req: req, res: res });
 });
 
 router.get('/users', function (req, res) {
