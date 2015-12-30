@@ -120,11 +120,9 @@ router.get('/jobs/:id', function (req, res) {
             return res.status(500).json({ error: err.message });
         }
 
-        resp.video._blobSasToken = blob.getSAS({name: id});
+        resp.video._blobSasToken = blob.getSAS({name: resp.video.Id});
 
         console.log('url:', resp.video.Url + '?' + resp.video._blobSasToken);
-
-        console.log('resp:', resp);
         res.json(resp);
     });
 });

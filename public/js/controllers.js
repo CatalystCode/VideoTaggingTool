@@ -238,8 +238,8 @@ videoTaggingAppControllers
                     .success(function (result) {
                         videoCtrl.inputFrames = result.frames;
                         videoCtrl.src = '';
-                        var url = jobData.video.Url; + '?' + jobData.video._blobSasToken;
-                        url = '/api/videos/' + jobData.video.Id + '/movie';
+                        var url = jobData.video.Url + '?' + jobData.video._blobSasToken;
+                       // url = '/api/videos/' + jobData.video.Id + '/movie';
                         console.log('video url', url);
                         videoCtrl.src = url;
                     });

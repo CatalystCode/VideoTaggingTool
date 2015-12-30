@@ -50,7 +50,6 @@ function upload(opts, cb) {
 
 function getSAS(opts) {
 
-
     var startDate = new Date();
     var expiryDate = new Date(startDate);
     expiryDate.setMinutes(startDate.getMinutes() + 100);
@@ -63,9 +62,7 @@ function getSAS(opts) {
             Expiry: expiryDate
         }
     };
-
-    var sasToken = blobSvc.generateSharedAccessSignature(CONTAINER_NAME, opts.name, sharedAccessPolicy);
-    console.log('sasToken', sasToken);
+    var sasToken = blobSvc.generateSharedAccessSignature(CONTAINER_NAME, opts.name + '', sharedAccessPolicy);
     return sasToken;
 }
 
