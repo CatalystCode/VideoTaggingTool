@@ -21,6 +21,7 @@
     "polymer": "~1.2.3",
     "moment": "~2.10.6",
     "bootstrap": "~3.3.6",
-    "jquery": "~2.1.4"
+    "jquery": "~2.1.4",
+    "underscore": "~1.8.3"
   }
 }
