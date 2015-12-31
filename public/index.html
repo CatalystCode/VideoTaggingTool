@@ -36,17 +36,19 @@
         <nav class="navbar navbar-inverse" ng-controller="AppController">
             <div class="container-fluid">
                 <div class="navbar-header">
-                    <a class="navbar-brand" href="#/">Video Taggin Tool</a>
+                    <a class="navbar-brand" href="#/">Video Tagging Tool</a> <br/>
                 </div>
+
                 <div>
                     <ul class="nav navbar-nav">
-                        <li ng-class="{active: $route.current.activetab == 'jobs'}"><a href="#/jobs">Jobs</a></li>
-                        <li ng-class="{active: $route.current.activetab == 'videos'}"><a href="#/videos">Videos</a></li>
-                        <li ng-class="{active: $route.current.activetab == 'users'}"><a href="#/users">Users</a></li>
+                        <li ng-hide="!user" ng-class="{active: $route.current.activetab == 'jobs'}"><a href="#/jobs">Jobs</a></li>
+                        <li ng-hide="!user" ng-class="{active: $route.current.activetab == 'videos'}"><a href="#/videos">Videos</a></li>
+                        <li ng-hide="!user" ng-class="{active: $route.current.activetab == 'users'}"><a href="#/users">Users</a></li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
-                        <li><a href="#/"><span class="glyphicon glyphicon-user"></span> {{user.name}}</a></li>
-                        <li><a href="#/"><span class="glyphicon glyphicon-log-out"></span> Log out</a></li>
+                        <li ng-hide="!user"><a href="#/"><span class="glyphicon glyphicon-user"></span> {{user.Name}} ({{user.RoleName}})</a></li>
+                        <li ng-hide="!user"><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Log out</a></li>
+                        <li ng-hide="user"><a href="/login"><span class="glyphicon glyphicon-log-out"></span> Log in</a></li>
                     </ul>
                 </div>
             </div>

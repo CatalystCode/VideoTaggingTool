@@ -1,21 +1,46 @@
 ﻿var express = require('express');
 var path = require('path');
 var bodyParser = require('body-parser');
-
 var api = require('./routes/api');
+
+var passport = require('passport');
+var flash    = require('connect-flash');
+var morgan       = require('morgan');
+var cookieParser = require('cookie-parser');
+var bodyParser   = require('body-parser');
+var session      = require('express-session');
+
+
+
+require('./passport')(passport);
+
 
 var app = express();
 
+app.use(morgan('dev')); // log every request to the console
 
 app.use('/favicon.ico', function(req, res){
     return res.end();
 });
 
+
+app.use(cookieParser()); // read cookies (needed for auth)
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+
+
+// required for passport
+app.use(session({ secret: 'ilovescotchscotchyscotchscotch' })); // session secret
+app.use(passport.initialize());
+app.use(passport.session()); // persistent login sessions
+app.use(flash()); // use connect-flash for flash messages stored in session
+
+//require('./routes/auth.js')(app, passport);
+app.use(require('./routes/login')(passport));
+app.use('/api', api(passport));
+
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/api', api);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -48,7 +73,8 @@ app.use(function (err, req, res, next) {
 });
 
 
-app.set('port', process.env.PORT || 3000);
+//app.set('port', process.env.PORT || 3000);
+app.set('port', 3000);
 
 var server = app.listen(app.get('port'), function() {
     console.log('Express server listening on port ' + server.address().port);

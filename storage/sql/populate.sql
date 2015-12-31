@@ -30,8 +30,8 @@ INSERT INTO [dbo].[Users]
            ,[RoleId])
      VALUES
            ('Ami'
-           ,'amitu@microsoft.com'
-           ,1)
+           ,'ami.turgman@gmail.com'
+           ,2)
 
 
 INSERT INTO [dbo].[Users]

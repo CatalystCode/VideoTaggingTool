@@ -13,7 +13,7 @@ function connect(cb) {
     }
     */
 
-    var configSql = require("./sql.amitu.private.json");
+    var configSql = require("./sql.azure.private.json");
     console.log('connecting to server', configSql.server);
 
     var Connection = tedious.Connection;
@@ -186,6 +186,23 @@ function getVideo(id, cb) {
                
         if (result.videos.length) {
             return cb(null, normalizeVideoRow(result.videos[0]));
+        }
+        
+        return cb(null, {});
+    });
+}
+
+
+function getUserByEmail(email, cb) {
+    return getDataSets({
+        sproc: 'GetUserByEmail',
+        sets: ['users'],
+        params: [{ name: 'Email', type: TYPES.VarChar, value: email }]
+    }, function (err, result) {
+        if (err) return cb(err);
+        
+        if (result.users.length) {
+            return cb(null, result.users[0]);
         }
         
         return cb(null, {});
@@ -484,5 +501,6 @@ module.exports = {
     getVideoFrames: getVideoFrames,
     getVideoFramesByJob: getVideoFramesByJob,
     getUsers: getUsers,
+    getUserByEmail: getUserByEmail,
     createOrModifyUser: createOrModifyUser
 }

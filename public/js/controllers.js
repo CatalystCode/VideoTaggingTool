@@ -2,43 +2,28 @@
 var videoTaggingAppControllers = angular.module('videoTaggingAppControllers', []);
 
 videoTaggingAppControllers
-.service('state', ['$http', function ($http) {
-
-        var data = {
-            enums: {
-
-            }
-        };
-
-        var api = {
-            getUser: function () {
-                return data.user;
-            },
-            setUser: function (user) {
-                data.user = user;
-            }
-        };
-        
-        return api;
-
-    }])
+.controller('AppController', ['$scope', '$rootScope', '$route', '$http', '$location', '$routeParams', function ($scope, $rootScope, $route, $http, $location, $routeParams) {
     
-.controller('AppController', ['$scope', 'state', '$route', '$http', '$location', '$routeParams', function ($scope, state, $route, $http, $location, $routeParams) {
         
-        var user = {
-            name: 'Ami Turgman',
-            id: 1
-        };
+        $http({ method: 'GET', url: '/profile' })
+        .success(function (user) {
+            console.log('got user profile', user);
+            $rootScope.user = user;
+        })
+        .error(function (err){
+            console.error(err);
+        });
 
-        state.setUser(user);
-
+        $scope.logout = function (){
+            $rootScope.user = user;
+        }
+        
         $scope.$route = $route;    
-        $scope.user  = user;
 
     }])
     
 
-.controller('JobsController', ['$scope', '$route', 'state', '$http', '$location', '$routeParams', function ($scope, $route, state, $http, $location, $routeParams) {
+.controller('JobsController', ['$scope', '$route', '$http', '$location', '$routeParams', function ($scope, $route, $http, $location, $routeParams) {
         
         $scope.btnMeOrAll = 'me';
         $scope.btnStatus = 'all';
@@ -49,8 +34,8 @@ videoTaggingAppControllers
         });
         
         var jobs;
-        
-        getJobsFromServer('/api/users/' + state.getUser().id + '/jobs');
+
+        getJobsFromServer('/api/users/' + $scope.user.Id + '/jobs');
         
         function getJobsFromServer(url) {
             console.log('getting jobs', url);
@@ -69,7 +54,7 @@ videoTaggingAppControllers
                     getJobsFromServer('/api/jobs');
                     break;
                 default:
-                    getJobsFromServer('/api/users/' + state.getUser().id + '/jobs');
+                    getJobsFromServer('/api/users/' + $scope.user.Id + '/jobs');
             }
                   
         }
@@ -107,7 +92,7 @@ videoTaggingAppControllers
 
     }])
     
-.controller('UpsertJobController', ['$scope', 'state', '$http', '$location', '$routeParams', function ($scope, state, $http, $location, $routeParams) {
+.controller('UpsertJobController', ['$scope', '$http', '$location', '$routeParams', function ($scope, $http, $location, $routeParams) {
         
         var defaultId = '[new]';
         $scope.jobId = defaultId;
@@ -151,7 +136,7 @@ videoTaggingAppControllers
             var data = {
                 videoId: $scope.selectedVideo.Id,
                 userId: $scope.selectedUser.Id,
-                createdById: state.getUser().id,
+                createdById: $scope.user.Id,
                 description: $scope.description,
                 statusId: $scope.selectedStatus.id,
                 configJson: JSON.parse($scope.config)
@@ -189,7 +174,7 @@ videoTaggingAppControllers
         }
     }])
     
-.controller('VideosController', ['$scope', '$route', 'state', '$http', '$location', '$routeParams', function ($scope, $route, state, $http, $location, $routeParams) {
+.controller('VideosController', ['$scope', '$route', '$http', '$location', '$routeParams', function ($scope, $route, $http, $location, $routeParams) {
         var videos = [];    
 
         $http({ method: 'GET', url: '/api/videos' })
@@ -211,7 +196,7 @@ videoTaggingAppControllers
     }])
 
     
-.controller('TagJobController', ['$scope', '$route', 'state', '$http', '$location', '$routeParams', function ($scope, $route, state, $http, $location, $routeParams) {
+.controller('TagJobController', ['$scope', '$route', '$http', '$location', '$routeParams', function ($scope, $route, $http, $location, $routeParams) {
         
         var videoCtrl = document.getElementById('video-tagging');
 
@@ -279,7 +264,7 @@ videoTaggingAppControllers
 
     }])
 
-.controller('UpsertVideoController', ['$scope', 'state', '$http', '$location', '$routeParams', function ($scope, state, $http, $location, $routeParams) {
+.controller('UpsertVideoController', ['$scope', '$http', '$location', '$routeParams', function ($scope, $http, $location, $routeParams) {
         
         var defaultId = '[new]';
         $scope.videoId = defaultId;
@@ -410,7 +395,7 @@ videoTaggingAppControllers
        
     }])
 
-    .controller('UsersController', ['$scope', '$route', 'state', '$http', '$location', '$routeParams', function ($scope, $route, state, $http, $location, $routeParams) {
+    .controller('UsersController', ['$scope', '$route', '$http', '$location', '$routeParams', function ($scope, $route, $http, $location, $routeParams) {
     var users = [];
 
     $http({ method: 'GET', url: '/api/users' })
