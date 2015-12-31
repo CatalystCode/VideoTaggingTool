@@ -13,7 +13,6 @@
   "dependencies": {
     "azure-storage": "^0.7.0",
     "body-parser": "~1.8.1",
-    "bower": "^1.7.1",
     "debug": "~2.0.0",
     "express": "~4.9.0",
     "multiparty": "^4.1.2",
