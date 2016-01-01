@@ -24,6 +24,7 @@
     "multiparty": "^4.1.2",
     "passport": "^0.3.2",
     "passport-google-oauth": "^0.2.0",
+    "q": "^1.4.1",
     "tedious": "^1.13.1"
   }
 }

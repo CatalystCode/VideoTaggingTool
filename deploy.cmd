@@ -109,7 +109,7 @@ IF EXIST "%DEPLOYMENT_TARGET%\package.json" (
 echo installing bower components
 echo entering "%DEPLOYMENT_TARGET%\public" directory
 pushd "%DEPLOYMENT_TARGET%\public"
-call :ExecuteCmd "!NODE_EXE!" ..\node_modules\bower\bin\bower install
+call :ExecuteCmd "!NODE_EXE!" D:\home\site\wwwroot\node_modules\bower\bin\bower install
 IF !ERRORLEVEL! NEQ 0 goto error
 popd
 
