@@ -109,7 +109,6 @@ IF EXIST "%DEPLOYMENT_TARGET%\package.json" (
 echo installing bower components
 echo entering "%DEPLOYMENT_TARGET%\public" directory
 pushd "%DEPLOYMENT_TARGET%\public"
-echo running :ExecuteCmd "!NODE_EXE!" ..\node_modules\bower\bin\bower install
 call :ExecuteCmd "!NODE_EXE!" ..\node_modules\bower\bin\bower install
 IF !ERRORLEVEL! NEQ 0 goto error
 popd
@@ -127,6 +126,7 @@ goto end
 :ExecuteCmd
 setlocal
 set _CMD_=%*
+echo calling %_CMD_%
 call %_CMD_%
 if "%ERRORLEVEL%" NEQ "0" echo Failed exitCode=%ERRORLEVEL%, command=%_CMD_%
 exit /b %ERRORLEVEL%
