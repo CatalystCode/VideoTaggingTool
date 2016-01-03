@@ -3,7 +3,7 @@ var router = express.Router();
 
 module.exports = function (passport) {
     
-    router.get('/login', passport.authenticate('google', { scope : ['profile', 'email'] }));
+    router.get('/login', passport.authenticate('google', { scope : ['https://www.googleapis.com/auth/plus.profile.emails.read'] }));
     
     // the callback after google has authenticated the user
     router.get('/.auth/login/google/callback',

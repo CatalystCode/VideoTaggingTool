@@ -13,7 +13,7 @@ function connect(cb) {
     }
     */
 
-    var configSql = require("./sql.azure.private.json");
+    var configSql = require("./sql.amitu.private.json");
     console.log('connecting to server', configSql.server);
 
     var Connection = tedious.Connection;
@@ -35,7 +35,7 @@ function normalizeVideoRow(video) {
         video.Data = JSON.parse(video.VideoJson);
     delete video.VideoJson;
     
-    video.Url = blob.getVideoUrl(video.Id);
+    video.Url = blob.getVideoUrlWithSas(video.Id);
     return video;
 }
 function normalizeFrameRow(frame) {

@@ -8,7 +8,7 @@
 
                 <div class="col-sm-2">
                     <span class="form-control" id="id">{{videoId}}</span>
-                    <span><a ng-hide="videoId === '[new]'" href="{{url}}" target="_blank">{{url}}</a></span>
+                    <span><a ng-hide="videoId === '[new]'" href="{{url}}" target="_blank">Preview</a></span>
                 </div>
             </div>
 
@@ -48,19 +48,10 @@
             </div>
 
             <div class="form-group">
-                <label class="control-label col-sm-2" for="metadata">metadata</label>
-                <div class="col-sm-5">
-                    <textarea rows="15" class="form-control" id="metadata" placeholder="Enter metadata (JSON)" ng-model="metadata"></textarea>
-                </div>
-            </div>
-
-            <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">
                     <button type="submit" class="btn btn-default">Submit</button>
                 </div>
             </div>
-
-        
         </form>
 
         <div ng-hide="videoId === '[new]'">

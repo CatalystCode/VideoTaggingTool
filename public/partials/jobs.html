@@ -22,7 +22,7 @@
         <table class="table table-hover">
             <thead>
                 <tr>
-                    <th>edit</th>
+                    <th ng-hide="user.RoleName !== 'Admin'">edit</th>
                     <th>id</th>
                     <th>description</th>
                     <th>status</th>
@@ -31,13 +31,13 @@
                     <th>assigned to</th>
                     <th>reviewed by</th>
                     <th>video</th>
-                    <th>metadata</th>
+                    <th>job setup</th>
                     <!--<th>progress</th>-->
                 </tr>
             </thead>
             <tbody>
                 <tr ng-repeat="job in jobs">
-                    <td><span ng-click="edit(job.JobId)" class="glyphicon glyphicon-edit" /></td>
+                    <td ng-hide="user.RoleName !== 'Admin'"><span ng-click="edit(job.JobId)" class="glyphicon glyphicon-edit" /></td>
                     <td><a href="#/jobs/{{job.JobId}}/tag">{{ job.JobId }}</a></td>
                     <td>{{ job.Description }}</td>
                     <td>{{ job.StatusName }}</td>
@@ -47,7 +47,17 @@
                     <td>{{ job.ReviewedByName }}</td>
                     <td>{{ job.VideoName }}</td>
                     <!--<td>{{ job.Config && job.Config.labels && job.Config.labels.join(',') }}</td> -->
-                    <td>{{ getConfig(job) }}</td>
+                    <td>
+                        <span class="glyphicon" ng-class="{'glyphicon glyphicon-resize-small' : this.toggle, 'glyphicon glyphicon-resize-full': !this.toggle}" ng-click="this.toggle = !this.toggle"></span>
+                        <table class="table table-bordered" ng-class="{'ng-hide' : !toggle}">
+                            <tr><td>location type</td><td>{{ job.Config.locationtype }}</td></tr>
+                            <tr><td>location shape</td><td>{{ job.Config.locationshape }}</td></tr>
+                            <tr><td>multi-locations</td><td>{{ job.Config.multilocations ? 'true' : 'false'}}</td></tr>
+                            <tr><td>location size</td><td>{{ job.Config.locationsize }}</td></tr>
+                            <tr><td>tags</td><td>{{ job.Config && job.Config.tags && job.Config.tags.join(', ') }}</td></tr>
+                        </table>
+
+                    </td>
                     <!--<td>{{ job.Progress }}%</td> -->
                 </tr>
 

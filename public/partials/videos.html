@@ -18,7 +18,6 @@
                     <th>height</th>
                     <th>duration (seconds)</th>
                     <th>FPS</th>
-                    <th>metadata</th>
                 </tr>
             </thead>
             <tbody>
@@ -26,12 +25,11 @@
                 <tr ng-repeat="video in videos">
                     <td><span ng-click="edit(video.Id)" class="glyphicon glyphicon-edit" /></td>
                     <td>{{ video.Id }}</td>
-                    <td><a href="{{ video.Url }}">{{ video.Name }}</a></td>
+                    <td><a href="{{ video.Url }}" target="_blank">{{ video.Name }}</a></td>
                     <td>{{ video.Width }}</td>
                     <td>{{ video.Height }}</td>
-                    <td>{{ video.DurationSeconds}}</td>
-                    <td>{{ video.FramesPerSecond }}</td>
-                    <td>{{ getMetadata(video) }}</td>
+                    <td>{{ video.DurationSeconds.toFixed(2)}}</td>
+                    <td>{{ video.FramesPerSecond.toFixed(2) }}</td>
                 </tr>
 
             </tbody>
