@@ -263,7 +263,7 @@ videoTaggingAppControllers
             .success(function (result) {
                 console.log('result', result);
                 info('user ' + result.userId + ($scope.userId == defaultId ? ' created' : ' modified') + ' successfully');
-                $scope.userId = result.UserId;
+                $scope.userId = result.userId;
             })
             .error(function (err) {
                 console.error(err);
