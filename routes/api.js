@@ -151,9 +151,6 @@ module.exports = function (passport) {
                 return res.status(500).json({ error: err.message });
             }
             
-            resp.video._blobSasToken = blob.getSAS({ name: resp.video.Id });
-            
-            console.log('url:', resp.video.Url + '?' + resp.video._blobSasToken);
             res.json(resp);
         });
     });
@@ -224,8 +221,7 @@ module.exports = function (passport) {
         var id = req.params.id;
         console.log('getting video file', id);
         
-        return blob.getVideoStream({ name: id },
-        function (err, result) {
+        return blob.getVideoStream({ name: id }, function (err, result) {
             if (err) {
                 console.error(err);
                 return res.status(500).json({ error: err.message });
@@ -244,13 +240,6 @@ module.exports = function (passport) {
             
             result.stream.pipe(res);
         });
-    });
-    
-    router.get('/videos/:id/movie2', EditorLoggedIn, function (req, res) {
-        var id = req.params.id;
-        console.log('getting video file*', id);
-        
-        return blob._getVideoStream({ name: id, req: req, res: res });
     });
     
     router.get('/users/:id', AdminLoggedIn, function (req, res) {

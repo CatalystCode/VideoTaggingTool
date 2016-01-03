@@ -3,7 +3,7 @@ var videoTaggingAppControllers = angular.module('videoTaggingAppControllers', []
 
 videoTaggingAppControllers
 
-.factory('state', ['$http', function ($http) {
+.factory('state', ['$http', '$rootScope', function ($http, $rootScope) {
     
     var jobStatus = {};
     
@@ -17,11 +17,18 @@ videoTaggingAppControllers
     .error(function (err) {
         console.error(err);
     });
+        
+    $rootScope.jobSetup = {
+        locationTypes: ['Area', 'Point'],
+        locationShapes: ['Rectangle', 'Circle'],
+        multiLocations: [{ id: '0', name: 'False' }, { id: '1', name: 'True' }],
+        locationSizes: Array.apply(null, Array(100)).map(function (item, i) { return i + 1 })
+    }
 
     return {
-        getJobStatusByName: function () {
-            return jobStatus;
-        }
+            getJobStatusByName: function () {
+                return jobStatus;
+            }
     };
 
 }])
@@ -80,7 +87,6 @@ videoTaggingAppControllers
                 default:
                     getJobsFromServer('/api/users/' + $scope.user.Id + '/jobs');
             }
-                  
         }
         
         $scope.filterFetch = function (filter) {
@@ -116,23 +122,31 @@ videoTaggingAppControllers
 
     }])
     
-.controller('UpsertJobController', ['$scope', '$http', '$location', '$routeParams', function ($scope, $http, $location, $routeParams) {
+.controller('UpsertJobController', ['$scope', '$http', '$location', '$routeParams', 'state', function ($scope, $http, $location, $routeParams, state) {
         
         var defaultId = '[new]';
         $scope.jobId = defaultId;
-        $scope.config = '{"locationtype":"Area","locationshape":"Rectangle","multilocations":"1","locationsize":"20","tags":["horse","bird"]}';
         
         if ($routeParams.id != 0) {
             $http({ method: 'GET', url: '/api/jobs/' + $routeParams.id })
             .success(function (result) {
                 console.log('jobData', result);
+              //  $scope.jobData = result;
                 $scope.jobId = result.job.Id;
                 $scope.selectedVideo = result.video;
                 $scope.selectedUser = result.user;
                 $scope.selectedStatus = { Id: result.job.StatusId };
                 console.log(' $scope.selectedStatus', $scope.selectedStatus);
                 $scope.description = result.job.Description;
-                $scope.config = result.job.Config && JSON.stringify(result.job.Config, true, 2);
+                
+                $scope.config = result.job.Config;
+                $scope.locationtype = result.job.Config.locationtype;
+                $scope.locationshape = result.job.Config.locationshape;
+                $scope.multilocations = result.job.Config.multilocations;
+                $scope.locationsize = result.job.Config.locationsize;
+
+                $scope.tags = result.job.Config.tags.join(', ');
+
             });
         }
       
@@ -157,13 +171,19 @@ videoTaggingAppControllers
         $scope.submit = function () {
             
             clearMessages();
-
+            
             var data = {
                 videoId: $scope.selectedVideo.Id,
                 userId: $scope.selectedUser.Id,
                 description: $scope.description,
                 statusId: $scope.selectedStatus.Id,
-                configJson: JSON.parse($scope.config)
+                configJson: {
+                    locationtype: $scope.locationtype,
+                    locationshape: $scope.locationshape,
+                    multilocations: $scope.multilocations,
+                    locationsize: $scope.locationsize,
+                    tags: $scope.tags.split(',').map(function (tag) { return tag.trim(); })
+                }
             };
             
             if ($scope.jobId != defaultId) {
@@ -273,18 +293,10 @@ videoTaggingAppControllers
         .success(function (result) {
             videos = $scope.videos = result.videos;
         });
-
-        
-        $scope.getMetadata = function (video) {
-            return JSON.stringify(video.Data, true, 2);
-        }
-
         
         $scope.edit = function (id) {
             $location.path('/videos/' + id);
         }
-        
-
     }])
 
     
@@ -315,10 +327,8 @@ videoTaggingAppControllers
                     .success(function (result) {
                         videoCtrl.inputFrames = result.frames;
                         videoCtrl.src = '';
-                        var url = jobData.video.Url + '?' + jobData.video._blobSasToken;
-                       // url = '/api/videos/' + jobData.video.Id + '/movie';
-                        console.log('video url', url);
-                        videoCtrl.src = url;
+                        console.log('video url', jobData.video.Url);
+                        videoCtrl.src = jobData.video.Url;
                     });
         });
         
@@ -393,11 +403,8 @@ videoTaggingAppControllers
                 $scope.url = video.Url;
                 $scope.height = video.Height;
                 $scope.width = video.Width;
-                $scope.duration = video.DurationSeconds;
-                $scope.framesPerSecond = video.FramesPerSecond;
-                
-                $scope.metadata = video.Data && JSON.stringify(video.Data);
-                
+                $scope.duration = video.DurationSeconds.toFixed(2);
+                $scope.framesPerSecond = video.FramesPerSecond.toFixed(2);
             });
         }
 
@@ -410,8 +417,7 @@ videoTaggingAppControllers
                 height: $scope.height,
                 width: $scope.width,
                 durationSeconds: $scope.duration,
-                framesPerSecond: $scope.framesPerSecond,
-                videoJson: JSON.parse($scope.metadata)
+                framesPerSecond: $scope.framesPerSecond
             };
             
             if ($scope.videoId != defaultId) {

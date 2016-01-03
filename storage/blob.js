@@ -79,12 +79,15 @@ function getVideoUrl(id) {
     return URL_FORMAT + '/' + id;
 }
 
+function getVideoUrlWithSas(id) {
+    return getVideoUrl(id) + '?' + getSAS({name: id});
+}
+
 module.exports = {
     init: init,
     upload: upload,
-    getVideoUrl: getVideoUrl,
     getVideoStream: getVideoStream,
-    getSAS: getSAS
+    getVideoUrlWithSas: getVideoUrlWithSas
 };
 
 
