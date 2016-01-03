@@ -2,7 +2,31 @@
 var videoTaggingAppControllers = angular.module('videoTaggingAppControllers', []);
 
 videoTaggingAppControllers
-.controller('AppController', ['$scope', '$rootScope', '$route', '$http', '$location', '$routeParams', function ($scope, $rootScope, $route, $http, $location, $routeParams) {
+
+.factory('state', ['$http', function ($http) {
+    
+    var jobStatus = {};
+    
+    $http({ method: 'GET', url: '/api/jobs/statuses' })
+        .success(function (result) {
+            console.log('got statuses', result);
+            result.statuses.forEach(function (status) {
+                jobStatus[status.Name] = status.Id;
+            });
+    })
+    .error(function (err) {
+        console.error(err);
+    });
+
+    return {
+        getJobStatusByName: function () {
+            return jobStatus;
+        }
+    };
+
+}])
+
+.controller('AppController', ['$scope', '$rootScope', '$route', '$http', '$location', '$routeParams', 'state', function ($scope, $rootScope, $route, $http, $location, $routeParams, state) {
     
         
         $http({ method: 'GET', url: '/profile' })
@@ -30,7 +54,7 @@ videoTaggingAppControllers
 
         $http({ method: 'GET', url: '/api/jobs/statuses' })
         .success(function (result) {
-            $scope.jobStatuses = result;
+            $scope.jobStatuses = result.statuses;
         });
         
         var jobs;
@@ -105,7 +129,8 @@ videoTaggingAppControllers
                 $scope.jobId = result.job.Id;
                 $scope.selectedVideo = result.video;
                 $scope.selectedUser = result.user;
-                $scope.selectedStatus = { id: result.job.StatusId, name: result.job.StatusName } ;
+                $scope.selectedStatus = { Id: result.job.StatusId };
+                console.log(' $scope.selectedStatus', $scope.selectedStatus);
                 $scope.description = result.job.Description;
                 $scope.config = result.job.Config && JSON.stringify(result.job.Config, true, 2);
             });
@@ -114,7 +139,7 @@ videoTaggingAppControllers
         $http({ method: 'GET', url: '/api/jobs/statuses' })
         .success(function (result) {
             console.log('got statuses', result);
-            $scope.jobStatuses = result;
+            $scope.jobStatuses = result.statuses;
         });
 
         $http({ method: 'GET', url: '/api/videos' })
@@ -136,9 +161,8 @@ videoTaggingAppControllers
             var data = {
                 videoId: $scope.selectedVideo.Id,
                 userId: $scope.selectedUser.Id,
-                createdById: $scope.user.Id,
                 description: $scope.description,
-                statusId: $scope.selectedStatus.id,
+                statusId: $scope.selectedStatus.Id,
                 configJson: JSON.parse($scope.config)
             };
             
@@ -174,6 +198,74 @@ videoTaggingAppControllers
         }
     }])
     
+    
+.controller('UpsertUserController', ['$scope', '$http', '$location', '$routeParams', function ($scope, $http, $location, $routeParams) {
+        
+        var defaultId = '[new]';
+        $scope.userId = defaultId;
+        
+        if ($routeParams.id != 0) {
+            $http({ method: 'GET', url: '/api/users/' + $routeParams.id })
+            .success(function (result) {
+                console.log('userData', result);
+                $scope.userId = result.Id;
+                $scope.name = result.Name;
+                $scope.email = result.Email;
+
+                $scope.selectedRole = { Id: result.RoleId, name: result.RoleName };
+            });
+        }
+        
+        $http({ method: 'GET', url: '/api/roles' })
+        .success(function (result) {
+            console.log('got statuses', result);
+            $scope.roles = result.roles;
+        });
+        
+        
+        $scope.submit = function () {
+            
+            clearMessages();
+            
+            var data = {
+                name: $scope.name,
+                email: $scope.email,
+                roleId: $scope.selectedRole.Id
+            };
+            
+            if ($scope.userId != defaultId) {
+                data.id = $scope.userId;
+            }
+            
+            console.log('submitting', data);
+            
+            $http({ method: 'POST', url: '/api/users', data: data })
+            .success(function (result) {
+                console.log('result', result);
+                info('user ' + result.userId + ($scope.userId == defaultId ? ' created' : ' modified') + ' successfully');
+                $scope.userId = result.UserId;
+            })
+            .error(function (err) {
+                console.error(err);
+                error(err.error.message);
+            });
+        }
+        
+        function error(err) {
+            $scope.error = err;
+        }
+        
+        function info(msg) {
+            $scope.info = msg;
+        }
+        
+        function clearMessages() {
+            $scope.error = '';
+            $scope.info = '';
+        }
+    }])
+    
+
 .controller('VideosController', ['$scope', '$route', '$http', '$location', '$routeParams', function ($scope, $route, $http, $location, $routeParams) {
         var videos = [];    
 
@@ -196,7 +288,7 @@ videoTaggingAppControllers
     }])
 
     
-.controller('TagJobController', ['$scope', '$route', '$http', '$location', '$routeParams', function ($scope, $route, $http, $location, $routeParams) {
+.controller('TagJobController', ['$scope', '$route', '$http', '$location', '$routeParams', 'state', function ($scope, $route, $http, $location, $routeParams, state) {
         
         var videoCtrl = document.getElementById('video-tagging');
 
@@ -229,31 +321,38 @@ videoTaggingAppControllers
                         videoCtrl.src = url;
                     });
         });
+        
+    
+        $scope.updateJobStatus = function (status) {
+            var statusId = state.getJobStatusByName()[status];
+            
+            var data = { statusId: statusId };
+            
+            $http({ method: 'POST', url: "/api/jobs/" + jobId + "/status", data: data })
+            .success(function () {
+                console.log('success');
+                info('job updated');
+            })
+            .error(function (err) {
+                console.error(err);
+                error('error updating job: ' + err.message);
+            });
+        }
 
         function tagHandler(e) {
             var inputObject = e.detail.location;
 
             var msg = {};
             msg.tags = inputObject.locations;
-            var json = JSON.stringify(msg)
-
-            console.log(json);
-
-            //POST
-            $.ajax({
-                type: "POST",
-                url: "/api/jobs/" + jobId + "/frames/" + inputObject.frameIndex,
-                dataType: "json",
-                data: json,
-                cache: false,
-                contentType: "application/json"
+            
+            $http({ method: 'POST', url: '/api/jobs/' + jobId + '/frames/' + inputObject.frameIndex, data: msg })
+            .success(function (result) {
+                console.log('success');
             })
-                .error(function(err){
-                   console.error('error', err);
-                })
-                .success(function(){
-                    console.log('success');
-                });
+            .error(function (err) {
+                console.error('error', err);
+            });
+           
         }
 
         window.addEventListener('onlocationchanged', tagHandler);
@@ -261,6 +360,19 @@ videoTaggingAppControllers
         $scope.$on('$destroy', function() {
             window.removeEventListener('onlocationchanged', tagHandler);
         })
+
+        function error(err) {
+            $scope.error = err;
+        }
+        
+        function info(msg) {
+            $scope.info = msg;
+        }
+        
+        function clearMessages() {
+            $scope.error = '';
+            $scope.info = '';
+        }
 
     }])
 
@@ -327,12 +439,11 @@ videoTaggingAppControllers
             var form = document.getElementById('uploadVideoForm');
 
             var formData = new FormData(form);
-                        
+           
             $.ajax({
                 url: '/api/videos/' + $scope.videoId,
                 type: 'POST',
                 data: formData,
-                //async: false,
                 cache: false,
                 contentType: false,
                 processData: false,

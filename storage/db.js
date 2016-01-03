@@ -128,7 +128,7 @@ function createOrModifyUser(req, cb) {
 
             request.addParameter('Name', TYPES.NVarChar, req.name);
             request.addParameter('Email', TYPES.NVarChar, req.email);
-            request.addParameter('RoleId', TYPES.Int, req.id);
+            request.addParameter('RoleId', TYPES.TinyInt, req.roleId);
 
             request.addOutputParameter('UserId', TYPES.Int);
 
@@ -148,6 +148,33 @@ function createOrModifyUser(req, cb) {
 }
 
 
+function updateJobStatus(req, cb) {
+    connect(function (err, connection) {
+        if (err) return cb(err);
+        
+        try {
+            
+            var request = new tedious.Request('UpdateJobStatus', function (err) {
+                if (err) {
+                    console.error('error calling UpdateJobStatus stored procedure', err);
+                    return cb(err);
+                }
+                
+                return cb();
+            });
+            
+            request.addParameter('Id', TYPES.Int, req.id);
+            request.addParameter('UserId', TYPES.Int, req.userId);
+            request.addParameter('StatusId', TYPES.TinyInt, req.statusId);
+            
+            connection.callProcedure(request);
+        }
+        catch (err) {
+            return cb(err);
+        }
+
+    });
+}
 
 function getVideos(cb) {
     return getDataSets({
@@ -176,6 +203,29 @@ function getVideos(cb) {
 }
 
 
+function getJobstatuses(cb) {
+    return getDataSets({
+        sproc: 'GetJobStatuses',
+        sets: ['statuses'],
+        params: []
+    }, function (err, result) {
+        if (err) return cb(err);
+        return cb(null, result);
+    });
+}
+
+function getRoles(cb) {
+    return getDataSets({
+        sproc: 'GetRoles',
+        sets: ['roles'],
+        params: []
+    }, function (err, result) {
+        if (err) return cb(err);
+        return cb(null, result);
+    });
+}
+
+
 function getVideo(id, cb) {
     return getDataSets({
         sproc: 'GetVideo',
@@ -186,6 +236,22 @@ function getVideo(id, cb) {
                
         if (result.videos.length) {
             return cb(null, normalizeVideoRow(result.videos[0]));
+        }
+        
+        return cb(null, {});
+    });
+}
+
+function getUserById(id, cb) {
+    return getDataSets({
+        sproc: 'GetUserById',
+        sets: ['users'],
+        params: [{ name: 'Id', type: TYPES.Int, value: id}]
+    }, function (err, result) {
+        if (err) return cb(err);
+        
+        if (result.users.length) {
+            return cb(null, result.users[0]);
         }
         
         return cb(null, {});
@@ -493,6 +559,8 @@ module.exports = {
     createOrModifyJob: createOrModifyJob,
     createOrModifyVideo: createOrModifyVideo,
     getJobDetails: getJobDetails,
+    getJobstatuses: getJobstatuses,
+    getRoles: getRoles,
     getVideos: getVideos,
     getVideo: getVideo,
     createOrModifyFrame: createOrModifyFrame,
@@ -502,5 +570,7 @@ module.exports = {
     getVideoFramesByJob: getVideoFramesByJob,
     getUsers: getUsers,
     getUserByEmail: getUserByEmail,
-    createOrModifyUser: createOrModifyUser
+    getUserById: getUserById,
+    createOrModifyUser: createOrModifyUser,
+    updateJobStatus: updateJobStatus
 }

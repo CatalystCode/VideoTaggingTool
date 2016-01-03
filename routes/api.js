@@ -7,8 +7,9 @@ var blob = require('../storage/blob');
 
 
 module.exports = function (passport) {
-
+ 
     router.post('/jobs', AdminLoggedIn, function (req, res) {
+        req.body.createdById = req.user.Id;
         db.createOrModifyJob(req.body, function (err, result) {
             if (err) {
                 console.error(err);
@@ -30,6 +31,16 @@ module.exports = function (passport) {
     
     router.post('/videos', AdminLoggedIn, function (req, res) {
         db.createOrModifyVideo(req.body, function (err, result) {
+            if (err) {
+                console.error(err);
+                return res.status(500).json({ error: err.message });
+            }
+            res.json(result);
+        });
+    });
+    
+    router.post('/users', AdminLoggedIn, function (req, res) {
+        db.createOrModifyUser(req.body, function (err, result) {
             if (err) {
                 console.error(err);
                 return res.status(500).json({ error: err.message });
@@ -85,19 +96,40 @@ module.exports = function (passport) {
         form.parse(req);
     });
     
-    router.get('/jobs/statuses', isLoggedIn, function (req, res) {
-        console.log('getting jobs statuses');
-        
-        var statuses = [
-            { id: 1, name: 'Active', description: 'Active jobs' },
-            { id: 2, name: 'Pending', description: 'Pending jobs' },
-            { id: 3, name: 'Approved', description: 'Approved jobs' }
-        ];
-        
-        res.json(statuses);
 
+    // TODO: check job belong to editor / Admin mode, if Approved check user is Admin
+    router.post('/jobs/:id/status', EditorLoggedIn, function (req, res) {
+        var id = req.body.id = req.params.id;
+        req.body.userId = req.user.Id;
+        
+        console.log('updating status for job', id);
+        db.updateJobStatus(req.body, function (err, resp) {
+            if (err) return res.status(500).json({ error: err.message });
+            console.log('resp:', resp);
+            res.json(resp);
+        });
     });
     
+
+    router.get('/jobs/statuses', function (req, res) {
+        console.log('getting jobs statuses');
+        db.getJobstatuses(function (err, resp) {
+            if (err) return res.status(500).json({ error: err });
+            console.log('resp:', resp);
+            res.json(resp);
+        });
+    });
+    
+    router.get('/roles', function (req, res) {
+        console.log('getting roles');
+        db.getRoles(function (err, resp) {
+            if (err) return res.status(500).json({ error: err });
+            console.log('resp:', resp);
+            res.json(resp);
+        });
+    });
+    
+    // TODO: check job belong to editor / Admin mode
     router.get('/jobs/:id/frames', EditorLoggedIn, function (req, res) {
         var id = req.params.id;
         console.log('getting frames for job', id);
@@ -107,7 +139,9 @@ module.exports = function (passport) {
             res.json(resp);
         });
     });
-    
+
+
+    // TODO: check job belong to editor / Admin mode
     router.get('/jobs/:id', EditorLoggedIn, function (req, res) {
         var id = req.params.id;
         console.log('getting job id', id);
@@ -136,6 +170,7 @@ module.exports = function (passport) {
         });
     });
     
+    // TODO: check job belong to editor / Admin mode
     router.post('/jobs/:id/frames/:index', EditorLoggedIn, function (req, res) {
         var options = {
             tagsJson: req.body.tags
@@ -153,8 +188,8 @@ module.exports = function (passport) {
         });
     });
     
-    router.get('/users/:id/jobs', EditorLoggedIn, function (req, res) {
-        var userId = req.params.id;
+    router.get('/users/:id/jobs', [EditorLoggedIn, AuthorizeUserAction], function (req, res) {
+        var userId = req.user.Id;
         console.log('getting jobs for user id', userId);
         db.getUserJobs(userId, function (err, resp) {
             if (err) return res.status(500).json({ error: err });
@@ -218,6 +253,19 @@ module.exports = function (passport) {
         return blob._getVideoStream({ name: id, req: req, res: res });
     });
     
+    router.get('/users/:id', AdminLoggedIn, function (req, res) {
+        var id = req.params.id;
+        console.log('getting user', id);
+        db.getUserById(id, function (err, resp) {
+            if (err) {
+                console.error(err);
+                return res.status(500).json({ error: err.message });
+            }
+            console.log('resp:', resp);
+            res.json(resp);
+        });
+    });
+
     router.get('/users', AdminLoggedIn, function (req, res) {
         console.log('getting users');
         db.getUsers(function (err, resp) {
@@ -249,6 +297,14 @@ module.exports = function (passport) {
 
 var AdminLoggedIn = getLoggedInForRole(['Admin']);
 var EditorLoggedIn = getLoggedInForRole(['Admin', 'Editor']);
+
+function AuthorizeUserAction(req, res, next) {
+    var id = req.params.id;
+    if (id && req.user.RoleName === 'Editor' && req.user.Id != id) {
+            return res.status(401).json({ error: 'user is not an Admin, can\'t access other user data' });
+    }
+    return next();
+}
 
 function getLoggedInForRole(roles) {
     return function(req, res, next) {

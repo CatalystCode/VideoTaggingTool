@@ -42,11 +42,14 @@
                 <div>
                     <ul class="nav navbar-nav">
                         <li ng-hide="!user" ng-class="{active: $route.current.activetab == 'jobs'}"><a href="#/jobs">Jobs</a></li>
-                        <li ng-hide="!user" ng-class="{active: $route.current.activetab == 'videos'}"><a href="#/videos">Videos</a></li>
-                        <li ng-hide="!user" ng-class="{active: $route.current.activetab == 'users'}"><a href="#/users">Users</a></li>
+                        <li ng-hide="!user || user.RoleName !== 'Admin'" ng-class="{active: $route.current.activetab == 'videos'}"><a href="#/videos">Videos</a></li>
+                        <li ng-hide="!user || user.RoleName !== 'Admin'" ng-class="{active: $route.current.activetab == 'users'}"><a href="#/users">Users</a></li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
-                        <li ng-hide="!user"><a href="#/"><span class="glyphicon glyphicon-user"></span> {{user.Name}} ({{user.RoleName}})</a></li>
+                        <li ng-hide="!user"><a href="#/">
+                            <img src="{{ user.ImageUrl }}" class="profile-image img-circle" style="position: relative; top: -5px; float: left; left: -5px; width: 30px; height: 30px;"> {{user.Name}} 
+
+                           ({{user.RoleName}})</a></li>
                         <li ng-hide="!user"><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Log out</a></li>
                         <li ng-hide="user"><a href="/login"><span class="glyphicon glyphicon-log-out"></span> Log in</a></li>
                     </ul>

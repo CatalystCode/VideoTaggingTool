@@ -9,7 +9,7 @@ INSERT INTO [dbo].[Roles]
      VALUES
            (1
 		   ,'Editor'
-           ,'Edit vidoes')
+           ,'Edit videos')
 GO
 
 

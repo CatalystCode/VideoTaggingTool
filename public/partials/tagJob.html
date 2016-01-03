@@ -9,6 +9,12 @@
         </div>
 
 
+        <div class="btn-group" role="group" style="margin-top: 2em;">
+            <button ng-hide="!user" ng-click="updateJobStatus('Pending')" type="button" class="btn btn-default">Send for review</button>
+            <button ng-hide="!user || user.RoleName !== 'Admin'" ng-click="updateJobStatus('Approved')" type="button" class="btn btn-default">Approve</button>
+        </div>
+
+        
         <div class="form-group">
             <div class="alert alert-danger col-sm-offset-2 col-sm-10" role="alert" ng-hide="!error">{{error}}</div>
         </div>

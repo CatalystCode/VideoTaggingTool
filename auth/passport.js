@@ -1,10 +1,10 @@
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
 var config = require('./passport.google.private');
-var db = require('./storage/db');
+var db = require('../storage/db');
 
-function findUser(user, cb) {
-    db.getUserByEmail(user.email, cb);
+function findUser(email, cb) {
+    db.getUserByEmail(email, cb);
 }
 
 module.exports = function(passport) {
@@ -28,22 +28,24 @@ module.exports = function(passport) {
             
             var userProfile = {
                 name: profile.displayName,
-                email: profile.emails[0].value 
-             //   image: profile.image.url
+                email: profile.emails[0].value,
+                image: profile.photos.length && profile.photos[0] && profile.photos[0].value
             };
 
             // try to find the user based on their google id
-            findUser(userProfile, function(err, user) {
+            findUser(userProfile.email, function(err, user) {
                 if (err) return cb(err);
 
                 if (user) {
                     user.Authorized = true;
+                    user.ImageUrl = userProfile.image;
                     return cb(null, user);
                 } 
                 else {
                     return cb(null, {
                         Name: userProfile.name,
                         Email: userProfile.email,
+                        ImageUrl: userProfile.image,
                         Authorized: false
                     });
                 }

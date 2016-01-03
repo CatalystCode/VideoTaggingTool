@@ -17,15 +17,17 @@
   <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
   <ItemGroup>
     <Content Include="package.json" />
+    <Content Include="public\partials\upsertUser.html" />
     <Content Include="public\partials\welcome.html" />
     <Content Include="README.md" />
-    <Compile Include="passport.js" />
+    <Compile Include="auth\basicAuth.js" />
+    <Compile Include="auth\passport.js" />
     <Compile Include="routes\login.js" />
     <Compile Include="server.js" />
     <Content Include="public\index.html" />
     <Content Include="public\bower.json" />
     <Compile Include="routes\api.js" />
-    <Content Include="passport.google.private.json" />
+    <Content Include="auth\passport.google.private.json" />
     <Content Include="storage\sql.amitu.private.json" />
     <Content Include="storage\sql.azure.private.json" />
     <Content Include="storage\sql\createdb.sql" />
@@ -533,6 +535,7 @@
     <Compile Include="public\video-tagging-0.0.5\assets\icons\ie7\ie7.js" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="auth\" />
     <Folder Include="public" />
     <Folder Include="public\bower_components" />
     <Folder Include="public\bower_components\angular" />

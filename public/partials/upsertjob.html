@@ -35,9 +35,9 @@
                 <label class="control-label col-sm-2" for="mySelect">Status</label>
                 <div class="col-sm-3">
                     <select class="form-control" name="status" id="status"
-                            ng-options="status.name for status in jobStatuses track by status.id"
+                            ng-options="status.Name for status in jobStatuses track by status.Id"
                             ng-model="selectedStatus"
-                            ng-selected="status.id == selectedStatus.id"></select>
+                            ng-selected="status.Id == selectedStatus.id"></select>
                 </div>
             </div>
 
