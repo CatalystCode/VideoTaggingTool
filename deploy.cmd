@@ -108,10 +108,12 @@ IF EXIST "%DEPLOYMENT_TARGET%\package.json" (
 :: 4. Install bower packages
 IF EXIST "%DEPLOYMENT_TARGET%\public\bower.json" (
   pushd "%DEPLOYMENT_TARGET%\public"
+  echo Installing bower components from public folder
   call :ExecuteCmd !NODE_EXE! ..\node_modules\bower\bin\bower install
   IF !ERRORLEVEL! NEQ 0 goto error
   popd
 )
+
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -125,7 +127,7 @@ goto end
 :ExecuteCmd
 setlocal
 set _CMD_=%*
-echo calling %_CMD_%
+echo calling command: %_CMD_%
 call %_CMD_%
 if "%ERRORLEVEL%" NEQ "0" echo Failed exitCode=%ERRORLEVEL%, command=%_CMD_%
 exit /b %ERRORLEVEL%
