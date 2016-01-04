@@ -287,15 +287,65 @@ videoTaggingAppControllers
     
 
 .controller('VideosController', ['$scope', '$route', '$http', '$location', '$routeParams', function ($scope, $route, $http, $location, $routeParams) {
-        var videos = [];    
+        var videos = [];
+        var lastLabelSelected = null;
 
-        $http({ method: 'GET', url: '/api/videos' })
+        getVideos();
+
+        function getVideos(filter) {
+            var url = '/api/videos';
+            if (filter)
+                url += "?filter=" + filter
+
+            $http({ method: 'GET', url: url })
+            .success(function (result) {
+                videos = $scope.videos = result.videos;
+            });
+        }
+       
+
+        $http({ method: 'GET', url: '/api/labels' })
         .success(function (result) {
-            videos = $scope.videos = result.videos;
+            labels = $scope.labels = result.labels;
         });
+
         
         $scope.edit = function (id) {
             $location.path('/videos/' + id);
+        }
+
+        $scope.limitOnlyOne = function (label) {
+            if (lastLabelSelected == null)
+                lastLabelSelected = label;
+            else
+            {
+                if (label.selected)
+                {
+                    lastLabelSelected.selected = false;
+                    lastLabelSelected = label;
+                }
+                else
+                {
+                    lastLabelSelected = null;
+                }
+            }
+        }
+
+        $scope.filterByLabel = function () {
+            var selectedFilters = [];
+
+            angular.forEach(
+                $scope.labels,
+                function(label) {
+                    // Yes - It's a double exclamation mark (Converts to bool)
+                    if (!!label.selected) selectedFilters.push(label);
+                });
+
+            // This should get the whole array. For now - It gets only the first one
+            if (selectedFilters.length > 0)
+                getVideos(selectedFilters[0].Id);
+            else
+                getVideos();
         }
     }])
 

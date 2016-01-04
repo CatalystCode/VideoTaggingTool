@@ -553,6 +553,58 @@ function getVideoFramesByJob(id, cb) {
     });
 }
 
+function getAllLabels(cb) {
+    return getDataSets({
+        sproc: 'GetLabels',
+        sets: ['labels'],
+        params: []
+    }, function(err, result){
+        if (err) return cb(err);
+
+        var newResult = {
+            labels: []
+        };
+
+        try {
+            for (var i=0; i<result.labels.length; i++) {
+                newResult.labels.push(result.labels[i]);
+            }
+        }
+        catch (err) {
+            console.error('error:', err);
+            return cb(err);
+        }
+
+        return cb(null, newResult);
+    });
+}
+
+function getVideosByLabels(filterLabelId, cb) {
+    return getDataSets({
+        sproc: 'GetVideosByLabels',
+        sets: ['videos'],
+        params: [{name: 'LabelId', type: TYPES.Int, value: filterLabelId}]
+    }, function(err, result){
+        if (err) return cb(err);
+
+        var newResult = {
+            videos: []
+        };
+
+        try {
+            for (var i=0; i<result.videos.length; i++) {
+                newResult.videos.push(normalizeVideoRow(result.videos[i]));
+            }
+        }
+        catch (err) {
+            console.error('error:', err);
+            return cb(err);
+        }
+
+        return cb(null, newResult);
+    });
+}
+
 
 module.exports = {
     connect: connect,
@@ -572,5 +624,7 @@ module.exports = {
     getUserByEmail: getUserByEmail,
     getUserById: getUserById,
     createOrModifyUser: createOrModifyUser,
-    updateJobStatus: updateJobStatus
+    updateJobStatus: updateJobStatus,
+    getAllLabels : getAllLabels,
+    getVideosByLabels : getVideosByLabels
 }

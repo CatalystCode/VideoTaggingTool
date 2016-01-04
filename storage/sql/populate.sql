@@ -33,6 +33,15 @@ INSERT INTO [dbo].[Users]
            ,'ami.turgman@gmail.com'
            ,2)
 
+INSERT INTO [dbo].[Users]
+           ([Name]
+           ,[Email]
+           ,[RoleId])
+     VALUES
+           ('Nitay'
+           ,'nitaym@gmail.com'
+           ,2)
+
 
 INSERT INTO [dbo].[Users]
            ([Name]

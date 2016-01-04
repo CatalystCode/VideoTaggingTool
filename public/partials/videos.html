@@ -2,39 +2,48 @@
 <section ng-controller="VideosController">
     <div id="videos">
         <h1>Videos</h1>
-       
 
-        <div>
-            <button ng-click="edit(0)" type="button" class="btn btn-default pull-right"><span class="glyphicon glyphicon-plus"> </span> Add Video</button>
-        </div>
+        <div class="Container">
+            <div class="row" style="margin-bottom:2em">
+                <button ng-click="edit(0)" type="button" class="btn btn-default pull-right"><span class="glyphicon glyphicon-plus"> </span> Add Video</button>
+            </div>
+            <div class="row">
+                <div class="col-xs-2 form-group">
+                    <div class="checkbox" ng-repeat="label in labels">
+                        <label><input type="checkbox" ng-model='label.selected' ng-change="limitOnlyOne(label)" name="FilterLabel" value="{{ label.Name }}" ng-click="filterByLabel()">{{ label.Name }}</label>
+                    </div>
+                </div>
 
-        <table class="table table-hover">
-            <thead>
-                <tr>
-                    <th>edit</th>
-                    <th>video id</th>
-                    <th>name</th>
-                    <th>width</th>
-                    <th>height</th>
-                    <th>duration (seconds)</th>
-                    <th>FPS</th>
-                </tr>
-            </thead>
-            <tbody>
+                <div class="col-xs-10">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>edit</th>
+                                <th>video id</th>
+                                <th>name</th>
+                                <th>width</th>
+                                <th>height</th>
+                                <th>duration (seconds)</th>
+                                <th>FPS</th>
+                                <th>Labels</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="video in videos">
+                                <td><span ng-click="edit(video.Id)" class="glyphicon glyphicon-edit" /></td>
+                                <td>{{ video.Id }}</td>
+                                <td><a href="{{ video.Url }}" target="_blank">{{ video.Name }}</a></td>
+                                <td>{{ video.Width }}</td>
+                                <td>{{ video.Height }}</td>
+                                <td>{{ video.DurationSeconds.toFixed(2)}}</td>
+                                <td>{{ video.FramesPerSecond.toFixed(2) }}</td>
+                                <td>{{ video.Labels }}</td>
+                            </tr>
 
-                <tr ng-repeat="video in videos">
-                    <td><span ng-click="edit(video.Id)" class="glyphicon glyphicon-edit" /></td>
-                    <td>{{ video.Id }}</td>
-                    <td><a href="{{ video.Url }}" target="_blank">{{ video.Name }}</a></td>
-                    <td>{{ video.Width }}</td>
-                    <td>{{ video.Height }}</td>
-                    <td>{{ video.DurationSeconds.toFixed(2)}}</td>
-                    <td>{{ video.FramesPerSecond.toFixed(2) }}</td>
-                </tr>
-
-            </tbody>
-        </table>
-    </div>
-
-  
+                        </tbody>
+                    </table>
+                </div>
+                </div>
+         </div>
+    </div>  
 </section>

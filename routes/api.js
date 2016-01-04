@@ -196,12 +196,28 @@ module.exports = function (passport) {
     });
     
     router.get('/videos', AdminLoggedIn, function (req, res) {
-        console.log('getting videos');
-        db.getVideos(function (err, resp) {
-            if (err) return res.status(500).json({ error: err });
-            console.log('resp:', resp);
-            res.json(resp);
-        });
+        var filter = req.query.filter;
+        if (filter)
+        {
+            console.log('getting videos labeled ' + filter);
+
+            db.getVideosByLabels(filter,
+                function (err, resp) {
+                if (err) return res.status(500).json({ error: err });
+                console.log('resp:', resp);
+                res.json(resp);
+            });
+        }
+        else
+        {
+            console.log('getting all videos');
+    
+            db.getVideos(function (err, resp) {
+                if (err) return res.status(500).json({ error: err });
+                console.log('resp:', resp);
+                res.json(resp);
+            });
+        }        
     });
     
     router.get('/videos/:id', EditorLoggedIn, function (req, res) {
@@ -275,6 +291,15 @@ module.exports = function (passport) {
                 console.error(err);
                 return res.status(500).json({ error: err.message });
             }
+            console.log('resp:', resp);
+            res.json(resp);
+        });
+    });
+
+    router.get('/labels', AdminLoggedIn, function (req, res) {
+        console.log('getting all labels');
+        db.getAllLabels(function (err, resp) {
+            if (err) return res.status(500).json({ error: err });
             console.log('resp:', resp);
             res.json(resp);
         });
