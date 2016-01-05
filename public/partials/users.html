@@ -5,7 +5,7 @@
        
 
         <div>
-            <button ng-click="edit(0)" type="button" class="btn btn-default pull-right"><span class="glyphicon glyphicon-plus"> </span> Add User</button>
+            <button ng-click="addUser()" type="button" class="btn btn-default pull-right"><span class="glyphicon glyphicon-plus"> </span> Add User</button>
         </div>
 
         <table class="table table-hover m-t-2">
@@ -21,7 +21,7 @@
             <tbody>
 
                 <tr ng-repeat="user in users">
-                    <td><span ng-click="edit(user.Id)" class="glyphicon glyphicon-edit" title="edit user" /></td>
+                    <td><button ng-click="editUser()" type="button" class="btn btn-default"><span class="glyphicon glyphicon-edit"> </span> Edit User</button>
                     <td>{{ user.Id }}</td>
                     <td>{{ user.Name }}</a></td>
                     <td>{{ user.Email }}</td>

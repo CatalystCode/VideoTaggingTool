@@ -4,7 +4,7 @@
         <h1>Jobs</h1>
 
         <div>
-            <button ng-hide="user.RoleName !== 'Admin'" ng-click="edit(0)" type="button" class="btn btn-default  pull-right"><span class="glyphicon glyphicon-plus"> </span> Add Job</button>
+            <button ng-hide="user.RoleName !== 'Admin'" ng-click="addJob()" type="button" class="btn btn-default  pull-right"><span class="glyphicon glyphicon-plus"> </span> Add Job</button>
         </div>
 
         <div class="btn-group" role="group">
@@ -39,8 +39,8 @@
             <tbody>
                 <tr ng-repeat="job in jobs">
                     <td>
-                        <span ng-hide="user.RoleName !== 'Admin'" ng-click="editJob()" class="glyphicon glyphicon-edit" title="edit job" />
-                        <span ng-click="tagJob()" class="glyphicon glyphicon-tag" title="tag job"/>
+                        <button ng-click="editJob()" ng-hide="user.RoleName !== 'Admin'" type="button" class="btn btn-default"><span class="glyphicon glyphicon-edit"> </span> Edit Job</button>
+                        <button ng-click="tagJob()" type="button" class="btn btn-default"><span class="glyphicon glyphicon-tag"> </span> Tag Job</button>
                     </td>
                     <td>{{ job.JobId }}</td>
                     <td>{{ job.Description }}</td>

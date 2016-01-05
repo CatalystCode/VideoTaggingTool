@@ -5,7 +5,7 @@
        
 
         <div>
-            <button ng-click="edit(0)" type="button" class="btn btn-default pull-right"><span class="glyphicon glyphicon-plus"> </span> Add Video</button>
+            <button ng-click="addVideo()" type="button" class="btn btn-default pull-right"><span class="glyphicon glyphicon-plus"> </span> Add Video</button>
         </div>
 
         <table class="table table-hover">
@@ -24,8 +24,8 @@
 
                 <tr ng-repeat="video in videos">
                     <td>
-                        <span ng-click="edit(video.Id)" class="glyphicon glyphicon-edit" title="edit video" />
-                        <span ng-click="createJob()" class="glyphicon glyphicon-cog" title="create job for this video" />
+                        <button ng-click="editVideo()" type="button" class="btn btn-default"><span class="glyphicon glyphicon-edit"> </span> Edit Video</button>
+                        <button ng-hide="user.RoleName !== 'Admin'" ng-click="createJob()" type="button" class="btn btn-default"><span class="glyphicon glyphicon-cog"> </span> Create Job</button>
                     </td>
                     <td>{{ video.Id }}</td>
                     <td><a href="{{ video.Url }}" target="_blank">{{ video.Name }}</a></td>

@@ -122,6 +122,10 @@ videoTaggingAppControllers
             return JSON.stringify(job.Config, true, 2);
         }
 
+        $scope.addJob = function () {
+            $location.path('/jobs/0');
+        }
+
         $scope.editJob = function () {
             var jobId = this.job.JobId;
             $location.path('/jobs/' + jobId);
@@ -325,9 +329,14 @@ videoTaggingAppControllers
         .success(function (result) {
             videos = $scope.videos = result.videos;
         });
-        
-        $scope.edit = function (id) {
-            $location.path('/videos/' + id);
+
+        $scope.addVideo = function () {
+            $location.path('/videos/0');
+        }
+
+        $scope.editVideo = function () {
+            var videoId = this.video.Id;
+            $location.path('/videos/' + videoId);
         }
 
         $scope.createJob = function() {
@@ -558,8 +567,13 @@ videoTaggingAppControllers
             users = $scope.users = result.users;
         });
 
-    $scope.edit = function (id) {
-        $location.path('/users/' + id);
+    $scope.editUser = function () {
+        $location.path('/users/' + this.user.Id);
+    }
+
+
+    $scope.addUser = function () {
+        $location.path('/users/0');
     }
 
 }]);
