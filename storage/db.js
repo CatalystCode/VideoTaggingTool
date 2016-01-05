@@ -1,6 +1,10 @@
 var tedious = require('tedious');
 var TYPES = tedious.TYPES;
 
+var DBErrors = {
+    duplicate: 2601
+}
+
 var blob = require('./blob');
 
 var _sqlConnection;
@@ -326,7 +330,10 @@ function createOrModifyJob(req, cb) {
 
             var request = new tedious.Request('UpsertJob', function(err) {
                 if (err) {
-                    console.error('error calling Upsert stored procedure', err);
+                    console.error('error calling UpsertJob stored procedure', err);
+                    if(err.number == DBErrors.duplicate) {
+                        return cb(new Error('video already assigned to user'));
+                    }
                     return cb(err);
                 }
 

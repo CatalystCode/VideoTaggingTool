@@ -28,48 +28,19 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 
 // required for passport
-app.use(session({ secret: 'ilovescotchscotchyscotchscotch' })); // session secret
+app.use(session({ secret: 'mysecretsesson123456789' })); // session secret
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
 
-//require('./routes/auth.js')(app, passport);
 app.use(require('./routes/login')(passport));
 app.use('/api', api(passport));
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-
-// catch 404 and forward to error handler
-app.use(function (req, res, next) {
-    var err = new Error('Not Found');
-    err.status = 404;
-    next(err);
+app.use(function (req, res) {
+    return res.status(404).json({ error: 'not found' });
 });
-
-// development error handler
-// will print stacktrace
-if (app.get('env') === 'development') {
-    app.use(function (err, req, res, next) {
-        console.error(err);
-        res.status(err.status || 500);
-        res.render('error', {
-            message: err.message,
-            error: err
-        });
-    });
-}
-
-// production error handler
-// no stacktraces leaked to user
-app.use(function (err, req, res, next) {
-    res.status(err.status || 500);
-    res.render('error', {
-        message: err.message,
-        error: {}
-    });
-});
-
 
 app.set('port', process.env.PORT || 3000);
 

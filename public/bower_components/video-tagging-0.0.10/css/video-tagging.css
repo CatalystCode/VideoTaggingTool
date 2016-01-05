@@ -58,8 +58,7 @@ input[type='range']::-moz-range-track {
   border: none;
   width: 1em;
   height: 0.75em;
-  border-radius: 50%;
-  
+  border-radius: 20%;
   background: transparent;
   display: block;
 }
@@ -166,10 +165,6 @@ input[type='range']:focus {
 
 
 /*General*/
-.fields{
-    margin:0;
-    padding:0;
-}
 
 :host {
       display: block;
@@ -181,9 +176,17 @@ input[type='range']:focus {
 {
     width:100%;
     height:100%;
-    border-width: 1px;
+    border: 0px;
     border-style: solid;
     border-color: green;
+    display: none;
+    overflow: hidden;
+}
+
+.relativeDiv
+{
+    position:relative;
+    width:100%;
 }
 
 
@@ -192,20 +195,14 @@ input[type='range']:focus {
     
     width:100%;
     height:65%;
-    border-width: 1px;
-    border-style: solid;
-    border-color: black;
-    background-color: #e6e6e6;
+    
 }
 
 .overlaystyle {
   position: absolute; 
   display:block;
   background-color: transparent;
-  
-  padding:  0;
   z-index: 20;
-
 }
 
 #vid {
@@ -224,7 +221,7 @@ input[type='range']:focus {
 
 /*playback*/
 
-#playbackControl  {
+#playSpeedControl  {
     
     background:black;
     z-index:20000;
@@ -244,6 +241,7 @@ input[type='range']:focus {
     cursor:pointer;
     font-size: 130%;
     text-align: center;
+    font-family: Arial;
 }
 
 #playbackContainer
@@ -267,13 +265,15 @@ input[type='range']:focus {
     background:gray; 
     position:absolute; 
     z-index:50000;
-    display: none;  
    
     border:1px solid #000;
-    
+    padding-top: 3px;
     color:white;
     font-family: "Arial";
     font-size: 15px;
+    display: none;
+    width:40px;
+    height:20px;
 }
 
 #locationLabelSpan
@@ -281,18 +281,12 @@ input[type='range']:focus {
     padding-left: 5px;
 }
 
-#locationLabelClose
-{
-    color:red;
-    float: right;
-    padding-right: 2px;
-    cursor: pointer;
-}
-
 #closeLocationImage
 {
     cursor:pointer; 
     float:right; 
+    color: red;
+    padding-right: 3px;
 }
 
 
@@ -301,7 +295,7 @@ input[type='range']:focus {
 #videoControls  {
     
     width:100%;
-    height:18%;
+    height:90px;
     border: rgb(38,38,38,0.25);
     background-color: black;
     
@@ -313,118 +307,79 @@ input[type='range']:focus {
 #seekBar  {
     position: absolute;
     border:0px solid red;
-    margin:2% 0px 0px 3%;
-    width:93%;
+    margin:1% 0px 0px 3%;
+    width:94%;
     z-index: 2;
     cursor: pointer;
-    display: none;
+    display: block;
 }
 
 #stepbwd
 {
-    display: none;
-    width:7%;
-    margin-top:40px;
     border: 0px solid red;
-    padding-left: 2%;
     text-align: center;
 }
 
 #play-pause
 {
-    display: none;
-    width:4%;
-    margin-top:40px;
     border: 0px solid red;
-    padding-left: 0%;
     text-align: center;
 }
 
 #stepfwd
 {
-    display: none;
-    width:4%;
-    margin-top:40px;
     border: 0px solid red;
     text-align: center;
 }
 
 #frameText
 {
-    display: inline-block;
     font-family:arial;
-    width:15%;
-    
     color:white;
-    padding-bottom: 0px;
     text-align: center;
-    font-size: 170%;
+    font-size: 150%;
     border: 0px solid red;
-    margin-bottom: 0px;
 }
 
 #playbackSpan
 {
-    display: none;
     font-size: 150%;
-    width:8%;
+    font-family: Arial;
     border: 0px solid red;
     text-align: center;
 }
 
 #timeSpan  {
-    width: 30%;
-    display: inline-block;
     
-    margin-top: 0px;
-    margin-left: 0px;
     text-align: center;
     color:white;
     font-size: 150%;
-    
+    font-family: Arial;
     border: 0px solid red;
 }
 
 #mute  {
-    width: 5%;
-    display: none;
-    
-    margin-top: 0px;
-    margin-left: 2%;
-    
     color:white;
     text-align: center;
     border: 0px solid red;
 }
 
 #volumeSlider  {
-    width: 16.2%;
-    text-align: center;
-    margin-top: 0px;
-    margin-left: .5%;
+    width: 100%;
     color:white;
     border: 0px solid red;
-    padding-bottom: 10px;
     background-color: black;
     cursor: pointer;
-    display:none;
 }
 
 
 
 /*tagging controls*/
-#lockTag
-{
-    margin-left: 20px;
-    display:none;
-}
 
 #tagsContainer
 {
     background-color: transparent;
-    overflow-y: auto;
     width:100%;
-    height: 100%;
 }
 
 #videoTagControls  {
@@ -435,7 +390,7 @@ input[type='range']:focus {
     background-color: black;
     
     display: block;
-    margin-top:3px;
+    margin-top:2px;
     position: relative;
 }
 
@@ -446,6 +401,14 @@ input[type='range']:focus {
     cursor:pointer; 
 }
 
+#tagsWrapper
+{
+  overflow-y:auto;
+  height:130px;
+  margin-top: 10px;
+  background-color: transparent;
+}
+
 .taggingControlsText
 {
     margin-top: 10px;
@@ -453,9 +416,8 @@ input[type='range']:focus {
 
 #nextuntagged
 {
-    margin-left: 5%;
-    margin-top: 0px;
-    display: none;
+    
+    display: inline-block;
 }
 
 #optionalTags
@@ -464,9 +426,23 @@ input[type='range']:focus {
     position:relative; 
 }
 
+#tagsDiv
+{
+    height:100%;
+    border-left:1px solid rgb(89,89,89);
+    border-right:1px solid rgb(89,89,89);
+}
+
 #movenext
 {
     display: none;
+    padding-left: 12%;
+}
+
+#lockTag
+{
+    margin-left: 5%;
+    display:inline-block;
 }
 
 .tagButtons
@@ -475,43 +451,61 @@ input[type='range']:focus {
     margin: 0px 6px 10px 5px; 
     background : rgb(50,50,50);
     color:gray;
-    width : 100px;
+    width : 80px;
     height : 25px;
     border-radius: 5px;
-
 }
 
 
 /*Table for tags section*/
 
-.table {
-  display: table;
-}
-.row {
-  display: table-row;
-}
-.cell {
-  display: table-cell;
-  border: 0px solid red;
-  padding: 1em;
-  width:10%;
-}
-.cell.right{
-  display: table-cell;
-  border: 0px solid red;
-  padding: 1em;
-  width:20%;
-}
-.cell.empty
-{
-  border: none;
-  width: 70%;
-}
-.cell.rowspanned {
+#tagsTable {
+  
+  width:100%;
+  height:150px;
+  margin-top: 0px;
   position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 70%;
+  table-layout: fixed;
+
+}
+
+tr td{
+  border:0px solid green;
+  padding-top: 1%;
+
 }
 
 
+
+#leftCell
+{
+    width:10%;
+    height: 20px;
+    padding-bottom: 8%;
+    padding-left: 3%;
+}
+
+#rightCell
+{
+    width:18%;
+    padding-bottom: 8%;
+    height: 20px;
+}
+
+
+/*tagging vertical scroll bar*/
+::-webkit-scrollbar {
+    width: 12px;
+    background: rgb(89,89,89);
+}
+ 
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+    border-radius: 10px;
+}
+ 
+::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+    background: #fff;
+}

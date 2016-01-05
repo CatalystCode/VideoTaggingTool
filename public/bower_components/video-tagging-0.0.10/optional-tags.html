@@ -1,4 +1,4 @@
-<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../polymer/polymer.html">
 
 
 <dom-module id="optional-tags">
@@ -53,7 +53,7 @@
                 });
                  
                 btn.value = tagsArray[index];
-                this.buttonsContainer.appendChild(btn);   
+                Polymer.dom(this.$.buttonsContainer).appendChild(btn);  
           }
        },
        displaySelectedTags: function(tagsArray)
@@ -79,7 +79,6 @@
             btn.style.background =  "rgb(50,50,50)"; 
             btn.selected = false;           
        },
-
        getSelectedTags :function()
        { 
             var selectedTags = [];

@@ -19,11 +19,17 @@ videoTaggingAppControllers
     });
         
     $rootScope.jobSetup = {
-        locationTypes: ['Area', 'Point'],
-        locationShapes: ['Rectangle', 'Circle'],
-        multiLocations: [{ id: '0', name: 'False' }, { id: '1', name: 'True' }],
-        locationSizes: Array.apply(null, Array(100)).map(function (item, i) { return i + 1 })
-    }
+        locationTypes: { values: ['Area', 'Point'], default: 'Area' },
+        locationShapes: { values: ['Rectangle', 'Circle'], default: 'Rectangle' },
+        multiLocations: { values: [{ id: '0', name: 'False' }, { id: '1', name: 'True' }], default: '1' },
+        locationSizes: { values: Array.apply(null, Array(100)).map(function (item, i) { return i + 1 }), default: 20 }
+    };
+
+    $rootScope.jobStatuses = {
+        Active: 1,
+        Pending: 2,
+        Approved: 3
+    };
 
     return {
             getJobStatusByName: function () {
@@ -106,10 +112,6 @@ videoTaggingAppControllers
             });
         }
         
-        $scope.edit = function (jobId) {
-            $location.path('/jobs/' + jobId);
-        }
-        
         $scope.count = function (status) {
             return jobs && jobs.filter(function (job) {
                 return !status || job.StatusId == status;
@@ -120,13 +122,29 @@ videoTaggingAppControllers
             return JSON.stringify(job.Config, true, 2);
         }
 
+        $scope.editJob = function () {
+            var jobId = this.job.JobId;
+            $location.path('/jobs/' + jobId);
+        }
+
+        $scope.tagJob = function() {
+            var jobId = this.job.JobId;
+            $location.path('/jobs/' + jobId + '/tag');
+        }
     }])
     
 .controller('UpsertJobController', ['$scope', '$http', '$location', '$routeParams', 'state', function ($scope, $http, $location, $routeParams, state) {
         
         var defaultId = '[new]';
         $scope.jobId = defaultId;
-        
+
+
+        $scope.locationtype = $scope.jobSetup.locationTypes.default;
+        $scope.locationshape = $scope.jobSetup.locationShapes.default;
+        $scope.multilocations = $scope.jobSetup.multiLocations.default;
+        $scope.locationsize = $scope.jobSetup.locationSizes.default;
+        $scope.selectedStatus = { Id: $scope.jobStatuses['Active'] };
+
         if ($routeParams.id != 0) {
             $http({ method: 'GET', url: '/api/jobs/' + $routeParams.id })
             .success(function (result) {
@@ -145,7 +163,7 @@ videoTaggingAppControllers
                 $scope.multilocations = result.job.Config.multilocations;
                 $scope.locationsize = result.job.Config.locationsize;
 
-                $scope.tags = result.job.Config.tags.join(', ');
+                $scope.tags = result.job.Config && result.job.Config.tags && result.job.Config.tags.join(', ');
 
             });
         }
@@ -160,6 +178,16 @@ videoTaggingAppControllers
             .success(function (result) {
             $scope.videos = result.videos;
             console.log('videos', result);
+
+            if ($routeParams.id == 0) {
+                var videoId = $location.search()['videoId'];
+
+                var selectedVideoArr = $scope.videos.filter(function(video){
+                    return video.Id == videoId
+                });
+                $scope.selectedVideo = selectedVideoArr.length && selectedVideoArr[0];
+                $scope.description = $scope.selectedVideo ? 'new job for video ' + $scope.selectedVideo.Name : 'new job';
+            }
         });
 
         $http({ method: 'GET', url: '/api/users' })
@@ -174,7 +202,7 @@ videoTaggingAppControllers
             
             var data = {
                 videoId: $scope.selectedVideo.Id,
-                userId: $scope.selectedUser.Id,
+                userId: $scope.selectedUser && $scope.selectedUser.Id,
                 description: $scope.description,
                 statusId: $scope.selectedStatus.Id,
                 configJson: {
@@ -182,10 +210,14 @@ videoTaggingAppControllers
                     locationshape: $scope.locationshape,
                     multilocations: $scope.multilocations,
                     locationsize: $scope.locationsize,
-                    tags: $scope.tags.split(',').map(function (tag) { return tag.trim(); })
+                    tags: ($scope.tags && $scope.tags.split(',').map(function (tag) { return tag.trim(); })) || ''
                 }
             };
-            
+
+            if (!$scope.selectedUser || !$scope.selectedUser.Id) {
+                return error('user was not provided');
+            }
+
             if ($scope.jobId != defaultId) {
                 data.id = $scope.jobId;
             }
@@ -200,10 +232,10 @@ videoTaggingAppControllers
             })
             .error(function (err) {
                 console.error(err);
-                error(err.error.message);
+                error(err.error);
             });
         }
-        
+
         function error(err) {
             $scope.error = err;
         }
@@ -267,7 +299,7 @@ videoTaggingAppControllers
             })
             .error(function (err) {
                 console.error(err);
-                error(err.error.message);
+                error(err.error);
             });
         }
         
@@ -296,6 +328,12 @@ videoTaggingAppControllers
         
         $scope.edit = function (id) {
             $location.path('/videos/' + id);
+        }
+
+        $scope.createJob = function() {
+            var videoId = this.video.Id;
+            console.log('creating job for video id', videoId);
+            $location.path('/jobs/0').search({'videoId': videoId });
         }
     }])
 
@@ -434,7 +472,7 @@ videoTaggingAppControllers
             })
             .error(function (err) {
                 console.error(err);
-                error(err.error.message);
+                error(err.error);
             });
         }
         

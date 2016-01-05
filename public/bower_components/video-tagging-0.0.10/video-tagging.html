@@ -1,10 +1,10 @@
-<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="optional-tags.html">
 <link rel="import" href="playback-control.html">
 
 
 <!--
-`<video-locationging>` control for video locationging.
+`<video-tagging>` control for video tagging.
 -->
 
 <dom-module id="video-tagging">
@@ -13,76 +13,80 @@
     
     <link rel="stylesheet" href="css/video-tagging.css" />
     <link rel="stylesheet" href="css/imgareaselect-animated.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css" />
     <link rel="stylesheet" href="assets/icons/style.css">
     
     <div id="controlWrapper">
-      <div id="messageDiv">Please select a video...</div>
-        <playback-control id="playbackControl"></playback-control>
-        <div id='videoWrapper'>
+      <playback-control id="playSpeedControl"></playback-control>
+      <div id='videoWrapper'>
           <div id = "locationLabelDiv" style="width:40px;height:20px;" >
-            <span id = "locationLabelSpan"></span>
-            
-            <span id = "locationLabelClose" on-click="deleteLocation">X</span>
+              <span id = "locationLabelSpan"></span>
+              
+              <span id = "closeLocationImage" on-click="deleteLocation">X</span>
           </div>
-           
-          <canvas id="overlay"  on-click='videoClicked' class = "overlaystyle" >
-                  Your browser does not support the HTML5 canvas location.</canvas>
-          <video id='vid'>
-                     
-                   Your browser does not support the video location.</video>
-        </div>
-    
-    
-      <div id="videoControls">
-        
-          <input id="seekBar" class="seek" type="range" min='0' value="0" step=.01 required />
-
-          <div style="position:relative;display:block;">
-                <span id = "stepbwd" title="prev" class="icon-backward2 taggingControls" on-click='stepbwdclicked'></span>
-                  
-                <span id = "play-pause" title="play/pause" class="icon-play3 taggingControls" on-click='playclicked'></span>
-
-                <span id = "stepfwd" title="next" class="icon-forward3 taggingControls" on-click='stepfwdclicked'></span>
-
-                <span id='frameText' title="frame#"></span>
-
-                <span id="playbackSpan"  class="taggingControls padLeft" on-click="playbackMouseEnter">x 1.0</span>
-                <span id="timeSpan" ></span>
-                
-                <span id = "mute" title="Mute"  class="icon-volume-mute2 taggingControls padLeft" on-click='muteclicked'></span>
-
-                <input id="volumeSlider" class="volume" type="range" min=0 max = 1 value=.5 step= .1 required />
-          </div>
+              <canvas id="overlay"  on-click='videoClicked' class = "overlaystyle" >
+                      Your browser does not support the HTML5 canvas location.
+              </canvas>
+              <video id='vid'>
+                       Your browser does not support the video location.
+              </video>
       </div>
-      
+      <div id="videoControls">
+          <input id="seekBar" class="seek" type="range" min='0' value="0" step="any" required />
+          
+          <table id="videoControlsTable" style="margin-left:2%;margin-right:2%;">
+            <tr>
+              <td style="width:5%">
+                <span id = "stepbwd" title="prev" class="icon-backward2 taggingControls" on-click='stepbwdclicked'></span>
+              </td>
+              <td style="width:5%">
+                <span id = "play-pause" title="play/pause" class="icon-play3 taggingControls" on-click='playclicked'></span>
+              </td>
+              <td style="width:5%">
+                <span id = "stepfwd" title="next" class="icon-forward3 taggingControls" on-click='stepfwdclicked'></span>
+              </td>
+              <td style="width:20%;text-align:center">
+                <span id='frameText' title="frame#"></span>
+              </td>
+              <td style="width:8%" id="playbackCell">
+                <span id="playbackSpan"  class="taggingControls" on-click="playbackMouseEnter">x 1.0</span>
+              </td>
+              <td nowrap="nowrap" style="width:10%">
+                <span id="timeSpan" ></span>
+              </td>
+              <td style="width:5%">
+                <span id = "mute" title="Mute"  class="icon-volume-mute2 taggingControls" on-click='muteclicked'></span>
+              </td>
+              <td style="width:10%">
+                <input id="volumeSlider" class="volume" type="range" min=0 max = 1 value=.5 step= .1 required />
+              </td>
+            </tr>
+          </table>
+      </div>
       <div id="videoTagControls">
-
-        <div class="table">
-          <div class="row">
-            <div class="cell">
-               <div style="position:relative;width:100%;">
+        <table id = "tagsTable">
+          <tr>
+            <td id = "leftCell">
+               <div class = "relativeDiv">
                   <span id = "nextuntagged" title="first untagged frame" class="icon-next2 taggingControls" on-click='nextuntaggedclicked'></span>
               </div>
-            </div>
-            <div class="rowspanned cell">
-              <optional-tags id = "optionalTags" ></optional-tags>
-            </div>
-            <div class="right cell">
-              <div style="position:relative;width:100%;">
+            </td>
+            <td rowspan="2" id="tagsDiv">
+              <div id = "tagsWrapper">
+                  <optional-tags id = "optionalTags" ></optional-tags>
+              </div>
+            </td>
+            <td id = "rightCell">
+              <div class = "relativeDiv">
                 <span id = "movenext" title="next frame"  class="icon-share taggingControls" on-click='saveAndMove'></span>
                 <span id = "lockTag" title="lock tags" class="icon-pushpin taggingControls" style="padding-left:15px" on-click='lockTagsClicked'></span>
-                
               </div>
-            </div>
-        </div>
-        <div class="row">
-          <div class="cell">
-          </div>
-          <div class="empty cell"></div>
-          <div class=" right cell"></div>
-        </div>
-      </div>
+            </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+        </tr>
+      </table>
    </div> 
 </div> 
 </template>
@@ -120,11 +124,10 @@
       this.selectedTags = [];
       this.x1, this.y1, this.x2, this.y2 = 0;//location coordinates
       this.volumeStyle = document.createElement('style');
-      document.body.appendChild(this.volumeStyle);
+      Polymer.dom(this.root).appendChild(this.volumeStyle);
 
       //Divs and spans
       this.controlWrapper= document.getElementById('controlWrapper');
-      this.messageDiv= document.getElementById('messageDiv');
       this.videoWrapper= document.getElementById('videoWrapper');
       this.videoControls = document.getElementById('videoControls');
       this.overlay = document.getElementById('overlay');
@@ -144,7 +147,9 @@
       this.stepfwd = document.getElementById("stepfwd");
       this.stepbwd = document.getElementById("stepbwd");
       this.lockTag = document.getElementById("lockTag");
-      this.playbackControl = document.getElementById("playbackControl");
+      this.playSpeedControl = document.getElementById("playSpeedControl");
+
+      this.playbackCell = document.getElementById("playbackCell");
       this.mute = document.getElementById("mute");
       this.movenext = document.getElementById("movenext");
       this.nextuntagged = document.getElementById("nextuntagged");
@@ -169,39 +174,28 @@
       var self = this;
       this.video.addEventListener( "loadedmetadata", function (e) {
 
-            self.controlWrapper.style.border = "0px";
-            self.messageDiv.innerHTML = "";
+            self.controlWrapper.style.display = "block";
 
-            //Poistion canvas on video
+            //Position canvas on video
             self.overlay.width = $('#vid').width();
             self.overlay.height = $('#vid').height();
-            var offset = $(self).offset();
+            //var offset = $(self).offset();
             self.overlay.style.top = self.video.offsetTop  + "px";
+            self.overlay.style.left = self.video.offsetLeft  + "px";
             
-            //Init
+            //Init variables and controls
             self.frames = self.inputFrames? self.inputFrames:{};
             self.frameTime = 1/self.framerate;
             self.lockTag.className = "icon-pushpin  taggingControls";
             self.enableAreaSelect(self);
             self.optionalTags.createTagControls(self.inputtagsarray);
 
-            //Show controls
-            self.stepbwd.style.display = "inline-block";
-            self.stepfwd.style.display = "inline-block";
-            self.playButton.style.display = "inline-block";
-            self.playbackSpan.style.display = "inline-block";
-            self.mute.style.display = "inline-block";
-            self.nextuntagged.style.display = "inline-block";
-            self.movenext.style.display = "inline-block";
-            self.lockTag.style.display = "inline-block";
-
             //Init sliders
             self.volumeSlider.value = .5;
             self.volumeSlider.style.display = "inline-block";
             self.volumeStyle.textContent =  '.volume::-webkit-slider-runnable-track{background-size:50% 100%}';
             self.seekBar.max = self.video.duration;
-            self.seekBar.style.display = "block";
-            initSliderStyles('.seek');
+            initSliderStyles('.seek', self);
 
             self.playingCallback();
 
@@ -237,7 +231,8 @@
               var arr = [];
               arr.push(e.detail.tagid)
               this.addTagsToLocation(arr);
-              
+              this.sendLocationToHost();//Persist
+
           });
       this.addEventListener("ontagdeleted", function(e) {
             
@@ -255,10 +250,23 @@
           });
       //Adjusts the canvas to the video
       window.onresize = function(event) {
-          var offset = $(self).offset();
+          var topBefore = self.overlay.style.top;
+          var leftBefore = self.overlay.style.left;
           self.overlay.style.top = self.video.offsetTop  + "px";
+          self.overlay.style.left = self.video.offsetLeft  + "px";
+          //How much the canvas moved
+          var diffTop = parseInt(self.overlay.style.top) - parseInt(topBefore);
+          var diffLeft = parseInt(self.overlay.style.left) - parseInt(leftBefore);
+
+          if(self.selectedLocationId > 0 && (diffTop!==0 || diffLeft!== 0))//If there is selection and movement
+          {   
+              //Adjust div top and left according to canvas movement
+              var div = document.getElementById(self.selectedLocationId); 
+              div.style.top = parseInt(div.style.top) + diffTop + "px";
+              div.style.left = parseInt(div.style.left) + diffLeft + "px";
+              self.positionLocationNameLabel(div);
+          }
       };
-      
     },
     
 
@@ -287,7 +295,7 @@
           var areaSelected = false;
           
           $('canvas#overlay').imgAreaSelect({
-                        disable: false, //enable/disable locationging
+                        disable: false, //enable/disable 
                         handles: true, //grab handles when selecting the area
                         aspectRatio: '1:1',
                         maxWidth: self.overlay.offsetWidth, 
@@ -303,21 +311,8 @@
                                 self.y1 = selection.y1;
                                 self.x2 = selection.x2;
                                 self.y2 = selection.y2;
-                              }
-                              else
-                              {
-                                  if(self.areaSelected)
-                                  {
-                                      self.areaSelected = false;
-                                      self.createLocation();
-                                  }
-                                  else
-                                  {
-                                      self.optionalTags.toggleEnableButtons(false);
-                                      self.optionalTags.resetSelected();
-                                      self.locationLabelDiv.style.display = "none";
-                                  }
-                                  self.clearArea(); 
+                                self.createLocation();
+                                self.clearArea(); 
                               }
                          },
                          onSelectStart: function(img, selection){
@@ -339,9 +334,10 @@
        */
     //Locations management
     positionLocationNameLabel: function(div){
+
         this.locationLabelDiv.style.left = (div.offsetLeft + parseFloat(div.style.width, 10) - parseFloat(this.locationLabelDiv.style.width, 10)) + "px";
 
-        this.locationLabelDiv.style.top = (div.offsetTop - parseFloat(this.locationLabelDiv.style.height, 10)) + "px" ;
+        this.locationLabelDiv.style.top = (div.offsetTop - 5 - parseFloat(this.locationLabelDiv.style.height, 10)) + "px" ;
 
         this.locationLabelSpan.innerHTML = div.id;
         this.locationLabelDiv.style.display = "block";
@@ -352,9 +348,8 @@
                       
         this.drawLocation(this.x1, this.y1, this.x2, this.y2, location.name);
 
-        var div = document.getElementById(location.name);
+        var div = document.getElementById(location.name);//Gets the div that was created in draw
         this.positionLocationNameLabel(div);
-
         this.locationSelected(div);//Select new location automatically
 
         if(this.lockTagsEnabled)//
@@ -374,6 +369,7 @@
                   setTimeout(function(){ self.stepfwdclicked(); }, 500);
             }
         }
+        this.sendLocationToHost();//Persist
     },
     addTagsToLocation: function(selectedTagsArray){
           
@@ -383,20 +379,18 @@
                     
                   location.tags.push(selectedTagsArray[i]);
             }
-            this.sendLocationToHost();
+            
               
     },
     locationSelected: function(div) {
-          
+          this.cleanAllLocationBorders();
           if(div.id === this.selectedLocationId)//Unselect
           {
-              this.cleanAllLocationBorders();
               this.optionalTags.toggleEnableButtons(false);
               this.optionalTags.resetSelected();
           }
           else//select
           {
-              this.cleanAllLocationBorders();
               div.style.border = "1px solid red";
               this.selectedLocationId = div.id;
               this.locationLabelDiv.style.display = "block";
@@ -453,21 +447,21 @@
             div.style.zIndex = 100;
             div.style.position = 'absolute';
             div.id = locationId;
-            div.type = "locationCanvas";
+            div.className = "locationCanvas";
 
             if(this.locationtype.toLowerCase() === "point")
             {
-                  div.style.width = this.locationsize  +  "px";
-                  div.style.height = this.locationsize +  "px";
-                  div.style.top = y1 - this.locationsize/2 +  "px";
-                  div.style.left = x1 - this.locationsize/2 +  "px";
+                  div.style.width = this.locationsize - 1 +  "px";//Compensate for 1px border
+                  div.style.height = this.locationsize - 1 +  "px";
+                  div.style.top = y1 - this.locationsize/2  +  "px";
+                  div.style.left = x1 - this.locationsize/2  +  "px";
             }
             if(this.locationtype.toLowerCase() === "area")
             {
                   div.style.width = x2 - x1  +  "px";
-                  div.style.height = y2 - y1 +  "px";
-                  div.style.top = y1 + "px";
-                  div.style.left = x1 + "px";
+                  div.style.height = y2 - y1   +  "px";
+                  div.style.top = y1  + "px";
+                  div.style.left = x1  + "px";
             }
             var self = this;
             $( div )
@@ -487,18 +481,15 @@
                         }
                       });
 
-            document.getElementById('videoWrapper').appendChild(div);
+            Polymer.dom(this.$.videoWrapper).appendChild(div); 
     },
-    
+    /**
+       * @method cleanAllLocationBorders
+       * Removes all borders of locations
+       */
     cleanAllLocationBorders: function()
     {
-          for (i = 0; i < this.videoWrapper.childNodes.length; i++) {
-
-                if(this.videoWrapper.childNodes[i].type == "locationCanvas")
-                {
-                      this.videoWrapper.childNodes[i].style.border = "0px"
-                }
-          }
+          $(this.videoWrapper).children(".locationCanvas").css('border-width', "0");
           this.selectedLocationId = 0;
     },
     showAllLocations: function() {
@@ -510,7 +501,6 @@
             
             if(locations && locations.length > 0)
             {
-              
               //Draw all locations for this frame
               for (i = 0; i < locations.length; i++) {
 
@@ -538,8 +528,6 @@
        */
     addLocation: function(x1, y1, x2, y2) {
             
-            console.log(x1 + "_" + y1 + "_" + x2 + "_" + y2)
-
             var location = {};
             location.x1 = x1;
             location.y1 = y1;
@@ -554,7 +542,7 @@
             var frameIndex = this.getCurrentFrame();      
             var locations = this.frames[frameIndex];
 
-            if(this.multilocations == 1 && locations !== undefined)//The array is populated and can have multiple locations
+            if(this.multilocations == 1 && locations !== undefined)//The array is populated and can contain multiple locations
             {
                 location.name = locations.length + 1;
                 this.frames[frameIndex].push(location);
@@ -570,9 +558,15 @@
             this.sendLocationToHost();
             return location; 
     },
+    /** 
+       * @method drawLocation
+       * Uses HTML5 canvas to draw.
+       * @params {x1, y1, x2, y2} locationname.
+       */
     drawLocation: function(x1, y1, x2, y2, locationname) {
 
-            //this.ctx.strokeStyle = 'rgb(59,56,59)';//Gray
+            this.ctx.strokeStyle = 'rgb(0,0,0)';
+            this.ctx.lineWidth = 1;
             if(this.locationtype.toLowerCase() == "point")
             {
                var centerOffset = this.locationsize/2;
@@ -581,14 +575,14 @@
                 {
                     this.ctx.strokeRect(x1 - centerOffset, y1 - centerOffset, this.locationsize, this.locationsize);
                 }
-                if(this.locationshape.toLowerCase() == "circle")
+                else if(this.locationshape.toLowerCase() == "circle")
                 {
                     this.ctx.beginPath();
                     this.ctx.arc(x1 , y1, this.locationsize, 0, 2*Math.PI, false);
                     this.ctx.stroke();
                     this.ctx.closePath();
                 }
-                if(this.locationshape.toLowerCase() == "x")
+                else if(this.locationshape.toLowerCase() == "x")
                 {
 
                     this.ctx.beginPath();
@@ -600,7 +594,7 @@
                     this.ctx.closePath();
                 }
             }        
-            if(this.locationtype.toLowerCase() == "area")
+            else if(this.locationtype.toLowerCase() == "area")
             {
                 this.ctx.beginPath();
                 this.ctx.moveTo(x1, y1);
@@ -616,16 +610,18 @@
             }
             this.addDivToLocation(x1, y1, x2 , y2, locationname);
     },
+    /** 
+       * @method saveAndMove
+       * Creates an empty location array for the current frame, meaning that the frame is not * tagged, but has been reviewed.
+       */
     saveAndMove: function()
     {
         var frameIndex = this.getCurrentFrame();      
         var locations = this.frames[frameIndex];
         if(locations === undefined || locations.length === 0)
         {
-            var locationArray = [];
-            var location = {};   
-            locationArray.push(location);
-            this.frames[frameIndex] = locationArray;
+            this.frames[frameIndex] = [];
+            this.frames[frameIndex].push({});
             this.stepfwdclicked();
             this.sendLocationToHost();
         }
@@ -642,18 +638,7 @@
       //Clear drawings
       this.ctx.clearRect(0, 0, this.overlay.width, this.overlay.height);
       //Clear divs
-      var locationDivsArray = [];
-      for (i = 0; i < this.videoWrapper.childNodes.length; i++) {
-
-            if(this.videoWrapper.childNodes[i].type == "locationCanvas")
-            {
-                  locationDivsArray.push(this.videoWrapper.childNodes[i])
-            }
-      }
-      for (i = 0; i < locationDivsArray.length; i++) {
-
-          this.videoWrapper.removeChild(locationDivsArray[i]);
-      }
+      $(this.videoWrapper).children(".locationCanvas").remove();
       //reset tag buttons to not selected
       this.optionalTags.resetSelected();
       //hide location number
@@ -663,7 +648,13 @@
       return Math.round(this.video.currentTime * this.framerate);
     },
 
-    //Video management
+
+
+
+    /**
+       * Video management
+       *
+       */
     muteclicked: function()
     {
           if(this.video.muted)
@@ -676,7 +667,6 @@
               this.video.muted = true;
               this.mute.className = "icon-volume-medium taggingControls padLeft";
           }
-          
     },
     playback: function(val, text) {
           if(val !== null)
@@ -684,13 +674,13 @@
               this.video.playbackRate = val;
               this.playbackSpan.innerHTML = text;
           }
-          this.playbackControl.style.display = "none";
+          this.playSpeedControl.style.display = "none";
     },
     playbackMouseEnter: function()
-    {console.log($('#playbackControl').outerHeight())
-          this.playbackControl.style.top = this.videoControls.offsetTop - $('#playbackControl').outerHeight()  + "px";
-          this.playbackControl.style.left = this.videoControls.offsetLeft + this.playbackSpan.offsetLeft  + "px";
-          this.playbackControl.style.display = "block";
+    {
+          this.playSpeedControl.style.top = this.videoControls.offsetTop - $('#playSpeedControl').outerHeight()  + "px";
+          this.playSpeedControl.style.left = this.videoControls.offsetLeft + this.playbackCell.offsetLeft + ($('#playbackCell').outerWidth()/4)  + "px";
+          this.playSpeedControl.style.display = this.playSpeedControl.style.display == "none"? "block":"none";
     },
     playclicked: function() {
           this.video.paused?this.playState():this.pauseState();
@@ -728,17 +718,21 @@
     },
     lockTagsClicked: function() {
 
-          if (this.lockTagsEnabled) {
-            this.lockTagsEnabled = false;
-            this.lockTag.className = "icon-pushpin  taggingControls";
-            this.selectedTags = [];
-            this.optionalTags.resetSelected();
-            
-          } else {
-            this.pauseState();
-            this.lockTagsEnabled = true;
-            this.lockTag.className = "icon-price-tag  taggingControls";
-            this.selectedTags = this.optionalTags.getSelectedTags();
+          var selTags = this.optionalTags.getSelectedTags();
+          if (!this.lockTagsEnabled && selTags.length > 0)
+          {
+              this.pauseState();
+              this.lockTagsEnabled = true;
+              this.lockTag.className = "icon-price-tag  taggingControls";
+              this.selectedTags = selTags;
+              this.stepfwdclicked();
+          }
+          else
+          {
+              this.lockTagsEnabled = false;
+              this.lockTag.className = "icon-pushpin  taggingControls";
+              this.selectedTags = [];
+              this.optionalTags.resetSelected();
           }
     },
     videoSrcChanged: function(newValue, oldValue) { 
@@ -768,9 +762,10 @@
         this.lockTag.className = "icon-pushpin taggingControls";
         this.lockTagsEnabled = false;
         var self = this;
+        
         this.playing = setInterval(function() {
             self.playingCallback();
-        }, 10);
+        }, 1000 / this.framerate);
     },
     pauseState: function() {
             this.video.pause();
@@ -785,16 +780,15 @@
             var remainingtTime = Math.round(this.video.duration - this.video.currentTime);
 
             //Format using moment.js
-            currentTime = moment(currentTime, "seconds").format("HH:mm:ss")
-            remainingtTime = moment(remainingtTime, "seconds").format("HH:mm:ss")
+            currentTime = moment(currentTime, "seconds").format("HH:mm:ss");
+            remainingtTime = moment(remainingtTime, "seconds").format("HH:mm:ss");
             this.timeSpan.innerHTML = currentTime + "  /  " + remainingtTime;
-
             if(!this.seeking)
             {
                 this.seekBar.value = this.video.currentTime;
                 //Fire event to update seek bar track
                 var evt = document.createEvent("Events");
-                evt.initEvent("change", true, false);
+                evt.initEvent("seekbarchange", true, false);
                 this.seekBar.dispatchEvent(evt);
             }
             this.showAllLocations();
@@ -802,8 +796,10 @@
 });
 
 </script>
+<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script> 
 <script src="js/jquery.imgareaselect.js"></script>
-<script src="../bower_components/moment/moment.js"></script>
+<script src="../moment/moment.js"></script>
 <script src="js/sliderstyles.js"></script>
 
 </dom-module>

@@ -11,7 +11,7 @@
         <table class="table table-hover">
             <thead>
                 <tr>
-                    <th>edit</th>
+                    <th>action</th>
                     <th>video id</th>
                     <th>name</th>
                     <th>width</th>
@@ -23,7 +23,10 @@
             <tbody>
 
                 <tr ng-repeat="video in videos">
-                    <td><span ng-click="edit(video.Id)" class="glyphicon glyphicon-edit" /></td>
+                    <td>
+                        <span ng-click="edit(video.Id)" class="glyphicon glyphicon-edit" title="edit video" />
+                        <span ng-click="createJob()" class="glyphicon glyphicon-cog" title="create job for this video" />
+                    </td>
                     <td>{{ video.Id }}</td>
                     <td><a href="{{ video.Url }}" target="_blank">{{ video.Name }}</a></td>
                     <td>{{ video.Width }}</td>

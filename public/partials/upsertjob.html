@@ -1,5 +1,5 @@
 ﻿
-<section class="resultsPage" ng-controller="UpsertJobController">
+<section ng-controller="UpsertJobController">
     <div>
         <h1>{{ description }}</h1>
         <form class="form-horizontal" role="form" ng-submit="submit()">
@@ -12,7 +12,7 @@
             </div>
 
             <div class="form-group">
-                <label class="control-label col-sm-2" for="mySelect">Video</label>
+                <label class="control-label col-sm-2" for="video">Video</label>
                 <div class="col-sm-4">
                     <select class="form-control" name="video" id="video"
                             ng-options="video.Name for video in videos track by video.Id"
@@ -22,7 +22,7 @@
             </div>
 
             <div class="form-group">
-                <label class="control-label col-sm-2" for="mySelect">Assign to</label>
+                <label class="control-label col-sm-2" for="user">Assign to</label>
                 <div class="col-sm-4">
                     <select class="form-control" name="user" id="user"
                             ng-options="user.Name for user in users track by user.Id"
@@ -32,8 +32,9 @@
             </div>
         
             <div class="form-group">
-                <label class="control-label col-sm-2" for="mySelect">Status</label>
+                <label class="control-label col-sm-2" for="status">Status</label>
                 <div class="col-sm-3">
+
                     <select class="form-control" name="status" id="status"
                             ng-options="status.Name for status in jobStatuses track by status.Id"
                             ng-model="selectedStatus"
@@ -57,7 +58,7 @@
                         <label class="control-label col-sm-2" for="locationType">Location Type</label>
                         <div class="col-sm-3">
                             <select class="form-control" name="locationtype" id="locationtype"
-                                    ng-options="opt as opt for opt in jobSetup.locationTypes"
+                                    ng-options="opt as opt for opt in jobSetup.locationTypes.values"
                                     ng-model="locationtype"
                                     ng-selected="opt == locationtype"></select>
                         </div>
@@ -66,7 +67,7 @@
                         <label class="control-label col-sm-2" for="locationshape">Location Shape</label>
                         <div class="col-sm-3">
                             <select class="form-control" name="locationshape" id="locationshape"
-                                    ng-options="opt as opt for opt in jobSetup.locationShapes"
+                                    ng-options="opt as opt for opt in jobSetup.locationShapes.values"
                                     ng-model="locationshape"
                                     ng-selected="opt == locationshape"></select>
                         </div>
@@ -75,7 +76,7 @@
                         <label class="control-label col-sm-2" for="multilocations">Multi Locations</label>
                         <div class="col-sm-3">
                             <select class="form-control" ng-model="multilocations" name="multilocations" id="multilocations">
-                                <option ng-repeat="o in jobSetup.multiLocations" ng-selected="{{o.id==multilocations}}" value="{{o.id}}">
+                                <option ng-repeat="o in jobSetup.multiLocations.values" ng-selected="{{o.id==multilocations}}" value="{{o.id}}">
                                     {{o.name}}
                                 </option>
                             </select>
@@ -85,11 +86,10 @@
                         <label class="control-label col-sm-2" for="locationsize">Location Size</label>
                         <div class="col-sm-3">
                             <select class="form-control" ng-model="locationsize" name="locationsize" id="locationsize">
-                                <option ng-repeat="o in jobSetup.locationSizes" ng-selected="{{o==locationsize}}" value="{{o}}">
+                                <option ng-repeat="o in jobSetup.locationSizes.values" ng-selected="{{o==locationsize}}" value="{{o}}">
                                     {{o}}
                                 </option>
                             </select>
-                           
                         </div>
                     </div>
                     <div class="form-group">

@@ -8,6 +8,7 @@
   "keywords": [
     "web-component",
     "web-components",
+    "momemt",
     "polymer",
     "video",
     "tagging"
@@ -23,6 +24,7 @@
     "/demo/"
   ],
   "dependencies": {
+    "moment": "~2.10.6",
     "polymer": "Polymer/polymer#^1.0.0"
   },
   "devDependencies": {

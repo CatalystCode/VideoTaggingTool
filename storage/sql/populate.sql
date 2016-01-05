@@ -40,8 +40,8 @@ INSERT INTO [dbo].[Users]
            ,[RoleId])
      VALUES
            ('Uzi'
-           ,'uzi@microsoft.com'
-           ,1)
+           ,'last3876@gmail.com'
+           ,2)
 
 
 INSERT INTO [dbo].[Users]
@@ -50,7 +50,17 @@ INSERT INTO [dbo].[Users]
            ,[RoleId])
      VALUES
            ('Limor'
-           ,'limorl@microsoft.com'
+           ,'limorlimon@gmail.com'
+           ,2)
+
+
+INSERT INTO [dbo].[Users]
+           ([Name]
+           ,[Email]
+           ,[RoleId])
+     VALUES
+           ('Nitay'
+           ,'nitaym@gmail.com'
            ,2)
 
 GO
