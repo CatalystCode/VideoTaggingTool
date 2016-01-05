@@ -433,15 +433,15 @@ input[type='range']:focus {
     border-right:1px solid rgb(89,89,89);
 }
 
-#movenext
+#emptyFrame
 {
-    display: none;
+    display:inline-block;
     padding-left: 12%;
 }
 
 #lockTag
 {
-    margin-left: 5%;
+    padding-left: 12%;
     display:inline-block;
 }
 

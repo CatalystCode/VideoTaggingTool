@@ -77,7 +77,7 @@
             </td>
             <td id = "rightCell">
               <div class = "relativeDiv">
-                <span id = "movenext" title="next frame"  class="icon-share taggingControls" on-click='saveAndMove'></span>
+                <span id = "emptyFrame" title="next frame"  class="icon-share taggingControls" on-click='emptyFrameClicked'></span>
                 <span id = "lockTag" title="lock tags" class="icon-pushpin taggingControls" style="padding-left:15px" on-click='lockTagsClicked'></span>
               </div>
             </td>
@@ -151,7 +151,7 @@
 
       this.playbackCell = document.getElementById("playbackCell");
       this.mute = document.getElementById("mute");
-      this.movenext = document.getElementById("movenext");
+      this.emptyFrame = document.getElementById("emptyFrame");
       this.nextuntagged = document.getElementById("nextuntagged");
       
       // Sliders
@@ -196,6 +196,9 @@
             self.volumeStyle.textContent =  '.volume::-webkit-slider-runnable-track{background-size:50% 100%}';
             self.seekBar.max = self.video.duration;
             initSliderStyles('.seek', self);
+
+            //lock tags is shown only in single location mode
+            self.lockTag.style.display = self.multilocations === "0"?"inline-block":"none";
 
             self.playingCallback();
 
@@ -504,7 +507,12 @@
               //Draw all locations for this frame
               for (i = 0; i < locations.length; i++) {
 
-                  var location = locations[i]; 
+                  var location = locations[i];
+                  if(Object.keys(location).length === 0)//Frame was tagged as empty
+                  {
+                      this.indicateEmptyFrame();
+                      continue;
+                  }
                   //Calculate x, y relative to current width and height          
                   var widthRatio =  $('#vid').width() / location.width;
                   var heightRatio =  $('#vid').height() / location.height ;
@@ -611,18 +619,17 @@
             this.addDivToLocation(x1, y1, x2 , y2, locationname);
     },
     /** 
-       * @method saveAndMove
+       * @method emptyFrameClicked
        * Creates an empty location array for the current frame, meaning that the frame is not * tagged, but has been reviewed.
        */
-    saveAndMove: function()
+    emptyFrameClicked: function()
     {
         var frameIndex = this.getCurrentFrame();      
         var locations = this.frames[frameIndex];
         if(locations === undefined || locations.length === 0)
         {
-            this.frames[frameIndex] = [];
-            this.frames[frameIndex].push({});
-            this.stepfwdclicked();
+            this.frames[frameIndex] = [{}];
+            this.indicateEmptyFrame();
             this.sendLocationToHost();
         }
     },
@@ -643,9 +650,15 @@
       this.optionalTags.resetSelected();
       //hide location number
       self.locationLabelDiv.style.display = "none";
+      //Clears the empty frame icon
+      this.emptyFrame.style.color = "rgb(255,255,255)";
     },
     getCurrentFrame: function() {
       return Math.round(this.video.currentTime * this.framerate);
+    },
+    indicateEmptyFrame : function()
+    {
+            this.emptyFrame.style.color = "rgb(0,255,0)";
     },
 
 
@@ -723,14 +736,14 @@
           {
               this.pauseState();
               this.lockTagsEnabled = true;
-              this.lockTag.className = "icon-price-tag  taggingControls";
+              this.lockTag.style.color = "rgb(0,255,0)";
               this.selectedTags = selTags;
               this.stepfwdclicked();
           }
           else
           {
               this.lockTagsEnabled = false;
-              this.lockTag.className = "icon-pushpin  taggingControls";
+              this.lockTag.style.color = "rgb(255,255,255)";
               this.selectedTags = [];
               this.optionalTags.resetSelected();
           }
@@ -768,6 +781,7 @@
         }, 1000 / this.framerate);
     },
     pauseState: function() {
+
             this.video.pause();
             this.playButton.className  = "icon-play3 taggingControls";    
             clearInterval(this.playing);
