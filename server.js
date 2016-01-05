@@ -1,4 +1,17 @@
-﻿var express = require('express');
+﻿
+
+
+
+return require('http').createServer(function(req, res) {
+    return res.end('hi!!');
+}).listen(process.env.PORT || 3000, function(err) {
+        if (err) return console.error(err);
+        console.log('listening...');
+    });
+
+
+
+var express = require('express');
 var path = require('path');
 var bodyParser = require('body-parser');
 var api = require('./routes/api');
