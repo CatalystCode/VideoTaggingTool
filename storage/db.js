@@ -579,6 +579,87 @@ function getAllLabels(cb) {
     });
 }
 
+function createMultipleLabels(req, cb) {
+    connect(function(err, connection){
+        if (err) return cb(err);
+
+        try
+        {
+            // Create the request              
+            var request = new tedious.Request('InsertMultipleLabels', function (err) {
+                if (err) {
+                    console.error('error calling InsertMutlipleLabels stored procedure', err);
+                    return cb(err);
+                }
+
+                return cb(null);
+            });
+
+            var table = {
+                columns: [
+                  {name: 'Name', type: TYPES.VarChar, length: 50}
+                ],
+                rows: []};
+
+            for (var i=0; i < req.labels.length; i++)
+            {
+                table.rows.push([req.labels[i].value]);
+            }
+
+
+            request.addParameter('udtLabels', TYPES.TVP, table);
+
+            console.log('InsertMutlipleLabels After add parameter');
+
+            // Execute
+            connection.callProcedure(request);
+            console.log('InsertMutlipleLabels sent');
+        }
+        catch(err) {
+            return cb(err);
+        }
+    });
+}
+
+function createMultipleVideoLabels(req, cb) {
+    connect(function(err, connection){
+        if (err) return cb(err);
+
+        try
+        {
+            // Create the request              
+            var request = new tedious.Request('InsertMultipleVideoLabels', function (err) {
+                if (err) {
+                    console.error('error calling InsertMultipleVideoLabels stored procedure', err);
+                    return cb(err);
+                }
+
+                return cb(null);
+            });
+
+            var table = {
+                columns: [
+                  {name: 'LabelId', type: TYPES.Int}
+                ],
+                rows: []};
+
+            for (var i=0; i < req.labelIds.length; i++)
+            {
+                table.rows.push([req.labelIds[i]]);
+            }
+
+            request.addParameter('udtVideoLabels', TYPES.TVP, table);
+            request.addParameter('VideoId', TYPES.Int, req.videoId);
+
+            // Execute
+            connection.callProcedure(request);
+        }
+        catch(err) {
+            return cb(err);
+        }
+    });
+}
+
 function getVideosByLabels(filterLabelId, cb) {
     return getDataSets({
         sproc: 'GetVideosByLabels',
@@ -626,5 +707,7 @@ module.exports = {
     createOrModifyUser: createOrModifyUser,
     updateJobStatus: updateJobStatus,
     getAllLabels : getAllLabels,
-    getVideosByLabels : getVideosByLabels
+    getVideosByLabels : getVideosByLabels,
+    createMultipleLabels : createMultipleLabels,
+    createMultipleVideoLabels : createMultipleVideoLabels
 }

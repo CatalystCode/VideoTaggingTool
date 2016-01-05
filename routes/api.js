@@ -304,6 +304,27 @@ module.exports = function (passport) {
             res.json(resp);
         });
     });
+    router.post('/labels', AdminLoggedIn, function (req, res) {
+        console.log('labels post');
+        db.createMultipleLabels(req.body, function (err, result) {
+            if (err) {
+                console.error(err);
+                return res.status(500).json({ error: err.message });
+            }
+            res.json(result);
+        });
+    });
+
+    router.post('/videoLabels', AdminLoggedIn, function (req, res) {
+        console.log('video labels post');
+        db.createMultipleVideoLabels(req.body, function (err, result) {
+            if (err) {
+                console.error(err);
+                return res.status(500).json({ error: err.message });
+            }
+            res.json(result);
+        });
+    });
 
     return router;
 }

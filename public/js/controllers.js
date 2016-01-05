@@ -438,6 +438,8 @@ videoTaggingAppControllers
 
 .controller('UpsertVideoController', ['$scope', '$http', '$location', '$routeParams', function ($scope, $http, $location, $routeParams) {
         
+        var labels = [];
+
         var defaultId = '[new]';
         $scope.videoId = defaultId;
         $scope.config = '{}';
@@ -458,10 +460,32 @@ videoTaggingAppControllers
             });
         }
 
+
+        $http({ method: 'GET', url: '/api/labels' })
+            .success(function (result) {
+
+            angular.forEach(
+                result.labels,
+                function(label) {
+                    label.value = label.Name;
+                    labels.push(label);
+                });
+
+            $('#tokenfield').tokenfield({
+              autocomplete: {
+                //source: ['red','blue','green','yellow','violet','brown','purple','black','white'],
+                source: labels,
+                delay: 100
+              },
+              showAutocompleteOnFocus: true,
+            });
+        });
+
         $scope.submit = function () {
             
             clearMessages();
-            
+
+            // First add the video to the database            
             var data = {
                 name: $scope.name,
                 height: $scope.height,
@@ -481,6 +505,47 @@ videoTaggingAppControllers
                 console.log('result', result);
                 info('video ' + result.videoId + ($scope.videoId == defaultId ? ' created' : ' modified') + ' successfully');
                 $scope.videoId = result.videoId;
+
+
+                // Now add all the new labels
+                var videoLabels = $('#tokenfield').tokenfield('getTokens');
+                var missingLabels = [];
+                angular.forEach(
+                    videoLabels,
+                    function(videoLabel) {
+                        var found = false;
+
+                        // Do we know this label?
+                        for (i = 0; i < labels.length; i++) {
+                            if (labels[i].Name === videoLabel.Name) {
+                                found = true;
+                                break;
+                            }
+                        }
+
+                        if (!found)
+                            missingLabels.push(videoLabel);
+                    });
+
+                // Any missing labels?
+                if (missingLabels.length > 0)
+                {
+                    // Add all the labels that are missing
+                    var labelData = {
+                        labels: missingLabels
+                    };  
+                    $http({ method: 'POST', url: '/api/labels', data: labelData }).success(
+                        function (result) { 
+                            console.log('Label add result', result);
+
+                            // Labels added. Now add all labels to the video
+                            attachVideoLabels($scope.videoId, videoLabels);
+                        });                    
+                }
+
+                // No missing labels. Attached the labels to the video
+                attachVideoLabels($scope.videoId, videoLabels);
+
             })
             .error(function (err) {
                 console.error(err);
@@ -488,6 +553,25 @@ videoTaggingAppControllers
             });
         }
         
+        function attachVideoLabels(videoId, labels)
+        {
+            var Ids = [];
+            angular.forEach(
+                labels,
+                function (label) {
+                    Ids.push(label.Id);
+                });
+
+            var labelData = {
+                labelIds : Ids,
+                videoId : videoId
+            };
+
+            $http({ method: 'POST', url: '/api/videoLabels', data: labelData }).success(
+                function (result) { 
+                    console.log('Video label added', result);
+                });                    
+        }
         
         $scope.submitVideo = function() {
             clearMessages();
@@ -526,7 +610,7 @@ videoTaggingAppControllers
             });
 
         }
-        
+
         function updateProgress(e) {
             $scope.$apply(function () {
                 console.log('got progress', e);
@@ -559,9 +643,8 @@ videoTaggingAppControllers
             $scope.error = '';
             $scope.info = '';
         }
-       
     }])
-
+    
     .controller('UsersController', ['$scope', '$route', '$http', '$location', '$routeParams', function ($scope, $route, $http, $location, $routeParams) {
     var users = [];
 
