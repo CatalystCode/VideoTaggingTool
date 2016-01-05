@@ -13,7 +13,6 @@
   "dependencies": {
     "azure-storage": "^0.7.0",
     "body-parser": "~1.8.1",
-    "bower": "^1.7.2",
     "connect-flash": "^0.1.1",
     "cookie-parser": "^1.4.0",
     "debug": "~2.0.0",
