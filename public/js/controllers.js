@@ -376,7 +376,7 @@ videoTaggingAppControllers
     }])
 
     
-.controller('TagJobController', ['$scope', '$route', '$http', '$location', '$routeParams', 'state', function ($scope, $route, $http, $location, $routeParams, state) {
+.controller('TagJobController', ['$scope', '$route', '$http', '$location', '$routeParams', '$timeout', 'state', function ($scope, $route, $http, $location, $routeParams, $timeout, state) {
 
         $scope.clearMessages();
         var videoCtrl = document.getElementById('video-tagging');
@@ -437,12 +437,17 @@ videoTaggingAppControllers
             
             $http({ method: 'POST', url: '/api/jobs/' + jobId + '/frames/' + inputObject.frameIndex, data: msg })
             .success(function (result) {
-                console.log('success');
-                $scope.showInfo('frame saved successfully');
+                    console.log('frame saved successfully');
+                    /*
+                    $scope.showInfo('frame saved successfully');
+                    $timeout(function() {
+                        $scope.clearMessages();
+                    }, 400);
+                    */
             })
             .error(function (err) {
                 console.error('error', err);
-                $scope.showError('error saving frame: ' + error.message || '');
+                $scope.showError('error saving frame: ' + err.message || '');
             });
         }
 

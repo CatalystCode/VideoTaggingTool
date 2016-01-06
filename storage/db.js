@@ -20,7 +20,6 @@ var configSql = {
         "encrypt": true
     }
 };
-console.log('config', configSql);
 
 if (!configSql.server) return console.error('Sql server was not provided, please add DB_SERVER to environment variables');
 if (!configSql.userName) return console.error('Sql user was not provided, please add DB_USER to environment variables');

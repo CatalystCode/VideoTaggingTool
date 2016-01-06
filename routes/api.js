@@ -13,7 +13,7 @@ module.exports = function (passport) {
         db.createOrModifyJob(req.body, function (err, result) {
             if (err) {
                 console.error(err);
-                return res.status(500).json({ error: err.message });
+                return res.status(500).json({ message: err.message });
             }
             res.json(result);
         });
@@ -23,7 +23,7 @@ module.exports = function (passport) {
         db.createOrModifyUser(req.body, function (err, result) {
             if (err) {
                 console.error(err);
-                return res.status(500).json({ error: err.message });
+                return res.status(500).json({ message: err.message });
             }
             res.json(result);
         });
@@ -33,7 +33,7 @@ module.exports = function (passport) {
         db.createOrModifyVideo(req.body, function (err, result) {
             if (err) {
                 console.error(err);
-                return res.status(500).json({ error: err.message });
+                return res.status(500).json({ message: err.message });
             }
             res.json(result);
         });
@@ -43,7 +43,7 @@ module.exports = function (passport) {
         db.createOrModifyUser(req.body, function (err, result) {
             if (err) {
                 console.error(err);
-                return res.status(500).json({ error: err.message });
+                return res.status(500).json({ message: err.message });
             }
             res.json(result);
         });
@@ -104,7 +104,7 @@ module.exports = function (passport) {
         
         console.log('updating status for job', id);
         db.updateJobStatus(req.body, function (err, resp) {
-            if (err) return res.status(500).json({ error: err.message });
+            if (err) return res.status(500).json({ message: err.message });
             console.log('resp:', resp);
             res.json(resp);
         });
@@ -148,7 +148,7 @@ module.exports = function (passport) {
         db.getJobDetails(id, function (err, resp) {
             if (err) {
                 console.error(err);
-                return res.status(500).json({ error: err.message });
+                return res.status(500).json({ message: err.message });
             }
             
             res.json(resp);
@@ -160,7 +160,7 @@ module.exports = function (passport) {
         db.getAllJobs(function (err, resp) {
             if (err) {
                 console.error(err);
-                return res.status(500).json({ error: err.message });
+                return res.status(500).json({ message: err.message });
             }
             console.log('resp:', resp);
             res.json(resp);
@@ -179,7 +179,7 @@ module.exports = function (passport) {
         db.createOrModifyFrame(options, function (err) {
             if (err) {
                 console.error(err);
-                return res.status(500).json({ error: err.message });
+                return res.status(500).json({ message: err.message });
             }
             res.json({});
         });
@@ -210,7 +210,7 @@ module.exports = function (passport) {
         db.getVideo(id, function (err, resp) {
             if (err) {
                 console.error(err);
-                return res.status(500).json({ error: err.message });
+                return res.status(500).json({ message: err.message });
             }
             console.log('resp:', resp);
             res.json(resp);
@@ -224,7 +224,7 @@ module.exports = function (passport) {
         return blob.getVideoStream({ name: id }, function (err, result) {
             if (err) {
                 console.error(err);
-                return res.status(500).json({ error: err.message });
+                return res.status(500).json({ message: err.message });
             }
             
             console.log('stream', result);
@@ -235,7 +235,7 @@ module.exports = function (passport) {
             
             result.stream.on('error', function (err) {
                 console.error(err);
-                return res.status(500).json({ error: err.message });
+                return res.status(500).json({ message: err.message });
             });
             
             result.stream.pipe(res);
@@ -248,7 +248,7 @@ module.exports = function (passport) {
         db.getUserById(id, function (err, resp) {
             if (err) {
                 console.error(err);
-                return res.status(500).json({ error: err.message });
+                return res.status(500).json({ message: err.message });
             }
             console.log('resp:', resp);
             res.json(resp);
@@ -260,7 +260,7 @@ module.exports = function (passport) {
         db.getUsers(function (err, resp) {
             if (err) {
                 console.error(err);
-                return res.status(500).json({ error: err.message });
+                return res.status(500).json({ message: err.message });
             }
             console.log('resp:', resp);
             res.json(resp);
@@ -273,7 +273,7 @@ module.exports = function (passport) {
         db.getVideoFrames(id, function (err, resp) {
             if (err) {
                 console.error(err);
-                return res.status(500).json({ error: err.message });
+                return res.status(500).json({ message: err.message });
             }
             console.log('resp:', resp);
             res.json(resp);
