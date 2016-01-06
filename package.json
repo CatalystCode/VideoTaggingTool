@@ -10,6 +10,9 @@
     "name": "Ami Turgman",
     "email": "ami.turgman@microsoft.com"
   },
+  "engines":{
+      "node": "0.10.32"
+  },
   "dependencies": {
     "azure-storage": "^0.7.0",
     "body-parser": "~1.8.1",
