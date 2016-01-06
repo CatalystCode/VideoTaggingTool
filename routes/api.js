@@ -300,7 +300,7 @@ module.exports = function (passport) {
         console.log('getting all labels');
         db.getAllLabels(function (err, resp) {
             if (err) return res.status(500).json({ error: err });
-            console.log('resp:', resp);
+            //console.log('resp:', resp);
             res.json(resp);
         });
     });
@@ -315,9 +315,11 @@ module.exports = function (passport) {
         });
     });
 
-    router.post('/videoLabels', AdminLoggedIn, function (req, res) {
-        console.log('video labels post');
-        db.createMultipleVideoLabels(req.body, function (err, result) {
+    router.get('/videoLabels/:id', EditorLoggedIn, function (req, res) {
+        var id = req.params.id;
+        console.log('getting video labels for video', id);
+
+        db.getLabelsOfVideo(id, function (err, result) {
             if (err) {
                 console.error(err);
                 return res.status(500).json({ error: err.message });

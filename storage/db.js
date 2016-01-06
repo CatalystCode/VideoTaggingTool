@@ -300,6 +300,19 @@ function createOrModifyVideo(req, cb) {
             request.addParameter('Height', TYPES.Int, req.height);
             request.addParameter('DurationSeconds', TYPES.Real, req.durationSeconds);
             request.addParameter('FramesPerSecond', TYPES.Real, req.framesPerSecond);
+
+            var table = {
+                columns: [
+                  { name: '[LabelId]', type: TYPES.Int }
+                ],
+                rows: []};
+
+            for (var i=0; i < req.labels.length; i++)
+            {
+                table.rows.push([req.labels[i].Id]);
+            }
+            request.addParameter('udtVideoLabels', TYPES.TVP, table);
+
             
             if (req.videoJson)
                 request.addParameter('VideoJson', TYPES.NVarChar, JSON.stringify(req.videoJson));
@@ -406,7 +419,7 @@ function getDataSets(opts, cb) {
         });
 
         request.on('doneProc', function (rowCount, more, returnStatus, rows) {
-            console.log('doneProc', rowCount, more, returnStatus, rows);
+            //console.log('doneProc', rowCount, more, returnStatus, rows);
 
             cb(null, result);
         });
@@ -580,44 +593,38 @@ function getAllLabels(cb) {
 }
 
 function createMultipleLabels(req, cb) {
-    connect(function(err, connection){
-        if (err) return cb(err);
+    // Prepeare the input table
+    var table = 
+        {columns: [{name: 'Name', type: TYPES.VarChar, length: 50}],
+         rows: []};
 
-        try
-        {
-            // Create the request              
-            var request = new tedious.Request('InsertMultipleLabels', function (err) {
-                if (err) {
-                    console.error('error calling InsertMutlipleLabels stored procedure', err);
-                    return cb(err);
-                }
+    for (var i=0; i < req.labels.length; i++)
+    {
+        table.rows.push([req.labels[i].value]);
+    }
 
-                return cb(null);
-            });
+    return getDataSets({
+        sproc: 'InsertMultipleLabels',
+        sets: ['labels'],
+        params: [{name: 'udtLabels', type: TYPES.TVP, value: table }]
+    }, function(err, result){
 
-            var table = {
-                columns: [
-                  {name: 'Name', type: TYPES.VarChar, length: 50}
-                ],
-                rows: []};
+        var newResult = {
+            labels: []
+        };
 
-            for (var i=0; i < req.labels.length; i++)
-            {
-                table.rows.push([req.labels[i].value]);
+        try {
+            for (var i=0; i<result.labels.length; i++) {
+                newResult.labels.push(result.labels[i]);
             }
-
-
-            request.addParameter('udtLabels', TYPES.TVP, table);
-
-            console.log('InsertMutlipleLabels After add parameter');
-
-            // Execute
-            connection.callProcedure(request);
-            console.log('InsertMutlipleLabels sent');
         }
-        catch(err) {
+        catch (err) {
+            console.error('error:', err);
             return cb(err);
         }
+
+        return cb(null, newResult);
+
     });
 }
 
@@ -686,6 +693,32 @@ function getVideosByLabels(filterLabelId, cb) {
     });
 }
 
+function getLabelsOfVideo(videoId, cb) {
+    return getDataSets({
+        sproc: 'GetLabelsOfVideo',
+        sets: ['labels'],
+        params: [{name: 'videoId', type: TYPES.Int, value: videoId}]
+    }, function(err, result){
+        if (err) return cb(err);
+
+        var newResult = {
+            labels: []
+        };
+
+        try {
+            for (var i=0; i<result.labels.length; i++) {
+                newResult.labels.push(result.labels[i]);
+            }
+        }
+        catch (err) {
+            console.error('error:', err);
+            return cb(err);
+        }
+
+        return cb(null, newResult);
+    });
+}
+
 
 module.exports = {
     connect: connect,
@@ -709,5 +742,6 @@ module.exports = {
     getAllLabels : getAllLabels,
     getVideosByLabels : getVideosByLabels,
     createMultipleLabels : createMultipleLabels,
-    createMultipleVideoLabels : createMultipleVideoLabels
+    createMultipleVideoLabels : createMultipleVideoLabels,
+    getLabelsOfVideo : getLabelsOfVideo
 }

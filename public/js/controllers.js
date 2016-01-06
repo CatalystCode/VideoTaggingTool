@@ -458,6 +458,21 @@ videoTaggingAppControllers
                 $scope.duration = video.DurationSeconds.toFixed(2);
                 $scope.framesPerSecond = video.FramesPerSecond.toFixed(2);
             });
+
+
+            console.log('getting video labels');
+            $http({ method: 'GET', url: '/api/videoLabels/' + $routeParams.id })
+            .success(function (result) {
+                var labelsString = '';
+                console.log('video labels', result.labels);
+
+                angular.forEach(result.labels,
+                    function (label){
+                        labelsString += label.Name + ',';
+                    });
+                labelsString = labelsString.substring(0, labelsString.length - 1);
+                $scope.videoLabels = labelsString;
+            });
         }
 
 
@@ -485,13 +500,70 @@ videoTaggingAppControllers
             
             clearMessages();
 
+            // First add all the labels to the database (in case there are new labels)
+            var videoLabels = $('#tokenfield').tokenfield('getTokens');
+            var missingLabels = [];
+            angular.forEach(
+                videoLabels,
+                function(videoLabel) {
+                    var found = false;
+
+                    // Do we know this label?
+                    for (i = 0; i < labels.length; i++) {
+                        if (labels[i].Name === videoLabel.Name) {
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (!found)
+                        missingLabels.push(videoLabel);
+                });
+
+            // Any missing labels?
+            if (missingLabels.length > 0)
+            {
+                // Add all the labels that are missing
+                var labelData = {
+                    labels: missingLabels
+                };  
+                $http({ method: 'POST', url: '/api/labels', data: labelData }).success(
+                    function (result) { 
+                        console.log('Label add result', result);
+
+                        // Merge the returned set with the missing video labels
+                        angular.forEach(
+                            videoLabels,
+                            function(videoLabel) {
+                                if (!videoLabel.Id)
+                                {
+                                    for (var j=0; j < result.labels.length; j++)
+                                    {
+                                        if (videoLabel.value == result.labels[j].Name)
+                                            videoLabel.Id = result.labels[j].Id;
+                                    }
+                                }
+                            });
+
+                        // Labels added. Now add all labels to the video
+                        submitVideoInfo(videoLabels);
+                    });                    
+            }
+
+            // No missing labels. Attached the labels to the video
+            submitVideoInfo(videoLabels);
+        }
+
+        function submitVideoInfo(videoLabels)
+        {           
             // First add the video to the database            
             var data = {
                 name: $scope.name,
                 height: $scope.height,
                 width: $scope.width,
                 durationSeconds: $scope.duration,
-                framesPerSecond: $scope.framesPerSecond
+                framesPerSecond: $scope.framesPerSecond,
+                labels: videoLabels
             };
             
             if ($scope.videoId != defaultId) {
@@ -505,74 +577,13 @@ videoTaggingAppControllers
                 console.log('result', result);
                 info('video ' + result.videoId + ($scope.videoId == defaultId ? ' created' : ' modified') + ' successfully');
                 $scope.videoId = result.videoId;
-
-
-                // Now add all the new labels
-                var videoLabels = $('#tokenfield').tokenfield('getTokens');
-                var missingLabels = [];
-                angular.forEach(
-                    videoLabels,
-                    function(videoLabel) {
-                        var found = false;
-
-                        // Do we know this label?
-                        for (i = 0; i < labels.length; i++) {
-                            if (labels[i].Name === videoLabel.Name) {
-                                found = true;
-                                break;
-                            }
-                        }
-
-                        if (!found)
-                            missingLabels.push(videoLabel);
-                    });
-
-                // Any missing labels?
-                if (missingLabels.length > 0)
-                {
-                    // Add all the labels that are missing
-                    var labelData = {
-                        labels: missingLabels
-                    };  
-                    $http({ method: 'POST', url: '/api/labels', data: labelData }).success(
-                        function (result) { 
-                            console.log('Label add result', result);
-
-                            // Labels added. Now add all labels to the video
-                            attachVideoLabels($scope.videoId, videoLabels);
-                        });                    
-                }
-
-                // No missing labels. Attached the labels to the video
-                attachVideoLabels($scope.videoId, videoLabels);
-
             })
             .error(function (err) {
                 console.error(err);
                 error(err.error.message);
             });
         }
-        
-        function attachVideoLabels(videoId, labels)
-        {
-            var Ids = [];
-            angular.forEach(
-                labels,
-                function (label) {
-                    Ids.push(label.Id);
-                });
-
-            var labelData = {
-                labelIds : Ids,
-                videoId : videoId
-            };
-
-            $http({ method: 'POST', url: '/api/videoLabels', data: labelData }).success(
-                function (result) { 
-                    console.log('Video label added', result);
-                });                    
-        }
-        
+               
         $scope.submitVideo = function() {
             clearMessages();
             
