@@ -1,5 +1,5 @@
 {
   "clientID": "737402352022-f6ejv4o15mir8ibl1322o811dpqgs1k4.apps.googleusercontent.com",
   "clientSecret": "AFP0KpHBj9vVy9l8lGwhf8-Y",
-  "callbackURL": "http://localhost:3000/.auth/login/google/callback"
+  "callbackURL": "https://video-tagging.azurewebsites.net/.auth/login/google/callback"
 }
