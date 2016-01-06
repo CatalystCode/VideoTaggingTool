@@ -11,40 +11,28 @@ module.exports = function (passport) {
     router.post('/jobs', AdminLoggedIn, function (req, res) {
         req.body.createdById = req.user.Id;
         db.createOrModifyJob(req.body, function (err, result) {
-            if (err) {
-                console.error(err);
-                return res.status(500).json({ message: err.message });
-            }
+            if (err) return logError(err, res);
             res.json(result);
         });
     });
     
     router.post('/users', AdminLoggedIn, function (req, res) {
         db.createOrModifyUser(req.body, function (err, result) {
-            if (err) {
-                console.error(err);
-                return res.status(500).json({ message: err.message });
-            }
+            if (err) return logError(err, res);
             res.json(result);
         });
     });
     
     router.post('/videos', AdminLoggedIn, function (req, res) {
         db.createOrModifyVideo(req.body, function (err, result) {
-            if (err) {
-                console.error(err);
-                return res.status(500).json({ message: err.message });
-            }
+            if (err) return logError(err, res);
             res.json(result);
         });
     });
     
     router.post('/users', AdminLoggedIn, function (req, res) {
         db.createOrModifyUser(req.body, function (err, result) {
-            if (err) {
-                console.error(err);
-                return res.status(500).json({ message: err.message });
-            }
+            if (err) return logError(err, res);
             res.json(result);
         });
     });
@@ -78,19 +66,13 @@ module.exports = function (passport) {
                 size: part.byteCount,
                 contentType: contentType
             }, function (err, result) {
-                if (err) {
-                    console.error('Error parsing form: ' + err.stack);
-                    res.writeHead(500);
-                    return res.end(err.message);
-                }
+                if (err) return logError(err, res);
                 return res.json(result);
             });
         });
         
         form.on('error', function (err) {
-            console.error('Error parsing form: ' + err.stack);
-            res.writeHead(500);
-            return res.end();
+            return logError(err, res);
         });
         
         form.parse(req);
@@ -101,11 +83,9 @@ module.exports = function (passport) {
     router.post('/jobs/:id/status', EditorLoggedIn, function (req, res) {
         var id = req.body.id = req.params.id;
         req.body.userId = req.user.Id;
-        
         console.log('updating status for job', id);
         db.updateJobStatus(req.body, function (err, resp) {
-            if (err) return res.status(500).json({ message: err.message });
-            console.log('resp:', resp);
+            if (err) return logError(err, res);
             res.json(resp);
         });
     });
@@ -114,8 +94,7 @@ module.exports = function (passport) {
     router.get('/jobs/statuses', function (req, res) {
         console.log('getting jobs statuses');
         db.getJobstatuses(function (err, resp) {
-            if (err) return res.status(500).json({ error: err });
-            console.log('resp:', resp);
+            if (err) return logError(err, res);
             res.json(resp);
         });
     });
@@ -124,7 +103,6 @@ module.exports = function (passport) {
         console.log('getting roles');
         db.getRoles(function (err, resp) {
             if (err) return res.status(500).json({ error: err });
-            console.log('resp:', resp);
             res.json(resp);
         });
     });
@@ -134,8 +112,7 @@ module.exports = function (passport) {
         var id = req.params.id;
         console.log('getting frames for job', id);
         db.getVideoFramesByJob(id, function (err, resp) {
-            if (err) return res.status(500).json({ error: err });
-            console.log('resp:', resp);
+            if (err) return logError(err, res);
             res.json(resp);
         });
     });
@@ -146,11 +123,7 @@ module.exports = function (passport) {
         var id = req.params.id;
         console.log('getting job id', id);
         db.getJobDetails(id, function (err, resp) {
-            if (err) {
-                console.error(err);
-                return res.status(500).json({ message: err.message });
-            }
-            
+            if (err) return logError(err, res);
             res.json(resp);
         });
     });
@@ -158,11 +131,7 @@ module.exports = function (passport) {
     router.get('/jobs', AdminLoggedIn, function (req, res) {
         console.log('getting all jobs');
         db.getAllJobs(function (err, resp) {
-            if (err) {
-                console.error(err);
-                return res.status(500).json({ message: err.message });
-            }
-            console.log('resp:', resp);
+            if (err) return logError(err, res);
             res.json(resp);
         });
     });
@@ -177,10 +146,7 @@ module.exports = function (passport) {
         
         console.log('posing frame index', options.frameIndex, 'for job', options.jobId);
         db.createOrModifyFrame(options, function (err) {
-            if (err) {
-                console.error(err);
-                return res.status(500).json({ message: err.message });
-            }
+            if (err) return logError(err, res);
             res.json({});
         });
     });
@@ -189,8 +155,7 @@ module.exports = function (passport) {
         var userId = req.user.Id;
         console.log('getting jobs for user id', userId);
         db.getUserJobs(userId, function (err, resp) {
-            if (err) return res.status(500).json({ error: err });
-            console.log('resp:', resp);
+            if (err) return logError(err, res);
             res.json(resp);
         });
     });
@@ -198,8 +163,7 @@ module.exports = function (passport) {
     router.get('/videos', AdminLoggedIn, function (req, res) {
         console.log('getting videos');
         db.getVideos(function (err, resp) {
-            if (err) return res.status(500).json({ error: err });
-            console.log('resp:', resp);
+            if (err) return logError(err, res);
             res.json(resp);
         });
     });
@@ -208,11 +172,7 @@ module.exports = function (passport) {
         var id = req.params.id;
         console.log('getting video', id);
         db.getVideo(id, function (err, resp) {
-            if (err) {
-                console.error(err);
-                return res.status(500).json({ message: err.message });
-            }
-            console.log('resp:', resp);
+            if (err) return logError(err, res);
             res.json(resp);
         });
     });
@@ -222,10 +182,7 @@ module.exports = function (passport) {
         console.log('getting video file', id);
         
         return blob.getVideoStream({ name: id }, function (err, result) {
-            if (err) {
-                console.error(err);
-                return res.status(500).json({ message: err.message });
-            }
+            if (err) return logError(err, res);
             
             console.log('stream', result);
             
@@ -246,11 +203,7 @@ module.exports = function (passport) {
         var id = req.params.id;
         console.log('getting user', id);
         db.getUserById(id, function (err, resp) {
-            if (err) {
-                console.error(err);
-                return res.status(500).json({ message: err.message });
-            }
-            console.log('resp:', resp);
+            if (err) return logError(err, res);
             res.json(resp);
         });
     });
@@ -258,11 +211,7 @@ module.exports = function (passport) {
     router.get('/users', AdminLoggedIn, function (req, res) {
         console.log('getting users');
         db.getUsers(function (err, resp) {
-            if (err) {
-                console.error(err);
-                return res.status(500).json({ message: err.message });
-            }
-            console.log('resp:', resp);
+            if (err) return logError(err, res);
             res.json(resp);
         });
     });
@@ -271,11 +220,7 @@ module.exports = function (passport) {
         var id = req.params.id;
         console.log('getting frames for video', id);
         db.getVideoFrames(id, function (err, resp) {
-            if (err) {
-                console.error(err);
-                return res.status(500).json({ message: err.message });
-            }
-            console.log('resp:', resp);
+            if (err) return logError(err, res);
             res.json(resp);
         });
     });
@@ -283,6 +228,10 @@ module.exports = function (passport) {
     return router;
 }
 
+function logError(err, res) {
+    console.error('error:', err);
+    return res.status(500).json({ message: err.message });
+}
 
 var AdminLoggedIn = getLoggedInForRole(['Admin']);
 var EditorLoggedIn = getLoggedInForRole(['Admin', 'Editor']);

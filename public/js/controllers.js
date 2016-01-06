@@ -277,7 +277,7 @@ videoTaggingAppControllers
             })
             .error(function (err) {
                     console.error(err);
-                    $scope.showError(err.error);
+                    $scope.showError(err.message);
                     $scope.ajaxCompleted();
             });
         }
@@ -342,7 +342,7 @@ videoTaggingAppControllers
             })
             .error(function (err) {
                 console.error(err);
-                $scope.showError(err.error);
+                $scope.showError(err.message);
                 $scope.ajaxCompleted();
             });
         }
@@ -430,6 +430,7 @@ videoTaggingAppControllers
         }
 
         function tagHandler(e) {
+            console.log('handler called');
             var inputObject = e.detail.location;
 
             var msg = {};
@@ -517,7 +518,7 @@ videoTaggingAppControllers
             })
             .error(function (err) {
                     console.error(err);
-                    $scope.showError(err.error);
+                    $scope.showError(err.message);
                     $scope.ajaxCompleted();
             });
         }

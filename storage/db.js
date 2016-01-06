@@ -69,7 +69,7 @@ function getJobDetails(id, cb) {
         sets: ['job', 'video', 'user', 'frames'],
         params: [{name: 'Id', type: TYPES.Int, value: id}]
     }, function(err, result){
-        if (err) return cb(err);
+        if (err) return logError(err, cb);
 
         var newResult = {
             job: result.job[0],
@@ -82,8 +82,7 @@ function getJobDetails(id, cb) {
             normalizeVideoRow(newResult.video);
         }
         catch (err) {
-            console.error('error:', err);
-            return cb(err);
+            return logError(err, cb);
         }
 
         return cb(null, newResult);
@@ -97,7 +96,7 @@ function getUsers(cb) {
         sets: ['users'],
         params: []
     }, function (err, result) {
-        if (err) return cb(err);
+        if (err) return logError(err, cb);
         
         var newResult = {
             users: []
@@ -109,8 +108,7 @@ function getUsers(cb) {
             }
         }
         catch (err) {
-            console.error('error:', err);
-            return cb(err);
+            return logError(err, cb);
         }
         
         return cb(null, newResult);
@@ -127,11 +125,7 @@ function createOrModifyUser(req, cb) {
             var resultUserId;
 
             var request = new tedious.Request('UpsertUser', function (err) {
-                if (err) {
-                    console.error('error calling Upsert stored procedure', err);
-                    return cb(err);
-                }
-
+                if (err) return logError(err, cb);
                 return cb(null, { userId: resultUserId });
             });
 
@@ -167,11 +161,7 @@ function updateJobStatus(req, cb) {
         try {
             
             var request = new tedious.Request('UpdateJobStatus', function (err) {
-                if (err) {
-                    console.error('error calling UpdateJobStatus stored procedure', err);
-                    return cb(err);
-                }
-                
+                if (err) return logError(err, cb);
                 return cb();
             });
             
@@ -194,7 +184,7 @@ function getVideos(cb) {
         sets: ['videos'],
         params: []
     }, function(err, result){
-        if (err) return cb(err);
+        if (err) return logError(err, cb);
 
         var newResult = {
             videos: []
@@ -206,8 +196,7 @@ function getVideos(cb) {
             }
         }
         catch (err) {
-            console.error('error:', err);
-            return cb(err);
+            return logError(err, cb);
         }
 
         return cb(null, newResult);
@@ -221,7 +210,7 @@ function getJobstatuses(cb) {
         sets: ['statuses'],
         params: []
     }, function (err, result) {
-        if (err) return cb(err);
+        if (err) return logError(err, cb);
         return cb(null, result);
     });
 }
@@ -232,7 +221,7 @@ function getRoles(cb) {
         sets: ['roles'],
         params: []
     }, function (err, result) {
-        if (err) return cb(err);
+        if (err) return logError(err, cb);
         return cb(null, result);
     });
 }
@@ -244,7 +233,7 @@ function getVideo(id, cb) {
         sets: ['videos'],
         params: [{ name: 'Id', type: TYPES.Int, value: id }]
     }, function (err, result) {
-        if (err) return cb(err);
+        if (err) return logError(err, cb);
                
         if (result.videos.length) {
             return cb(null, normalizeVideoRow(result.videos[0]));
@@ -260,7 +249,7 @@ function getUserById(id, cb) {
         sets: ['users'],
         params: [{ name: 'Id', type: TYPES.Int, value: id}]
     }, function (err, result) {
-        if (err) return cb(err);
+        if (err) return logError(err, cb);
         
         if (result.users.length) {
             return cb(null, result.users[0]);
@@ -277,7 +266,7 @@ function getUserByEmail(email, cb) {
         sets: ['users'],
         params: [{ name: 'Email', type: TYPES.VarChar, value: email }]
     }, function (err, result) {
-        if (err) return cb(err);
+        if (err) return logError(err, cb);
         
         if (result.users && result.users.length) {
             return cb(null, result.users[0]);
@@ -296,11 +285,7 @@ function createOrModifyVideo(req, cb) {
             var resultVideoId;
             
             var request = new tedious.Request('UpsertVideo', function (err) {
-                if (err) {
-                    console.error('error calling Upsert stored procedure', err);
-                    return cb(err);
-                }
-                
+                if (err) return logError(err, cb);
                 return cb(null, { videoId: resultVideoId });
             });
             
@@ -327,7 +312,7 @@ function createOrModifyVideo(req, cb) {
             connection.callProcedure(request);
         }
         catch (err) {
-            return cb(err);
+            return logError(err, cb);
         }
 
     });
@@ -336,20 +321,15 @@ function createOrModifyVideo(req, cb) {
 
 function createOrModifyJob(req, cb) {
     connect(function(err, connection){
-        if (err) return cb(err);
+        if (err) return logError(err, cb);
 
         try
         {
             var resultJobId;
 
             var request = new tedious.Request('UpsertJob', function(err) {
-                if (err) {
-                    console.error('error calling UpsertJob stored procedure', err);
-                    if(err.number == DBErrors.duplicate) {
-                        return cb(new Error('video already assigned to user'));
-                    }
-                    return cb(err);
-                }
+                if (err && err.number == DBErrors.duplicate) return logError(new Error('video already assigned to user'), cb);
+                if (err) return logError(err, cb);
 
                 return cb(null, {jobId: resultJobId});
             });
@@ -377,7 +357,7 @@ function createOrModifyJob(req, cb) {
             connection.callProcedure(request);
         }
         catch(err) {
-            return cb(err);
+            return logError(err, cb);
         }
 
     });
@@ -386,7 +366,7 @@ function createOrModifyJob(req, cb) {
 
 function getDataSets(opts, cb) {
     connect(function(err, connection){
-        if (err) return cb(err);
+        if (err) return logError(err, cb);
 
         var sproc = opts.sproc,
             sets = opts.sets,
@@ -396,10 +376,7 @@ function getDataSets(opts, cb) {
         var result = {};
 
         var request = new tedious.Request(sproc, function(err, rowCount, rows) {
-            if (err) {
-                console.error('error calling', sproc, 'stored procedure', err);
-                return cb(err);
-            }
+            if (err) return logError(err, cb);
         });
 
         for (var i=0; i<params.length; i++) {
@@ -438,11 +415,7 @@ function createOrModifyFrame(req, cb) {
         try
         {
             var request = new tedious.Request('UpsertFrame', function(err) {
-                if (err) {
-                    console.error('error calling UpsertFrame stored procedure', err);
-                    return cb(err);
-                }
-
+                if (err) return logError(err, cb);
                 return cb();
             });
 
@@ -453,7 +426,7 @@ function createOrModifyFrame(req, cb) {
             connection.callProcedure(request);
         }
         catch(err) {
-            return cb(err);
+            return logError(err, cb);
         }
 
     });
@@ -465,7 +438,7 @@ function getUserJobs(userId, cb) {
         sets: ['jobs'],
         params: [{name: 'UserId', type: TYPES.Int, value: userId}]
     }, function(err, result){
-        if (err) return cb(err);
+        if (err) return logError(err, cb);
 
         var newResult = {
             jobs: []
@@ -477,8 +450,7 @@ function getUserJobs(userId, cb) {
             }
         }
         catch (err) {
-            console.error('error:', err);
-            return cb(err);
+            return logError(err, cb);
         }
         return cb(null, newResult);
     });
@@ -491,7 +463,7 @@ function getAllJobs(cb) {
         sets: ['jobs'],
         params: []
     }, function (err, result) {
-        if (err) return cb(err);
+        if (err) return logError(err, cb);
         
         var newResult = {
             jobs: []
@@ -503,8 +475,7 @@ function getAllJobs(cb) {
             }
         }
         catch (err) {
-            console.error('error:', err);
-            return cb(err);
+            return logError(err, cb);
         }
         return cb(null, newResult);
     });
@@ -516,7 +487,7 @@ function getVideoFrames(id, cb) {
         sets: ['frames'],
         params: [{name: 'VideoId', type: TYPES.Int, value: id}]
     }, function(err, result){
-        if (err) return cb(err);
+        if (err) return logError(err, cb);
 
         var newResult = {
             frames: []
@@ -532,8 +503,7 @@ function getVideoFrames(id, cb) {
             }
         }
         catch (err) {
-            console.error('error:', err);
-            return cb(err);
+            return logError(err, cb);
         }
 
         return cb(null, newResult);
@@ -547,7 +517,7 @@ function getVideoFramesByJob(id, cb) {
         sets: ['frames'],
         params: [{name: 'JobId', type: TYPES.Int, value: id}]
     }, function(err, result){
-        if (err) return cb(err);
+        if (err) return logError(err, cb);
 
         var newResult = {
             frames: {}
@@ -560,14 +530,17 @@ function getVideoFramesByJob(id, cb) {
             }
         }
         catch (err) {
-            console.error('error:', err);
-            return cb(err);
+            return logError(err, cb);
         }
 
         return cb(null, newResult);
     });
 }
 
+function logError(err, cb) {
+    console.error('error:', err);
+    return cb(err);
+}
 
 module.exports = {
     connect: connect,
