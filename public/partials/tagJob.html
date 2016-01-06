@@ -1,30 +1,29 @@
 ﻿
 <section ng-controller="TagJobController">
     <div>
-        <h1>{{ jobData.job.Description }}</h1>
+        <h1>{{ jobData.job.Description }} <img src="../images/ajax-loader.gif" ng-show='ajax'></h1>
         <h6>Id: {{jobData.job.Id}}, Created {{jobData.job.CreateDate | date:'dd-MM-yyyy'}}</h6>
 
         <div class="row">
-            <video-tagging id='video-tagging'></video-tagging>
+            <div class="col-md-8 col-md-push-2">
+                <video-tagging id='video-tagging'></video-tagging>
+            </div>
         </div>
 
-
-        <div class="btn-group" role="group" style="margin-top: 2em;">
+        <div class="buttons btn-group" role="group" style="margin-top: 2em;">
             <button ng-hide="!user" ng-click="updateJobStatus('Pending')" type="button" class="btn btn-default">Send for review</button>
             <button ng-hide="!user || user.RoleName !== 'Admin'" ng-click="updateJobStatus('Approved')" type="button" class="btn btn-default">Approve</button>
         </div>
 
         
-        <div class="form-group">
+        <div class="row">
             <div class="alert alert-danger col-sm-offset-2 col-sm-10" role="alert" ng-hide="!error">{{error}}</div>
         </div>
 
-        <div class="form-group">
+        <div class="row">
             <div class="alert alert-success col-sm-offset-2 col-sm-10" role="alert" ng-hide="!info">{{info}}</div>
         </div>
 
-
     </div>
 
-  
 </section>

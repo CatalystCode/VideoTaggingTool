@@ -1,11 +1,12 @@
 ﻿
 <section ng-controller="VideosController">
     <div id="videos">
-        <h1>Videos</h1>
+        <h1>Videos <img src="../images/ajax-loader.gif" ng-show='ajax'></h1>
        
 
-        <div>
+        <div class="buttons">
             <button ng-click="addVideo()" type="button" class="btn btn-default pull-right"><span class="glyphicon glyphicon-plus"> </span> Add Video</button>
+            <div class="clearfix"></div>
         </div>
 
         <table class="table table-hover">
@@ -16,7 +17,7 @@
                     <th>name</th>
                     <th>width</th>
                     <th>height</th>
-                    <th>duration (seconds)</th>
+                    <th nowrap>duration (seconds)</th>
                     <th>FPS</th>
                 </tr>
             </thead>

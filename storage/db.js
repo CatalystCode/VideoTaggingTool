@@ -11,7 +11,7 @@ var _sqlConnection;
 
 function connect(cb) {
 
-    var configSql = require("./sql.azure.private.json");
+    var configSql = require("./sql.amitu.private.json");
     console.log('connecting to server', configSql.server);
 
     var Connection = tedious.Connection;

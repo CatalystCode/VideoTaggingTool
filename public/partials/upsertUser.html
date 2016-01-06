@@ -1,7 +1,7 @@
 ﻿
 <section ng-controller="UpsertUserController">
     <div>
-        <h1>{{ Name }}</h1>
+        <h1>Edit User <img src="../images/ajax-loader.gif" ng-show='ajax'></h1>
         <form class="form-horizontal" role="form" ng-submit="submit()">
 
             <div class="form-group">
@@ -26,7 +26,7 @@
             </div>
 
             <div class="form-group">
-                <label class="control-label col-sm-2" for="mySelect">Role</label>
+                <label class="control-label col-sm-2" for="role">Role</label>
                 <div class="col-sm-2">
                     <select class="form-control" name="role" id="role"
                             ng-options="role.Name for role in roles track by role.Id"

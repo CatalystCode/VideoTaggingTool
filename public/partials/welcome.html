@@ -2,7 +2,10 @@
 <section ng-controller="AppController">
     <div>
   
-        <div ng-hide="!user">Welcome, {{user.Name}}</div>
+        <div ng-show="user">
+            <h1>Welcome, {{user.Name}}</h1>
+            Check out your <a href="#/jobs">jobs</a>
+        </div>
         <div ng-hide="user">Please <a href="/login">login</a></div>
             
     </div>
