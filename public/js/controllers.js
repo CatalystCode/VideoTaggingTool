@@ -47,8 +47,14 @@ videoTaggingAppControllers
             console.log('got user profile', user);
             $rootScope.user = user;
         })
-        .error(function (err){
-            console.error(err);
+        .error(function (err, statusCode){
+            if(statusCode == 401) {
+                console.warn('user is not logged in');
+            }
+            else {
+                console.error(err);
+            }
+
         });
 
         $scope.logout = function (){

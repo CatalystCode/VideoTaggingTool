@@ -47,7 +47,7 @@
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
                         <li ng-hide="!user"><a href="#/">
-                            <img src="{{ user.ImageUrl }}" class="profile-image img-circle" style="position: relative; top: -5px; float: left; left: -5px; width: 30px; height: 30px;"> {{user.Name}} 
+                            <img ng-src="{{ user.ImageUrl }}" class="profile-image img-circle" style="position: relative; top: -5px; float: left; left: -5px; width: 30px; height: 30px;"> {{user.Name}}
 
                            ({{user.RoleName}})</a></li>
                         <li ng-hide="!user"><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Log out</a></li>
