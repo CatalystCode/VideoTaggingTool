@@ -438,6 +438,7 @@ videoTaggingAppControllers
             $http({ method: 'POST', url: '/api/jobs/' + jobId + '/frames/' + inputObject.frameIndex, data: msg })
             .success(function (result) {
                     console.log('frame saved successfully');
+                    $scope.clearMessages();
                     /*
                     $scope.showInfo('frame saved successfully');
                     $timeout(function() {
