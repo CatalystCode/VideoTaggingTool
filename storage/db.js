@@ -1,5 +1,7 @@
 var tedious = require('tedious');
 var TYPES = tedious.TYPES;
+var fs = require('fs');
+var path = require('path');
 
 var DBErrors = {
     duplicate: 2601
@@ -7,11 +9,25 @@ var DBErrors = {
 
 var blob = require('./blob');
 
-var _sqlConnection;
+var localDbConfigPath = path.join(__dirname, "sql.private.json");
+var localSqlConfig = fs.existsSync(localDbConfigPath) && require(localDbConfigPath) || {};
+var configSql = {
+    server: localSqlConfig.server || process.env.DB_SERVER,
+    userName: localSqlConfig.userName || process.env.DB_USER,
+    password: localSqlConfig.password || process.env.DB_PASSWORD,
+    options: {
+        database: localSqlConfig.options && localSqlConfig.options.database || process.env.DB_NAME,
+        "encrypt": true
+    }
+};
+console.log('config', configSql);
+
+if (!configSql.server) return console.error('Sql server was not provided, please add DB_SERVER to environment variables');
+if (!configSql.userName) return console.error('Sql user was not provided, please add DB_USER to environment variables');
+if (!configSql.password) return console.error('password for db was not provided, please add DB_PASSWORD to environment variables');
+if (!configSql.options.database) return console.error('db name was not provided, please add DB_NAME to environment variables');
 
 function connect(cb) {
-
-    var configSql = require("./sql.azure.private.json");
     console.log('connecting to server', configSql.server);
 
     var Connection = tedious.Connection;
@@ -22,7 +38,6 @@ function connect(cb) {
             console.error('error connecting to sql server', configSql.server);
             return cb(err);
         }
-        _sqlConnection = connection;
         console.log('connection established', !connection.closed);
         return cb(null, connection);
     });
@@ -265,7 +280,7 @@ function getUserByEmail(email, cb) {
     }, function (err, result) {
         if (err) return cb(err);
         
-        if (result.users.length) {
+        if (result.users && result.users.length) {
             return cb(null, result.users[0]);
         }
         

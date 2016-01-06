@@ -12,11 +12,18 @@
     <ProjectTypeGuids>{3AF33F2E-1136-4D97-BBB7-1795711AC8B8};{349c5851-65df-11da-9384-00065b846f21};{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <StartWebBrowser>True</StartWebBrowser>
+    <Environment>PORT=3000
+</Environment>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
   <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
   <ItemGroup>
+    <Content Include=".deployment" />
+    <Content Include=".gitignore" />
+    <Content Include="deploy.cmd" />
     <Content Include="package.json" />
+    <Content Include="public\images\ajax-loader.gif" />
     <Content Include="public\partials\contact.html" />
     <Content Include="public\partials\terms.html" />
     <Content Include="public\partials\upsertUser.html" />
@@ -24,18 +31,16 @@
     <Content Include="public\partials\welcome.html" />
     <Content Include="README.md" />
     <Compile Include="auth\passport.js" />
+    <Compile Include="LICENSE" />
     <Compile Include="routes\login.js" />
     <Compile Include="server.js" />
     <Content Include="public\index.html" />
     <Content Include="public\bower.json" />
     <Compile Include="routes\api.js" />
     <Content Include="auth\passport.google.private.json" />
-    <Content Include="storage\sql.amitu.private.json" />
-    <Content Include="storage\sql.azure.private.json" />
     <Content Include="storage\sql\createdb.sql" />
     <Content Include="storage\sql\populate.sql" />
     <Content Include="storage\sql\schema.sql" />
-    <Content Include="storage\storage.private.json" />
     <Compile Include="storage\blob.js" />
     <Compile Include="storage\db.js" />
     <Content Include="public\css\style.css" />
@@ -595,6 +600,7 @@
     <Folder Include="public\bower_components\polymer" />
     <Folder Include="public\bower_components\webcomponentsjs" />
     <Folder Include="public\css" />
+    <Folder Include="public\images\" />
     <Folder Include="public\js" />
     <Folder Include="public\partials" />
     <Folder Include="public\video-tagging-0.0.5" />

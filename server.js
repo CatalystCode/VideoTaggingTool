@@ -36,11 +36,6 @@ app.use(flash()); // use connect-flash for flash messages stored in session
 app.use(require('./routes/login')(passport));
 app.use('/api', api(passport));
 
-app.use('/config', function(req, res) {
-    var dbConfig =  process.env.DB_CONFIG || "{}";
-    res.end(dbConfig);
-});
-
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(function (req, res) {
