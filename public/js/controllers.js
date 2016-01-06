@@ -479,7 +479,7 @@ videoTaggingAppControllers
 
         $scope.submit = function () {
             
-            clearMessages();
+            $scope.clearMessages();
 
             if(!$scope.name) return $scope.showError('name was not provided');
             if(!$scope.height) return $scope.showError('height was not provided');
