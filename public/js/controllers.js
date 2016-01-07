@@ -292,6 +292,12 @@ videoTaggingAppControllers
 
         getVideos();
 
+        $http({ method: 'GET', url: '/api/labels' })
+        .success(function (result) {
+            labels = $scope.labels = result.labels;
+        });
+      
+
         function getVideos(filter) {
             var url = '/api/videos';
             if (filter)
@@ -300,16 +306,13 @@ videoTaggingAppControllers
             $http({ method: 'GET', url: url })
             .success(function (result) {
                 videos = $scope.videos = result.videos;
+                angular.forEach(videos, function (video) {
+                    video.Labels = video.Labels && video.Labels.split(',');
+                })
             });
         }
        
-
-        $http({ method: 'GET', url: '/api/labels' })
-        .success(function (result) {
-            labels = $scope.labels = result.labels;
-        });
-
-        
+       
         $scope.edit = function (id) {
             $location.path('/videos/' + id);
         }
@@ -445,6 +448,28 @@ videoTaggingAppControllers
         $scope.config = '{}';
         $scope.progress = null;
 
+
+        $http({ method: 'GET', url: '/api/labels' })
+            .success(function (result) {
+                angular.forEach(
+                    result.labels,
+                    function(label) {
+                        label.value = label.Name;
+                        labels.push(label);
+                    });
+
+                $('#tokenfield').tokenfield({
+                  autocomplete: {
+                    //source: ['red','blue','green','yellow','violet','brown','purple','black','white'],
+                    source: labels,
+                    delay: 100
+                  },
+                  showAutocompleteOnFocus: true,
+                });
+            });
+
+
+
         if ($routeParams.id != 0) {
             $http({ method: 'GET', url: '/api/videos/' + $routeParams.id })
             .success(function (video) {
@@ -457,40 +482,10 @@ videoTaggingAppControllers
                 $scope.width = video.Width;
                 $scope.duration = video.DurationSeconds.toFixed(2);
                 $scope.framesPerSecond = video.FramesPerSecond.toFixed(2);
-            });
-
-
-            console.log('getting video labels');
-            $http({ method: 'GET', url: '/api/videoLabels/' + $routeParams.id })
-            .success(function (result) {
-                // var labelsString = '';
-                console.log('video labels', result.labels);
-                var labelsString = result.labels && result.labels.length && result.labels.map(function(item) { return item['Name']; });;
-
-                $scope.videoLabels = labelsString;
+                $scope.videoLabels = video.Labels;
             });
         }
 
-
-        $http({ method: 'GET', url: '/api/labels' })
-            .success(function (result) {
-
-            angular.forEach(
-                result.labels,
-                function(label) {
-                    label.value = label.Name;
-                    labels.push(label);
-                });
-
-            $('#tokenfield').tokenfield({
-              autocomplete: {
-                //source: ['red','blue','green','yellow','violet','brown','purple','black','white'],
-                source: labels,
-                delay: 100
-              },
-              showAutocompleteOnFocus: true,
-            });
-        });
 
         $scope.submit = function () {
             

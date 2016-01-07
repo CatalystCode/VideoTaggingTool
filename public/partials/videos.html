@@ -38,9 +38,10 @@
                                 <td>{{ video.Height }}</td>
                                 <td>{{ video.DurationSeconds.toFixed(2)}}</td>
                                 <td>{{ video.FramesPerSecond.toFixed(2) }}</td>
-                                <td>{{ video.Labels }}</td>
+                                <td><span ng-repeat="label in video.Labels">
+                                    <span class="label label-default">{{ label }}</span>
+                                </span></td>
                             </tr>
-
                         </tbody>
                     </table>
                 </div>
