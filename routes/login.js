@@ -8,7 +8,7 @@ module.exports = function (passport) {
     // the callback after google has authenticated the user
     router.get('/.auth/login/google/callback',
             passport.authenticate('google', {
-            successRedirect : '/',
+            successRedirect : '/#/jobs',
             failureRedirect : '/Login'
     }));
     
