@@ -9,6 +9,7 @@
             </div>
             <div class="row">
                 <div class="col-xs-2 form-group">
+                    <span class="glyphicon glyphicon-filter"></span>
                     <div class="checkbox" ng-repeat="label in labels">
                         <label><input type="checkbox" ng-model='label.selected' ng-change="limitOnlyOne(label)" name="FilterLabel" value="{{ label.Name }}" ng-click="filterByLabel()">{{ label.Name }}</label>
                     </div>
