@@ -463,14 +463,10 @@ videoTaggingAppControllers
             console.log('getting video labels');
             $http({ method: 'GET', url: '/api/videoLabels/' + $routeParams.id })
             .success(function (result) {
-                var labelsString = '';
+                // var labelsString = '';
                 console.log('video labels', result.labels);
+                var labelsString = result.labels && result.labels.length && result.labels.map(function(item) { return item['Name']; });;
 
-                angular.forEach(result.labels,
-                    function (label){
-                        labelsString += label.Name + ',';
-                    });
-                labelsString = labelsString.substring(0, labelsString.length - 1);
                 $scope.videoLabels = labelsString;
             });
         }
