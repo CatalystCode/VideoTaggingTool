@@ -70,7 +70,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </div>
     </div>
 
-
     <div style="float:left;margin-left:50px">
 
       <select id="jobslist" onChange="jobSelectionChanged()">
@@ -79,13 +78,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </div>
     
     
-    <div style="width:800px;height:700px;margin:50px 0px 0px 200px;">
-
-      <video-tagging id='video-tagging'>
-         </video-tagging>
-
-    </div>
-    
+    <div >
+            <div style="width:40%;margin:100px 0 0 200px">
+                <video-tagging id='video-tagging'></video-tagging>
+            </div>
+        </div>
    <script>
      var jobsForUser = [];     
 
@@ -256,7 +253,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             msg.tags = inputObject.locations;
             var json = JSON.stringify(msg)
 
-            console.log(json);
+            //console.log(json);
             
             //POST
             $.ajax({
@@ -267,7 +264,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 data: json,
                 contentType: "application/json; charset=utf-8",
                 error: function(err) {
-                    console.log(err); 
+                    //console.log(err); 
                 }
             });   
         });

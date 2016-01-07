@@ -13,7 +13,7 @@ There are 2 location types:
 
 In addition, it is possible to define single or multiple tags per frame:  
 1) Single - only one location can appear in a frame.  
-2) Multiple - multiple location can appear in a frame. 
+2) Multiple - multiple locations can appear in a frame. 
 
 Once a video has been loaded the control is ready for use:
 
@@ -29,12 +29,12 @@ Once a video has been loaded the control is ready for use:
 3) Play/Pause  
 4) One frame forward  
 5) Frame number  
-6) Playback control  
+6) Playback speed control  
 7) current and remaining video time  
 8) Mute button  
 9) Volume slider  
 
-To change the playback rate, click on the icon and select:
+To change the playback speed, click on the icon and select:
 
 ![Alt text](images/playback.png?raw=true "Title")
 
@@ -59,9 +59,7 @@ Point/single - On a certain frame, click the video screen. Every click will move
 Point/multiple - On a certain frame, click the video screen. Every click adds a new location
 ![Alt text](images/multipoints.png?raw=true "Title")
 
-Area - Click the video screen and drag. A rectangle appears. You can move it for repositioning. When done, click the video screen:  
-
-![Alt text](images/area.png?raw=true "Title")
+Area - Click the video screen and drag. A rectangle appears. 
 
 ![Alt text](images/area2shapes.png?raw=true "Title")
 
@@ -70,12 +68,13 @@ In all modes, when a location is selected, you can add/remove tags to it or dele
 Lock Tags and Auto step - When the Mode is set to "Single", the video will automatically advance 1 frame after a location has been designated, so the work flow of a user is:  
      Create a new location - Click or drag  
      Select Tags  
-     Click on the Lock Icon.  
-     Advance 1 frame or reselect location.   
+     Click on the Lock Icon - turns to green.  
+     Advance 1 frame or reselect location.
+     Click the icon again to exit.   
 
 **Technical**
 
-The control is built using HTML, CSS based on the <a href="https://www.polymer-project.org/1.0/" target="_blank">Polymer</a>
+The control is built using HTML5, CSS3 based on the <a href="https://www.polymer-project.org/1.0/" target="_blank">Polymer</a>
 framework, allowing us to create reusable web components.
 Area selection is credited to <a href="http://odyniec.net/projects/imgareaselect/" target="_blank">ImageAreaSelect</a>
 

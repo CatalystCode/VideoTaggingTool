@@ -2,11 +2,9 @@
 <link rel="import" href="optional-tags.html">
 <link rel="import" href="playback-control.html">
 
-
 <!--
 `<video-tagging>` control for video tagging.
 -->
-
 <dom-module id="video-tagging">
 
   <template>
@@ -33,61 +31,52 @@
       <div id="videoControls">
           <input id="seekBar" class="seek" type="range" min='0' value="0" step="any" required />
           
-          <table id="videoControlsTable" style="margin-left:2%;margin-right:2%;">
+          <table id="videoControlsTable">
             <tr>
-              <td style="width:5%">
+              <td class = "videoControlCell simpleControl">
                 <span id = "stepbwd" title="prev" class="icon-backward2 taggingControls" on-click='stepbwdclicked'></span>
               </td>
-              <td style="width:5%">
+              <td class = "videoControlCell simpleControl">
                 <span id = "play-pause" title="play/pause" class="icon-play3 taggingControls" on-click='playclicked'></span>
               </td>
-              <td style="width:5%">
+              <td class = "videoControlCell simpleControl">
                 <span id = "stepfwd" title="next" class="icon-forward3 taggingControls" on-click='stepfwdclicked'></span>
               </td>
-              <td style="width:20%;text-align:center">
-                <span id='frameText' title="frame#"></span>
+              <td class = "videoControlCell simpleControl">
+                <span id = "nextuntagged"  title="first untagged frame" class="icon-next2 taggingControls" on-click='nextuntaggedclicked'></span>
               </td>
-              <td style="width:8%" id="playbackCell">
-                <span id="playbackSpan"  class="taggingControls" on-click="playbackMouseEnter">x 1.0</span>
+              <td class = "videoControlCell frameNumber">
+                <span id='frameText' class = "textElements" title="frame#"></span>
               </td>
-              <td nowrap="nowrap" style="width:10%">
-                <span id="timeSpan" ></span>
+              <td id="playbackCell" title="playback speed" class = "videoControlCell longControl">
+                <span id="playbackSpan"  class = "textElements" on-click="playbackSpeedClicked">x 1.0</span>
               </td>
-              <td style="width:5%">
+              <td nowrap="nowrap" class = "videoControlCell simpleControl">
+                <span id="timeSpan" class = "textElements" ></span>
+              </td>
+              <td class = "videoControlCell simpleControl">
                 <span id = "mute" title="Mute"  class="icon-volume-mute2 taggingControls" on-click='muteclicked'></span>
               </td>
-              <td style="width:10%">
-                <input id="volumeSlider" class="volume" type="range" min=0 max = 1 value=.5 step= .1 required />
+              <td class = "videoControlCell longControl">
+                  <input id="volumeSlider" class="volume" type="range" min=0 max = 1 value=.5 step= .1 required />
               </td>
             </tr>
           </table>
       </div>
       <div id="videoTagControls">
-        <table id = "tagsTable">
-          <tr>
-            <td id = "leftCell">
-               <div class = "relativeDiv">
-                  <span id = "nextuntagged" title="first untagged frame" class="icon-next2 taggingControls" on-click='nextuntaggedclicked'></span>
-              </div>
-            </td>
-            <td rowspan="2" id="tagsDiv">
-              <div id = "tagsWrapper">
-                  <optional-tags id = "optionalTags" ></optional-tags>
-              </div>
-            </td>
-            <td id = "rightCell">
-              <div class = "relativeDiv">
-                <span id = "emptyFrame" title="next frame"  class="icon-share taggingControls" on-click='emptyFrameClicked'></span>
-                <span id = "lockTag" title="lock tags" class="icon-pushpin taggingControls" style="padding-left:15px" on-click='lockTagsClicked'></span>
-              </div>
-            </td>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-        </tr>
-      </table>
-   </div> 
+        
+          <div class = "optionalTags">
+            <div class = "optionalTagsWrapper">
+              <optional-tags id = "optionalTags" ></optional-tags>
+            </div>
+          </div>
+          <div class = "emptyFrame">
+              <span id = "emptyFrame" title="next frame"  class="icon-share taggingControls" on-click='emptyFrameClicked'></span>
+              <span id = "lockTag" title="lock tags" class="icon-pushpin taggingControls"  on-click='lockTagsClicked'></span>
+          </div>
+          <div style="clear: both">
+          </div>
+      </div> 
 </div> 
 </template>
 
@@ -261,13 +250,13 @@
           var diffTop = parseInt(self.overlay.style.top) - parseInt(topBefore);
           var diffLeft = parseInt(self.overlay.style.left) - parseInt(leftBefore);
 
-          if(self.selectedLocationId > 0 && (diffTop!==0 || diffLeft!== 0))//If there is selection and movement
+          if(diffTop!==0 || diffLeft!== 0)//If there is selection and movement
           {   
               //Adjust div top and left according to canvas movement
-              var div = document.getElementById(self.selectedLocationId); 
-              div.style.top = parseInt(div.style.top) + diffTop + "px";
-              div.style.left = parseInt(div.style.left) + diffLeft + "px";
-              self.positionLocationNameLabel(div);
+              //var div = document.getElementById(self.selectedLocationId); 
+              //div.style.top = parseInt(div.offsetTop) + diffTop + "px";
+              //div.style.left = parseInt(div.offsetLeft) + diffLeft + "px";
+              //self.positionLocationNameLabel(div);
           }
       };
     },
@@ -340,7 +329,7 @@
 
         this.locationLabelDiv.style.left = (div.offsetLeft + parseFloat(div.style.width, 10) - parseFloat(this.locationLabelDiv.style.width, 10)) + "px";
 
-        this.locationLabelDiv.style.top = (div.offsetTop - 5 - parseFloat(this.locationLabelDiv.style.height, 10)) + "px" ;
+        this.locationLabelDiv.style.top = (div.offsetTop - parseFloat(this.locationLabelDiv.style.height, 10)) + "px" ;
 
         this.locationLabelSpan.innerHTML = div.id;
         this.locationLabelDiv.style.display = "block";
@@ -350,12 +339,9 @@
         var location = this.addLocation(this.x1, this.y1, this.x2, this.y2);
                       
         this.drawLocation(this.x1, this.y1, this.x2, this.y2, location.name);
+        this.selectDiv(location.name);
 
-        var div = document.getElementById(location.name);//Gets the div that was created in draw
-        this.positionLocationNameLabel(div);
-        this.locationSelected(div);//Select new location automatically
-
-        if(this.lockTagsEnabled)//
+        if(this.lockTagsEnabled)
         {   
             //Get all selected tags and add them to current location automatically
             //this.selectedTags was populated in this.lockTagsClicked
@@ -382,8 +368,6 @@
                     
                   location.tags.push(selectedTagsArray[i]);
             }
-            
-              
     },
     locationSelected: function(div) {
           this.cleanAllLocationBorders();
@@ -394,15 +378,19 @@
           }
           else//select
           {
-              div.style.border = "1px solid red";
+              div.style.border = "1px solid rgb(255, 0, 0)";
               this.selectedLocationId = div.id;
               this.locationLabelDiv.style.display = "block";
 
               //Tags
               this.optionalTags.toggleEnableButtons(true);
               this.optionalTags.resetSelected();
-              var tags = this.frames[this.getCurrentFrame()][this.selectedLocationId - 1].tags;
-              self.optionalTags.displaySelectedTags(tags);
+              var locations = this.frames[this.getCurrentFrame()];
+              if(locations !== undefined)
+              {
+                  var tags = this.frames[this.getCurrentFrame()][this.selectedLocationId - 1].tags;
+                  self.optionalTags.displaySelectedTags(tags);
+              }
           }
     },
     deleteLocation: function(e) {
@@ -446,9 +434,6 @@
             y2 = y2 + offset.top;
 
             var div = document.createElement("div");
-            div.style.backgroundColor = "transparent";
-            div.style.zIndex = 100;
-            div.style.position = 'absolute';
             div.id = locationId;
             div.className = "locationCanvas";
 
@@ -510,7 +495,7 @@
                   var location = locations[i];
                   if(Object.keys(location).length === 0)//Frame was tagged as empty
                   {
-                      this.indicateEmptyFrame();
+                      this.indicateEmptyFrame(true);
                       continue;
                   }
                   //Calculate x, y relative to current width and height          
@@ -526,8 +511,19 @@
                   x2 = (location.x2 * widthRatio);
                   y2 = (location.y2 * heightRatio);
                   this.drawLocation( x1, y1, x2, y2, location.name);
+
+                  if(locations.length === 1)//Only 1 location - select it and show tags
+                  {
+                      this.selectDiv(location.name)
+                  }
               }
             }
+    },
+    selectDiv: function(divId)
+    {
+        var div = document.getElementById(divId);//Gets the div that was created in draw
+        this.positionLocationNameLabel(div);
+        this.locationSelected(div);//Select new location automatically
     },
     /** 
        * @method addLocation
@@ -536,6 +532,8 @@
        */
     addLocation: function(x1, y1, x2, y2) {
             
+            this.resetEmptyFrame();//Clear empty frame logic
+
             var location = {};
             location.x1 = x1;
             location.y1 = y1;
@@ -557,13 +555,11 @@
             }
             else//Only one location allowed
             {
-                location.name = 1;
                 this.clearFrameElements();
-                var locationArray = [];
-                locationArray.push(location);
-                this.frames[frameIndex] = locationArray;
+                location.name = 1;
+                this.frames[frameIndex] = [];
+                this.frames[frameIndex].push(location);
             }
-            this.sendLocationToHost();
             return location; 
     },
     /** 
@@ -629,8 +625,23 @@
         if(locations === undefined || locations.length === 0)
         {
             this.frames[frameIndex] = [{}];
-            this.indicateEmptyFrame();
+            this.indicateEmptyFrame(true);
             this.sendLocationToHost();
+            if(this.lockTagsEnabled)
+            {
+                this.stepfwdclicked();
+            }
+        }
+    },
+    resetEmptyFrame: function()
+    {
+        var locations = this.frames[this.getCurrentFrame()];
+        //If there is an empty location
+        if(locations !== undefined && locations.length === 1 && Object.keys(locations[0]).length === 0)
+        {
+            //reset all for this frame
+            this.frames[this.getCurrentFrame()] = [];
+            this.clearFrameElements();
         }
     },
 
@@ -642,6 +653,7 @@
        * Clears all drawings and divs from the video area and resets tag controls.
        */
     clearFrameElements: function() {
+
       //Clear drawings
       this.ctx.clearRect(0, 0, this.overlay.width, this.overlay.height);
       //Clear divs
@@ -651,14 +663,18 @@
       //hide location number
       self.locationLabelDiv.style.display = "none";
       //Clears the empty frame icon
-      this.emptyFrame.style.color = "rgb(255,255,255)";
+      this.indicateEmptyFrame(false);
     },
     getCurrentFrame: function() {
       return Math.round(this.video.currentTime * this.framerate);
     },
-    indicateEmptyFrame : function()
+    indicateEmptyFrame : function(selected)
     {
-            this.emptyFrame.style.color = "rgb(0,255,0)";
+        if(selected)
+            this.emptyFrame.style.color = "rgb(255,255,255)";
+        else
+            this.emptyFrame.style.color = "rgb(89,89,89)";
+
     },
 
 
@@ -689,11 +705,11 @@
           }
           this.playSpeedControl.style.display = "none";
     },
-    playbackMouseEnter: function()
+    playbackSpeedClicked: function()
     {
           this.playSpeedControl.style.top = this.videoControls.offsetTop - $('#playSpeedControl').outerHeight()  + "px";
           this.playSpeedControl.style.left = this.videoControls.offsetLeft + this.playbackCell.offsetLeft + ($('#playbackCell').outerWidth()/4)  + "px";
-          this.playSpeedControl.style.display = this.playSpeedControl.style.display == "none"? "block":"none";
+          this.playSpeedControl.style.display = this.playSpeedControl.style.display === "block"?"none":"block";
     },
     playclicked: function() {
           this.video.paused?this.playState():this.pauseState();
@@ -736,14 +752,14 @@
           {
               this.pauseState();
               this.lockTagsEnabled = true;
-              this.lockTag.style.color = "rgb(0,255,0)";
+              this.lockTag.style.color = "rgb(255,255,255)";
               this.selectedTags = selTags;
               this.stepfwdclicked();
           }
           else
           {
               this.lockTagsEnabled = false;
-              this.lockTag.style.color = "rgb(255,255,255)";
+              this.lockTag.style.color = "rgb(89,89,89)";
               this.selectedTags = [];
               this.optionalTags.resetSelected();
           }
@@ -761,10 +777,11 @@
             if(this.locationtype.toLowerCase() !== "area")
             {
                 var offset = $(this).offset();
-                this.x1 = (e.pageX - offset.left);
-                this.y1 = (e.pageY - offset.top);
+                this.x1 = (e.clientX - offset.left);
+                this.y1 = (e.clientY - offset.top);
                 this.x2 = null;
                 this.y2 = null;
+                console.log(this.x1 + " " + this.y1)
                 this.createLocation();
             }            
     },
@@ -778,7 +795,7 @@
         
         this.playing = setInterval(function() {
             self.playingCallback();
-        }, 1000 / this.framerate);
+        }, 10);
     },
     pauseState: function() {
 
@@ -810,8 +827,8 @@
 });
 
 </script>
-<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.3.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script> 
+<script src="../jquery/jquery.min.js"></script>
+
 <script src="js/jquery.imgareaselect.js"></script>
 <script src="../moment/moment.js"></script>
 <script src="js/sliderstyles.js"></script>
