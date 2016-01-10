@@ -1,6 +1,6 @@
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
-var config = require('./passport.google.private');
+var config = require('../config').auth.google;
 var db = require('../storage/db');
 
 function findUser(email, cb) {

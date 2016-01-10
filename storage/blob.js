@@ -1,12 +1,10 @@
 ﻿var azure = require('azure-storage');
-var config = require('./storage.private.json');
-
+var config = require('../config').storage;
 
 var CONTAINER_NAME = 'vidoes1';
 var URL_FORMAT = 'http://<storage-account-name>.blob.core.windows.net/<container-name>'
     .replace('<storage-account-name>', config.account)
     .replace('<container-name>', CONTAINER_NAME);
-
 
 var blobSvc = azure.createBlobService(config.account, config.key);
 
