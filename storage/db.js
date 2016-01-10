@@ -277,7 +277,7 @@ function getUserByEmail(email, cb) {
             return cb(null, result.users[0]);
         }
         
-        return cb(null, {});
+        return cb();
     });
 }
 
@@ -302,6 +302,19 @@ function createOrModifyVideo(req, cb) {
             request.addParameter('Height', TYPES.Int, req.height);
             request.addParameter('DurationSeconds', TYPES.Real, req.durationSeconds);
             request.addParameter('FramesPerSecond', TYPES.Real, req.framesPerSecond);
+
+            var table = {
+                columns: [
+                  { name: '[LabelId]', type: TYPES.Int }
+                ],
+                rows: []};
+
+            for (var i=0; i < req.labels.length; i++)
+            {
+                table.rows.push([req.labels[i].Id]);
+            }
+            request.addParameter('udtVideoLabels', TYPES.TVP, table);
+
             
             if (req.videoJson)
                 request.addParameter('VideoJson', TYPES.NVarChar, JSON.stringify(req.videoJson));
@@ -403,8 +416,6 @@ function getDataSets(opts, cb) {
         });
 
         request.on('doneProc', function (rowCount, more, returnStatus, rows) {
-            console.log('doneProc', rowCount, more, returnStatus, rows);
-
             cb(null, result);
         });
 
@@ -546,6 +557,159 @@ function logError(err, cb) {
     console.error('error:', err);
     return cb(err);
 }
+function getAllLabels(cb) {
+    return getDataSets({
+        sproc: 'GetLabels',
+        sets: ['labels'],
+        params: []
+    }, function(err, result){
+        if (err) return cb(err);
+
+        var newResult = {
+            labels: []
+        };
+
+        try {
+            for (var i=0; i<result.labels.length; i++) {
+                newResult.labels.push(result.labels[i]);
+            }
+        }
+        catch (err) {
+            console.error('error:', err);
+            return cb(err);
+        }
+
+        return cb(null, newResult);
+    });
+}
+
+function createMultipleLabels(req, cb) {
+    // Prepeare the input table
+    var table = 
+        {columns: [{name: 'Name', type: TYPES.VarChar, length: 50}],
+         rows: []};
+
+    for (var i=0; i < req.labels.length; i++)
+    {
+        table.rows.push([req.labels[i].value]);
+    }
+
+    return getDataSets({
+        sproc: 'InsertMultipleLabels',
+        sets: ['labels'],
+        params: [{name: 'udtLabels', type: TYPES.TVP, value: table }]
+    }, function(err, result){
+
+        var newResult = {
+            labels: []
+        };
+
+        try {
+            for (var i=0; i<result.labels.length; i++) {
+                newResult.labels.push(result.labels[i]);
+            }
+        }
+        catch (err) {
+            console.error('error:', err);
+            return cb(err);
+        }
+
+        return cb(null, newResult);
+
+    });
+}
+
+function createMultipleVideoLabels(req, cb) {
+    connect(function(err, connection){
+        if (err) return cb(err);
+
+        try
+        {
+            // Create the request              
+            var request = new tedious.Request('InsertMultipleVideoLabels', function (err) {
+                if (err) {
+                    console.error('error calling InsertMultipleVideoLabels stored procedure', err);
+                    return cb(err);
+                }
+
+                return cb(null);
+            });
+
+            var table = {
+                columns: [
+                  {name: 'LabelId', type: TYPES.Int}
+                ],
+                rows: []};
+
+            for (var i=0; i < req.labelIds.length; i++)
+            {
+                table.rows.push([req.labelIds[i]]);
+            }
+
+            request.addParameter('udtVideoLabels', TYPES.TVP, table);
+            request.addParameter('VideoId', TYPES.Int, req.videoId);
+
+            // Execute
+            connection.callProcedure(request);
+        }
+        catch(err) {
+            return cb(err);
+        }
+    });
+}
+
+function getVideosByLabels(filterLabelId, cb) {
+    return getDataSets({
+        sproc: 'GetVideosByLabels',
+        sets: ['videos'],
+        params: [{name: 'LabelId', type: TYPES.Int, value: filterLabelId}]
+    }, function(err, result){
+        if (err) return cb(err);
+
+        var newResult = {
+            videos: []
+        };
+
+        try {
+            for (var i=0; i<result.videos.length; i++) {
+                newResult.videos.push(normalizeVideoRow(result.videos[i]));
+            }
+        }
+        catch (err) {
+            console.error('error:', err);
+            return cb(err);
+        }
+
+        return cb(null, newResult);
+    });
+}
+
+function getLabelsOfVideo(videoId, cb) {
+    return getDataSets({
+        sproc: 'GetLabelsOfVideo',
+        sets: ['labels'],
+        params: [{name: 'videoId', type: TYPES.Int, value: videoId}]
+    }, function(err, result){
+        if (err) return cb(err);
+
+        var newResult = {
+            labels: []
+        };
+
+        try {
+            for (var i=0; i<result.labels.length; i++) {
+                newResult.labels.push(result.labels[i]);
+            }
+        }
+        catch (err) {
+            console.error('error:', err);
+            return cb(err);
+        }
+
+        return cb(null, newResult);
+    });
+}
+
 
 module.exports = {
     connect: connect,
@@ -566,5 +730,11 @@ module.exports = {
     getUserById: getUserById,
     createOrModifyUser: createOrModifyUser,
     updateJobStatus: updateJobStatus,
-    updateVideoUploaded: updateVideoUploaded
+    updateVideoUploaded: updateVideoUploaded,
+    updateJobStatus: updateJobStatus,
+    getAllLabels : getAllLabels,
+    getVideosByLabels : getVideosByLabels,
+    createMultipleLabels : createMultipleLabels,
+    createMultipleVideoLabels : createMultipleVideoLabels,
+    getLabelsOfVideo : getLabelsOfVideo
 }

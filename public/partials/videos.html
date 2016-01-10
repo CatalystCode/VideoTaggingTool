@@ -2,45 +2,63 @@
 <section ng-controller="VideosController">
     <div id="videos">
         <h1>videos <img src="../images/ajax-loader.gif" ng-show='ajax'></h1>
-       
 
-        <div class="buttons">
-            <span ng-click="addVideo()" class="glyphicon glyphicon-plus pull-right" title="add video"></span>
-            <div class="clearfix"></div>
+        <div class="Container">
+            <div class="row" style="margin-bottom:2em">
+                <div class="buttons">
+                    <span ng-click="addVideo()" class="glyphicon glyphicon-plus pull-right" title="add video"></span>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-2 form-group">
+                    <span class="glyphicon glyphicon-filter"></span>
+                    <div class="checkbox" ng-repeat="label in labels">
+                        <label><input type="checkbox" ng-model='label.selected' ng-change="limitOnlyOne(label)" name="FilterLabel" value="{{ label.Name }}" ng-click="filterByLabel()">{{ label.Name }}</label>
+                    </div>
+                </div>
+
+                <div class="col-xs-10">
+                    <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>action</th>
+                        <th>video id</th>
+                        <th>title</th>
+                        <th>width</th>
+                        <th>height</th>
+                        <th nowrap>duration (seconds)</th>
+                        <th>FPS</th>
+                        <th>Labels</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    <tr ng-repeat="video in videos">
+                        <td>
+                            <span ng-click="editVideo()" class="glyphicon glyphicon-edit" title="edit video"></span>
+                            <span ng-hide="user.RoleName !== 'Admin'" ng-click="createJob()" class="glyphicon glyphicon-refresh" title="create job for this video"> </span>
+                        </td>
+                        <td>{{ video.Id }}</td>
+                        <td>
+                            <a ng-show="video.VideoUploaded" href="{{ video.Url }}" target="_blank">{{ video.Name }}</a>
+                            <span ng-show="!video.VideoUploaded">{{ video.Name }}</span>
+                        </td>
+                        <td>{{ video.Width }}</td>
+                        <td>{{ video.Height }}</td>
+                        <td>{{ video.DurationSeconds.toFixed(2)}}</td>
+                        <td>{{ video.FramesPerSecond.toFixed(2) }}</td>
+                        <td>
+                            <span ng-repeat="label in video.Labels">
+                                    <span class="label label-default">{{ label }}</span>
+                            </span>
+                        </td>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
         </div>
-
-        <table class="table table-hover">
-            <thead>
-                <tr>
-                    <th>action</th>
-                    <th>video id</th>
-                    <th>title</th>
-                    <th>width</th>
-                    <th>height</th>
-                    <th nowrap>duration (seconds)</th>
-                    <th>FPS</th>
-                </tr>
-            </thead>
-            <tbody>
-
-                <tr ng-repeat="video in videos">
-                    <td>
-                        <span ng-click="editVideo()" class="glyphicon glyphicon-edit" title="edit video"></span>
-                        <span ng-hide="user.RoleName !== 'Admin'" ng-click="createJob()" class="glyphicon glyphicon-refresh" title="create job for this video"> </span>
-                    </td>
-                    <td>{{ video.Id }}</td>
-                    <td>
-                        <a ng-show="video.VideoUploaded" href="{{ video.Url }}" target="_blank">{{ video.Name }}</a>
-                        <span ng-show="!video.VideoUploaded">{{ video.Name }}</span>
-                    </td>
-                    <td>{{ video.Width }}</td>
-                    <td>{{ video.Height }}</td>
-                    <td>{{ video.DurationSeconds.toFixed(2)}}</td>
-                    <td>{{ video.FramesPerSecond.toFixed(2) }}</td>
-                </tr>
-
-            </tbody>
-        </table>
     </div>
 
   

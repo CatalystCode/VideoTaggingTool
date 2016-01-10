@@ -166,9 +166,22 @@ module.exports = function (passport) {
     });
     
     router.get('/videos', AdminLoggedIn, function (req, res) {
-        console.log('getting videos');
-        db.getVideos(function (err, resp) {
-            if (err) return logError(err, res);
+        var filter = req.query.filter;
+        if (filter) {
+            console.log('getting videos labeled ' + filter);
+
+            return db.getVideosByLabels(filter,
+                function (err, resp) {
+                if (err) return res.status(500).json({ error: err });
+                console.log('resp:', resp);
+                res.json(resp);
+            });
+        }
+       
+        console.log('getting all videos');
+        return db.getVideos(function (err, resp) {
+            if (err) return res.status(500).json({ error: err });
+            console.log('resp:', resp);
             res.json(resp);
         });
     });
@@ -227,6 +240,38 @@ module.exports = function (passport) {
         db.getVideoFrames(id, function (err, resp) {
             if (err) return logError(err, res);
             res.json(resp);
+        });
+    });
+
+    router.get('/labels', AdminLoggedIn, function (req, res) {
+        console.log('getting all labels');
+        db.getAllLabels(function (err, resp) {
+            if (err) return res.status(500).json({ error: err });
+            //console.log('resp:', resp);
+            res.json(resp);
+        });
+    });
+    router.post('/labels', AdminLoggedIn, function (req, res) {
+        console.log('labels post');
+        db.createMultipleLabels(req.body, function (err, result) {
+            if (err) {
+                console.error(err);
+                return res.status(500).json({ error: err.message });
+            }
+            res.json(result);
+        });
+    });
+
+    router.get('/videoLabels/:id', EditorLoggedIn, function (req, res) {
+        var id = req.params.id;
+        console.log('getting video labels for video', id);
+
+        db.getLabelsOfVideo(id, function (err, result) {
+            if (err) {
+                console.error(err);
+                return res.status(500).json({ error: err.message });
+            }
+            res.json(result);
         });
     });
 
