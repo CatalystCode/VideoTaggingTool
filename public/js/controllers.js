@@ -171,7 +171,7 @@ videoTaggingAppControllers
 .controller('UpsertJobController', ['$scope', '$http', '$location', '$routeParams', 'state', function ($scope, $http, $location, $routeParams, state) {
 
         $scope.clearMessages();
-        var defaultId = '[new]';
+        var defaultId = -1;
         $scope.jobId = defaultId;
 
         $scope.locationtype = $scope.jobSetup.locationTypes.default;
@@ -293,7 +293,7 @@ videoTaggingAppControllers
 .controller('UpsertUserController', ['$scope', '$http', '$location', '$routeParams', function ($scope, $http, $location, $routeParams) {
 
         $scope.clearMessages();
-        var defaultId = '[new]';
+        var defaultId = -1;
         $scope.userId = defaultId;
         
         if ($routeParams.id != 0) {
@@ -468,7 +468,7 @@ videoTaggingAppControllers
 
 .controller('UpsertVideoController', ['$scope', '$http', '$location', '$routeParams', function ($scope, $http, $location, $routeParams) {
         
-        var defaultId = '[new]';
+        var defaultId = -1;
         $scope.videoId = defaultId;
         $scope.config = '{}';
         $scope.progress = null;
@@ -486,6 +486,8 @@ videoTaggingAppControllers
                 $scope.width = video.Width;
                 $scope.duration = video.DurationSeconds.toFixed(2);
                 $scope.framesPerSecond = video.FramesPerSecond.toFixed(2);
+                $scope.videoUploaded = video.VideoUploaded;
+
                 $scope.ajaxCompleted();
             });
         }

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Video Tagging</title>
+    <title>video tagging</title>
     <script src="bower_components/webcomponentsjs/webcomponents.js"></script>
 
     <script src="bower_components/angular/angular.min.js"></script>
@@ -36,22 +36,22 @@
         <nav class="navbar navbar-inverse" ng-controller="AppController">
             <div class="container-fluid">
                 <div class="navbar-header">
-                    <a class="navbar-brand" href="#/">Video Tagging Tool</a> <br/>
+                    <a class="navbar-brand" href="#/">video tagging</a> <br/>
                 </div>
 
                 <div>
                     <ul class="nav navbar-nav">
-                        <li ng-hide="!user" ng-class="{active: $route.current.activetab == 'jobs'}"><a href="#/jobs">Jobs</a></li>
-                        <li ng-hide="!user || user.RoleName !== 'Admin'" ng-class="{active: $route.current.activetab == 'videos'}"><a href="#/videos">Videos</a></li>
-                        <li ng-hide="!user || user.RoleName !== 'Admin'" ng-class="{active: $route.current.activetab == 'users'}"><a href="#/users">Users</a></li>
+                        <li ng-hide="!user" ng-class="{active: $route.current.activetab == 'jobs'}"><a href="#/jobs">jobs</a></li>
+                        <li ng-hide="!user || user.RoleName !== 'Admin'" ng-class="{active: $route.current.activetab == 'videos'}"><a href="#/videos">videos</a></li>
+                        <li ng-hide="!user || user.RoleName !== 'Admin'" ng-class="{active: $route.current.activetab == 'users'}"><a href="#/users">users</a></li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
                         <li ng-hide="!user"><a href="#/">
-                            <img ng-src="{{ user.ImageUrl }}" class="profile-image img-circle" style="position: relative; top: -5px; float: left; left: -5px; width: 30px; height: 30px;"> {{user.Name}}
+                            <img ng-src="{{ user.ImageUrl }}" class="profile-image img-circle text-lowercase" style="position: relative; top: -5px; float: left; left: -5px; width: 30px; height: 30px;"> {{user.Name}}
 
                            ({{user.RoleName}})</a></li>
-                        <li ng-hide="!user"><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Log out</a></li>
-                        <li ng-hide="user"><a href="/login"><span class="glyphicon glyphicon-log-out"></span> Log in</a></li>
+                        <li ng-hide="!user"><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> log out</a></li>
+                        <li ng-hide="user"><a href="/login"><span class="glyphicon glyphicon-log-out"></span> log in</a></li>
                     </ul>
                 </div>
             </div>

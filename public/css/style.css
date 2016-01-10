@@ -100,3 +100,21 @@ th {
     width: 70%;
 }
 
+span[ng-click] {
+    margin-right: 10px;
+}
+
+
+textarea:hover,
+input:hover,
+textarea:active,
+input:active,
+textarea:focus,
+input:focus,
+button:focus,
+button:active,
+button:hover
+{
+    outline:0px !important;
+    -webkit-appearance:none;
+}

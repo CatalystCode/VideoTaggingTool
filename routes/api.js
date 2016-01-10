@@ -67,7 +67,12 @@ module.exports = function (passport) {
                 contentType: contentType
             }, function (err, result) {
                 if (err) return logError(err, res);
-                return res.json(result);
+
+                db.updateVideoUploaded({id: id}, function(err) {
+                    if (err) return logError(err, res);
+                    return res.json(result);
+                });
+
             });
         });
         

@@ -160,6 +160,29 @@ function updateJobStatus(req, cb) {
     });
 }
 
+
+function updateVideoUploaded(req, cb) {
+    connect(function (err, connection) {
+        if (err) return cb(err);
+
+        try {
+
+            var request = new tedious.Request('UpdateVideoUploaded', function (err) {
+                if (err) return logError(err, cb);
+                return cb();
+            });
+
+            request.addParameter('Id', TYPES.Int, req.id);
+            connection.callProcedure(request);
+        }
+        catch (err) {
+            return cb(err);
+        }
+
+    });
+}
+
+
 function getVideos(cb) {
     return getDataSets({
         sproc: 'GetVideos',
@@ -542,5 +565,6 @@ module.exports = {
     getUserByEmail: getUserByEmail,
     getUserById: getUserById,
     createOrModifyUser: createOrModifyUser,
-    updateJobStatus: updateJobStatus
+    updateJobStatus: updateJobStatus,
+    updateVideoUploaded: updateVideoUploaded
 }

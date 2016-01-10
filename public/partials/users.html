@@ -1,10 +1,10 @@
 ﻿
 <section ng-controller="UsersController">
     <div>
-        <h1>Users <img src="../images/ajax-loader.gif" ng-show='ajax'></h1>
+        <h1>users <img src="../images/ajax-loader.gif" ng-show='ajax'></h1>
 
         <div class="buttons">
-            <button ng-click="addUser()" type="button" class="btn btn-default pull-right"><span class="glyphicon glyphicon-plus"> </span> Add User</button>
+            <span ng-click="addUser()" class="glyphicon glyphicon-plus pull-right" title="add user"> </span>
             <div class="clearfix"></div>
         </div>
 
@@ -21,11 +21,11 @@
             <tbody>
 
                 <tr ng-repeat="user in users">
-                    <td><button ng-click="editUser()" type="button" class="btn btn-default"><span class="glyphicon glyphicon-edit"> </span> Edit User</button>
+                    <td><span ng-click="editUser()" class="glyphicon glyphicon-edit" title="edit user"></span>
                     <td>{{ user.Id }}</td>
                     <td>{{ user.Name }}</a></td>
                     <td>{{ user.Email }}</td>
-                    <td>{{ user.RoleName }}</td>
+                    <td class="text-lowercase">{{ user.RoleName }}</td>
                 </tr>
 
             </tbody>

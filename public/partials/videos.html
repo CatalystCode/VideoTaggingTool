@@ -1,11 +1,11 @@
 ﻿
 <section ng-controller="VideosController">
     <div id="videos">
-        <h1>Videos <img src="../images/ajax-loader.gif" ng-show='ajax'></h1>
+        <h1>videos <img src="../images/ajax-loader.gif" ng-show='ajax'></h1>
        
 
         <div class="buttons">
-            <button ng-click="addVideo()" type="button" class="btn btn-default pull-right"><span class="glyphicon glyphicon-plus"> </span> Add Video</button>
+            <span ng-click="addVideo()" class="glyphicon glyphicon-plus pull-right" title="add video"></span>
             <div class="clearfix"></div>
         </div>
 
@@ -14,7 +14,7 @@
                 <tr>
                     <th>action</th>
                     <th>video id</th>
-                    <th>name</th>
+                    <th>title</th>
                     <th>width</th>
                     <th>height</th>
                     <th nowrap>duration (seconds)</th>
@@ -25,11 +25,14 @@
 
                 <tr ng-repeat="video in videos">
                     <td>
-                        <button ng-click="editVideo()" type="button" class="btn btn-default"><span class="glyphicon glyphicon-edit"> </span> Edit Video</button>
-                        <button ng-hide="user.RoleName !== 'Admin'" ng-click="createJob()" type="button" class="btn btn-default"><span class="glyphicon glyphicon-cog"> </span> Create Job</button>
+                        <span ng-click="editVideo()" class="glyphicon glyphicon-edit" title="edit video"></span>
+                        <span ng-hide="user.RoleName !== 'Admin'" ng-click="createJob()" class="glyphicon glyphicon-refresh" title="create job for this video"> </span>
                     </td>
                     <td>{{ video.Id }}</td>
-                    <td><a href="{{ video.Url }}" target="_blank">{{ video.Name }}</a></td>
+                    <td>
+                        <a ng-show="video.VideoUploaded" href="{{ video.Url }}" target="_blank">{{ video.Name }}</a>
+                        <span ng-show="!video.VideoUploaded">{{ video.Name }}</span>
+                    </td>
                     <td>{{ video.Width }}</td>
                     <td>{{ video.Height }}</td>
                     <td>{{ video.DurationSeconds.toFixed(2)}}</td>
