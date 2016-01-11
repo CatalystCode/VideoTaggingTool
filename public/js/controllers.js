@@ -372,100 +372,63 @@ videoTaggingAppControllers
     
 
 .controller('VideosController', ['$scope', '$route', '$http', '$location', '$routeParams', function ($scope, $route, $http, $location, $routeParams) {
-        var videos = [];
-        var lastLabelSelected = null;
 
+        $scope.btnAllOrUnassigned = 0;
         getVideos();
 
+        $scope.ajaxStart();
         $http({ method: 'GET', url: '/api/labels' })
         .success(function (result) {
-            labels = $scope.labels = result.labels;
+            $scope.labels = result.labels;
         });
 
-        function getVideos(filter) {
+        function getVideos() {
+
+            var selectedFilters =  $("input:checkbox[name=filterLabel]:checked").map(function(){
+                return $(this).val();
+            }).toArray();
+            console.log('selected filters:', selectedFilters);
+            var filter = selectedFilters.join(',');
+
             var url = '/api/videos';
             if (filter)
-                url += "?filter=" + filter
-    
+                url += "?filter=" + filter + '&unassigned=' + $scope.btnAllOrUnassigned;
+            else
+                url += '?unassigned=' + $scope.btnAllOrUnassigned;
+
+            $scope.ajaxStart();
             $http({ method: 'GET', url: url })
                 .success(function (result) {
-                    videos = $scope.videos = result.videos;
-                    angular.forEach(videos, function (video) {
+                    $scope.videos = result.videos;
+                    angular.forEach($scope.videos, function (video) {
                         video.Labels = video.Labels && video.Labels.split(',');
                     })
+                    $scope.ajaxCompleted();
                 });
         }
-    
-        $scope.ajaxStart();
-        $http({ method: 'GET', url: '/api/videos' })
-            .success(function (result) {
-                videos = $scope.videos = result.videos;
-                $scope.ajaxCompleted();
-        });
 
-
-        $http({ method: 'GET', url: '/api/labels' })
-        .success(function (result) {
-            videos = $scope.videos = result.videos;
-                $scope.ajaxCompleted();
-            labels = $scope.labels = result.labels;
-        });
+        $scope.filterFetch = function(mode) {
+            $scope.btnAllOrUnassigned = mode;
+            getVideos();
+        }
 
         $scope.addVideo = function () {
             $location.path('/videos/0');
         }
 
-        function getVideos(filter) {
-            var url = '/api/videos';
-            if (filter)
-                url += "?filter=" + filter
-
-            $http({ method: 'GET', url: url })
-            .success(function (result) {
-                videos = $scope.videos = result.videos;
-                angular.forEach(videos, function (video) {
-                    video.Labels = video.Labels && video.Labels.split(',');
-                })
-            });
-        }
-       
-       
-        $scope.edit = function (id) {
-            $location.path('/videos/' + id);
+        $scope.editVideo = function () {
+            var videoId = this.video.Id;
+            $location.path('/videos/' + videoId);
         }
 
-        $scope.limitOnlyOne = function (label) {
-            if (lastLabelSelected == null)
-                lastLabelSelected = label;
-            else
-            {
-                if (label.selected)
-                {
-                    lastLabelSelected.selected = false;
-                    lastLabelSelected = label;
-                }
-                else
-                {
-                    lastLabelSelected = null;
-                }
-            }
+        $scope.createJob = function() {
+            var videoId = this.video.Id;
+            console.log('creating job for video id', videoId);
+            $location.path('/jobs/0').search({'videoId': videoId });
         }
 
-        $scope.filterByLabel = function () {
-            var selectedFilters = [];
-
-            angular.forEach(
-                $scope.labels,
-                function(label) {
-                    // Yes - It's a double exclamation mark (Converts to bool)
-                    if (!!label.selected) selectedFilters.push(label);
-                });
-
-            // This should get the whole array. For now - It gets only the first one
-            if (selectedFilters.length > 0)
-                getVideos(selectedFilters[0].Id);
-            else
-                getVideos();
+        $scope.filter = function() {
+            getVideos();
         }
     }])
 
@@ -550,32 +513,34 @@ videoTaggingAppControllers
 .controller('UpsertVideoController', ['$scope', '$http', '$location', '$routeParams', function ($scope, $http, $location, $routeParams) {
         
         var defaultId = -1;
-        var labels = [];
 
         $scope.videoId = defaultId;
         $scope.config = '{}';
         $scope.progress = null;
 
+        function getLabels(cb) {
+            var labels = [];
+            $http({ method: 'GET', url: '/api/labels' })
+                .success(function (result) {
+                    angular.forEach(
+                        result.labels,
+                        function(label) {
+                            label.value = label.Name;
+                            labels.push(label);
+                        });
+                    return cb(labels);
+                });
+        }
 
-        $http({ method: 'GET', url: '/api/labels' })
-            .success(function (result) {
-                angular.forEach(
-                    result.labels,
-                    function(label) {
-                        label.value = label.Name;
-                        labels.push(label);
-                    });
-
-                $('#tokenfield').tokenfield({
-                  autocomplete: {
-                    //source: ['red','blue','green','yellow','violet','brown','purple','black','white'],
+        function initTokenField(labels) {
+            $('#tokenfield').tokenfield({
+                autocomplete: {
                     source: labels,
                     delay: 100
-                  },
-                  showAutocompleteOnFocus: true
-                });
+                },
+                showAutocompleteOnFocus: true
             });
-
+        }
 
 
         if ($routeParams.id != 0) {
@@ -593,11 +558,19 @@ videoTaggingAppControllers
                 $scope.framesPerSecond = video.FramesPerSecond.toFixed(2);
                 $scope.videoUploaded = video.VideoUploaded;
                 $scope.videoLabels = video.Labels;
-                $scope.ajaxCompleted();
 
+                getLabels(function(labels){
+                    initTokenField(labels);
+                });
+
+                $scope.ajaxCompleted();
             });
         }
-
+        else {
+            getLabels(function(labels){
+                initTokenField(labels);
+            });
+        }
 
         $scope.submit = function () {
             
@@ -609,70 +582,16 @@ videoTaggingAppControllers
             if(!$scope.duration) return $scope.showError('duration was not provided');
             if(!$scope.framesPerSecond) return $scope.showError('framesPerSecond was not provided');
 
-            // First add all the labels to the database (in case there are new labels)
-            var videoLabels = $('#tokenfield').tokenfield('getTokens');
-            var missingLabels = [];
-            angular.forEach(
-                videoLabels,
-                function(videoLabel) {
-                    var found = false;
+            var labels = $('#tokenfield').tokenfield('getTokens').map(function(label) {return label.value;});
 
-                    // Do we know this label?
-                    for (var i = 0; i < labels.length; i++) {
-                        if (labels[i].Name === videoLabel.Name) {
-                            found = true;
-                            break;
-                        }
-                    }
-
-                    if (!found)
-                        missingLabels.push(videoLabel);
-                });
-
-            // Any missing labels?
-            if (missingLabels.length > 0)
-            {
-                // Add all the labels that are missing
-                var labelData = {
-                    labels: missingLabels
-                };  
-                $http({ method: 'POST', url: '/api/labels', data: labelData }).success(
-                    function (result) { 
-                        console.log('Label add result', result);
-
-                        // Merge the returned set with the missing video labels
-                        angular.forEach(
-                            videoLabels,
-                            function(videoLabel) {
-                                if (!videoLabel.Id)
-                                {
-                                    for (var j=0; j < result.labels.length; j++)
-                                    {
-                                        if (videoLabel.value == result.labels[j].Name)
-                                            videoLabel.Id = result.labels[j].Id;
-                                    }
-                                }
-                            });
-
-                        // Labels added. Now add all labels to the video
-                        submitVideoInfo(videoLabels);
-                    });                    
-            }
-
-            // No missing labels. Attached the labels to the video
-            submitVideoInfo(videoLabels);
-        }
-
-        function submitVideoInfo(videoLabels)
-        {           
-            // First add the video to the database            
+            // First add the video to the database
             var data = {
                 name: $scope.name,
                 height: $scope.height,
                 width: $scope.width,
                 durationSeconds: $scope.duration,
                 framesPerSecond: $scope.framesPerSecond,
-                labels: videoLabels
+                labels: labels
             };
             
             if ($scope.videoId != defaultId) {

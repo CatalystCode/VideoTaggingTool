@@ -105,12 +105,7 @@ span[ng-click] {
 }
 
 
-textarea:hover,
-input:hover,
-textarea:active,
-input:active,
-textarea:focus,
-input:focus,
+
 button:focus,
 button:active,
 button:hover

@@ -183,32 +183,6 @@ function updateVideoUploaded(req, cb) {
 }
 
 
-function getVideos(cb) {
-    return getDataSets({
-        sproc: 'GetVideos',
-        sets: ['videos'],
-        params: []
-    }, function(err, result){
-        if (err) return logError(err, cb);
-
-        var newResult = {
-            videos: []
-        };
-
-        try {
-            for (var i=0; i<result.videos.length; i++) {
-                newResult.videos.push(normalizeVideoRow(result.videos[i]));
-            }
-        }
-        catch (err) {
-            return logError(err, cb);
-        }
-
-        return cb(null, newResult);
-    });
-}
-
-
 function getJobstatuses(cb) {
     return getDataSets({
         sproc: 'GetJobStatuses',
@@ -304,18 +278,15 @@ function createOrModifyVideo(req, cb) {
             request.addParameter('FramesPerSecond', TYPES.Real, req.framesPerSecond);
 
             var table = {
-                columns: [
-                  { name: '[LabelId]', type: TYPES.Int }
-                ],
-                rows: []};
+                columns: [ { name: '[Name]', type: TYPES.VarChar } ],
+                rows: []
+            };
 
-            for (var i=0; i < req.labels.length; i++)
-            {
-                table.rows.push([req.labels[i].Id]);
+            for (var i=0; i < req.labels.length; i++) {
+                table.rows.push([req.labels[i]]);
             }
-            request.addParameter('udtVideoLabels', TYPES.TVP, table);
+            request.addParameter('udtLabels', TYPES.TVP, table);
 
-            
             if (req.videoJson)
                 request.addParameter('VideoJson', TYPES.NVarChar, JSON.stringify(req.videoJson));
             
@@ -553,117 +524,46 @@ function getVideoFramesByJob(id, cb) {
     });
 }
 
-function logError(err, cb) {
-    console.error('error:', err);
-    return cb(err);
-}
-function getAllLabels(cb) {
+
+function getLabels(cb) {
     return getDataSets({
         sproc: 'GetLabels',
         sets: ['labels'],
         params: []
     }, function(err, result){
-        if (err) return cb(err);
-
-        var newResult = {
-            labels: []
-        };
-
-        try {
-            for (var i=0; i<result.labels.length; i++) {
-                newResult.labels.push(result.labels[i]);
-            }
-        }
-        catch (err) {
-            console.error('error:', err);
-            return cb(err);
-        }
-
-        return cb(null, newResult);
+        if (err) return logError(err, cb);
+        console.log(result);
+        return cb(null, result);
     });
 }
 
-function createMultipleLabels(req, cb) {
-    // Prepeare the input table
-    var table = 
-        {columns: [{name: 'Name', type: TYPES.VarChar, length: 50}],
-         rows: []};
 
-    for (var i=0; i < req.labels.length; i++)
+function getVideos(opts, cb) {
+
+    console.log('getting videos', opts);
+    var table = {
+        columns: [
+            {name: 'LabelId', type: TYPES.Int}
+        ],
+        rows: []};
+
+    for (var i=0; i < opts.labels.length; i++)
     {
-        table.rows.push([req.labels[i].value]);
+        table.rows.push([opts.labels[i]]);
+    }
+
+    var params = [{name: 'udtVideoLabels', type: TYPES.TVP, value: table }];
+
+    if(opts.unassigned) {
+        console.log('adding unassigned param', opts.unassigned);
+        params.push({name: 'Unassigned', type: TYPES.Bit, value: opts.unassigned });
     }
 
     return getDataSets({
-        sproc: 'InsertMultipleLabels',
-        sets: ['labels'],
-        params: [{name: 'udtLabels', type: TYPES.TVP, value: table }]
-    }, function(err, result){
-
-        var newResult = {
-            labels: []
-        };
-
-        try {
-            for (var i=0; i<result.labels.length; i++) {
-                newResult.labels.push(result.labels[i]);
-            }
-        }
-        catch (err) {
-            console.error('error:', err);
-            return cb(err);
-        }
-
-        return cb(null, newResult);
-
-    });
-}
-
-function createMultipleVideoLabels(req, cb) {
-    connect(function(err, connection){
-        if (err) return cb(err);
-
-        try
-        {
-            // Create the request              
-            var request = new tedious.Request('InsertMultipleVideoLabels', function (err) {
-                if (err) {
-                    console.error('error calling InsertMultipleVideoLabels stored procedure', err);
-                    return cb(err);
-                }
-
-                return cb(null);
-            });
-
-            var table = {
-                columns: [
-                  {name: 'LabelId', type: TYPES.Int}
-                ],
-                rows: []};
-
-            for (var i=0; i < req.labelIds.length; i++)
-            {
-                table.rows.push([req.labelIds[i]]);
-            }
-
-            request.addParameter('udtVideoLabels', TYPES.TVP, table);
-            request.addParameter('VideoId', TYPES.Int, req.videoId);
-
-            // Execute
-            connection.callProcedure(request);
-        }
-        catch(err) {
-            return cb(err);
-        }
-    });
-}
-
-function getVideosByLabels(filterLabelId, cb) {
-    return getDataSets({
-        sproc: 'GetVideosByLabels',
+        sproc: 'GetVideos',
         sets: ['videos'],
-        params: [{name: 'LabelId', type: TYPES.Int, value: filterLabelId}]
-    }, function(err, result){
+        params: params
+    }, function(err, result) {
         if (err) return cb(err);
 
         var newResult = {
@@ -684,32 +584,10 @@ function getVideosByLabels(filterLabelId, cb) {
     });
 }
 
-function getLabelsOfVideo(videoId, cb) {
-    return getDataSets({
-        sproc: 'GetLabelsOfVideo',
-        sets: ['labels'],
-        params: [{name: 'videoId', type: TYPES.Int, value: videoId}]
-    }, function(err, result){
-        if (err) return cb(err);
-
-        var newResult = {
-            labels: []
-        };
-
-        try {
-            for (var i=0; i<result.labels.length; i++) {
-                newResult.labels.push(result.labels[i]);
-            }
-        }
-        catch (err) {
-            console.error('error:', err);
-            return cb(err);
-        }
-
-        return cb(null, newResult);
-    });
+function logError(err, cb) {
+    console.error('error:', err);
+    return cb(err);
 }
-
 
 module.exports = {
     connect: connect,
@@ -718,7 +596,6 @@ module.exports = {
     getJobDetails: getJobDetails,
     getJobstatuses: getJobstatuses,
     getRoles: getRoles,
-    getVideos: getVideos,
     getVideo: getVideo,
     createOrModifyFrame: createOrModifyFrame,
     getUserJobs: getUserJobs,
@@ -732,9 +609,6 @@ module.exports = {
     updateJobStatus: updateJobStatus,
     updateVideoUploaded: updateVideoUploaded,
     updateJobStatus: updateJobStatus,
-    getAllLabels : getAllLabels,
-    getVideosByLabels : getVideosByLabels,
-    createMultipleLabels : createMultipleLabels,
-    createMultipleVideoLabels : createMultipleVideoLabels,
-    getLabelsOfVideo : getLabelsOfVideo
+    getLabels : getLabels,
+    getVideos : getVideos
 }

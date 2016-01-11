@@ -166,23 +166,22 @@ module.exports = function (passport) {
     });
     
     router.get('/videos', AdminLoggedIn, function (req, res) {
+        var labels = [];
         var filter = req.query.filter;
+        var unassigned = req.query.unassigned == '1' ? 1 : 0;
         if (filter) {
-            console.log('getting videos labeled ' + filter);
+            var labels = filter.split(',');
+            console.log('getting videos labeled ' + labels);
+        }
 
-            return db.getVideosByLabels(filter,
-                function (err, resp) {
+        return db.getVideos({
+                labels: labels,
+                unassigned: unassigned
+            },
+            function (err, resp) {
                 if (err) return res.status(500).json({ error: err });
                 console.log('resp:', resp);
                 res.json(resp);
-            });
-        }
-       
-        console.log('getting all videos');
-        return db.getVideos(function (err, resp) {
-            if (err) return res.status(500).json({ error: err });
-            console.log('resp:', resp);
-            res.json(resp);
         });
     });
     
@@ -245,35 +244,13 @@ module.exports = function (passport) {
 
     router.get('/labels', AdminLoggedIn, function (req, res) {
         console.log('getting all labels');
-        db.getAllLabels(function (err, resp) {
+        db.getLabels(function (err, resp) {
             if (err) return res.status(500).json({ error: err });
             //console.log('resp:', resp);
             res.json(resp);
         });
     });
-    router.post('/labels', AdminLoggedIn, function (req, res) {
-        console.log('labels post');
-        db.createMultipleLabels(req.body, function (err, result) {
-            if (err) {
-                console.error(err);
-                return res.status(500).json({ error: err.message });
-            }
-            res.json(result);
-        });
-    });
 
-    router.get('/videoLabels/:id', EditorLoggedIn, function (req, res) {
-        var id = req.params.id;
-        console.log('getting video labels for video', id);
-
-        db.getLabelsOfVideo(id, function (err, result) {
-            if (err) {
-                console.error(err);
-                return res.status(500).json({ error: err.message });
-            }
-            res.json(result);
-        });
-    });
 
     return router;
 }
