@@ -34,11 +34,7 @@ app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
 
 app.use(require('./routes/login')(passport));
-app.use('/api', function(req, res, next) {
-    setTimeout(function(){
-        return next();
-    }, 1000);
-}, api(passport));
+app.use('/api', api(passport));
 
 app.use(express.static(path.join(__dirname, 'public')));
 
