@@ -608,7 +608,6 @@ module.exports = {
     createOrModifyUser: createOrModifyUser,
     updateJobStatus: updateJobStatus,
     updateVideoUploaded: updateVideoUploaded,
-    updateJobStatus: updateJobStatus,
     getLabels : getLabels,
     getVideos : getVideos
 }
