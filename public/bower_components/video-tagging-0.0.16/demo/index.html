@@ -1,0 +1,273 @@
+<!doctype html>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>Video Tagging</title>
+    
+    
+    <script src="/bower_components/webcomponentsjs/webcomponents.js"></script>
+    <link rel="import" href="video-tagging.html">
+  </head>
+  <body>
+
+    <div style="float:right;margin-right:500px;">
+      <div style="height:30px;">
+        <span style='padding-left:20px;position:relative;' for="jobdescription">Description :</span>
+        <input id='jobdescription' style='float:right;'></input>
+      </div>
+      <div style="height:30px;">
+        <span style='padding-left:20px' for="videoList">Video :</span>
+        <select id='videoList' style='float:right;width:170px'></select>
+    </div>
+    <div style="height:30px;">
+        <span style='padding-left:20px' for="user">User :</span>
+        <input id='user' style='float:right;'></input>
+</div>
+<div style="height:30px;">
+        <span style='padding-left:20px' for="tagTypeList">Location Type :</span>
+        <select id='tagTypeList' style='float:right;width:170px'>
+              <option>Point</option>
+              <option>Area</option>
+        </select>
+    </div>
+    <div style="height:30px;">
+        <span style='padding-left:20px' for="tagShapeList">Location Shape :</span>
+        <select id='tagShapeList' style='float:right;width:170px'>
+              <option>X</option>
+              <option>Rectangle</option>
+              <option>Circle</option>
+        </select>
+
+      </div>
+      <div style="height:30px;">
+
+        <span style='padding-left:20px;padding-right:20px'>Location Size :</span>
+        <input id='tagSizeInput' style='float:right;'></input>
+      </div>
+      <div style="height:30px;">
+      <div style="height:30px;">
+
+        <span style='padding-left:20px;padding-right:20px' >Multiple Locations :</span>
+        <input type="radio" name='multiTags' checked class='radio-inline' value=1 > Yes </input>
+        <input type="radio" name='multiTags' class='radio-inline' value=0 > No </input>
+      </div>
+      <div style="height:30px;">
+
+        <span style='padding-left:20px;padding-right:20px' >Possible Tags :</span>
+        <input id='tags' style='float:right;'></input>
+      </div>
+        <input type="button" value="Create Job" id='createJobButton' onclick='createJobClicked()' style='float:right;'></input>
+      </div>
+    </div>
+
+    <div style="float:left;margin-left:50px">
+
+      <select id="jobslist" onChange="jobSelectionChanged()">
+            <option>Select Job...</option>
+      </select>
+    </div>
+    
+    
+    <div >
+            <div style="width:40%;margin:100px 0 0 200px">
+                <video-tagging id='video-tagging'></video-tagging>
+            </div>
+        </div>
+   <script>
+     var jobsForUser = [];     
+
+      $(window).load(function() {
+
+            getJobsForUser();
+            populateVideos();
+      });
+
+    function getJobsForUser()
+    {
+        var jobsList = $('#jobslist');
+        jobsList.find('option:gt(0)').remove();//Reset
+        //GET jobs by userid
+        jobsList = document.getElementById("jobslist");
+        $.ajax({
+
+            type: "GET",
+            url: "http://videotagging.azurewebsites.net/users/2/jobs",
+            
+            success: function(data) {
+                
+                var arr = data.jobs;
+                for(var index = 0;index < arr.length;index++)
+                {
+                      var option = document.createElement("option");
+                      option.text = arr[index].Description;
+                      option.value = arr[index].Id;
+                      jobsList.add(option);
+                }
+            },
+            error: function(err) {
+                console.log(err); 
+            }
+        });     
+    }
+
+    function populateVideos()
+    {
+        var videoList = document.getElementById("videoList");
+        //GET videos
+        $.ajax({
+
+            type: "GET",
+            url: "http://videotagging.azurewebsites.net/videos",
+            
+            success: function(data) {
+                
+                var arr = data.videos;
+                for(var index = 0;index < arr.length;index++)
+                {
+                      var option = document.createElement("option");
+                      option.text = arr[index].Name;
+                      option.value = arr[index].Id;
+                      videoList.add(option);
+                }      
+            },
+            error: function(err) {
+                console.log(err); 
+            }
+        });  
+    }
+    
+    function jobSelectionChanged()
+    {
+        var sel = document.getElementById("jobslist");
+        if(sel.options[sel.selectedIndex].value == "Select Job...")
+        {
+            return;
+        }
+        //GET job by id - job, video, frames
+        var jobId = sel.options[sel.selectedIndex].value;
+
+        $.ajax({
+
+            type: "GET",
+            url: "http://videotagging.azurewebsites.net/jobs/" + jobId,
+            
+            success: function(data) {
+                
+                var videotagging = document.getElementById('video-tagging');
+                
+                videotagging.videoduration = data.video.DurationSeconds;
+                videotagging.videowidth = data.video.Width;
+                videotagging.videoheight = data.video.Height;
+                videotagging.framerate = data.video.FramesPerSecond;
+
+                //Convert frames to dictionary
+                var frames = {};
+                
+                var arr = data.frames;
+                //console.log(arr)
+                for(var index = 0;index < arr.length;index++)
+                {
+                    frames[arr[index].FrameIndex] = [];
+                    var tagArray = arr[index].Tags;
+                      
+                    for(var index2 = 0;index2 < tagArray.length;index2++)
+                    {
+                        frames[arr[index].FrameIndex].push( tagArray[index2])
+                          
+                    }
+                } 
+                //console.log(frames)
+                videotagging.inputFrames = frames;
+
+                var jobConfig = data.job.Config;
+                videotagging.locationshape = jobConfig.locationshape;
+                videotagging.locationtype = jobConfig.locationtype;
+                videotagging.multilocations = jobConfig.multilocations;
+                videotagging.locationsize = jobConfig.locationsize;
+                videotagging.inputtagsarray = jobConfig.tags;
+                
+                videotagging.src = data.video.Url;
+
+            },
+            error: function(err) {
+                console.log(err); 
+            }
+        });  
+    }
+    
+    function createJobClicked()
+    {
+        var job = {};
+        job.description = $('#jobdescription').val();
+        job.videoId = $('#videoList')[0].options[$('#videoList')[0].selectedIndex].value;
+
+        job.userId = $('#user').val();
+        job.createdById = job.userId;
+        job.configJson = {};
+        job.configJson.locationtype =  $('#tagTypeList')[0].options[$('#tagTypeList')[0].selectedIndex].text;
+        job.configJson.locationshape =  $('#tagShapeList')[0].options[$('#tagShapeList')[0].selectedIndex].text;
+        job.configJson.multilocations =  $('input[name = multiTags]:checked')[0].value;
+        job.configJson.locationsize =  $('#tagSizeInput').val();
+        job.configJson.tags = [];
+        var tagsArray = $('#tags').val().split(',');
+        for(var index = 0;index < tagsArray.length;index++)
+        {
+            job.configJson.tags.push(tagsArray[index])
+        }
+
+        //POST
+        $.ajax({
+
+            type: "POST",
+            url: "http://videotagging.azurewebsites.net/job",
+            dataType: "json",
+            data: JSON.stringify(job),
+            contentType: "application/json; charset=utf-8",
+
+            success: function(data) {
+            
+                getJobsForUser(); //Refresh  
+            },
+            error: function(err) {
+                console.log(err); 
+            }
+          });       
+    }
+    document.getElementById('video-tagging').addEventListener('onlocationchanged', function (e) {
+            
+            var jobslist = document.getElementById("jobslist");
+            var jobId = jobslist.options[jobslist.selectedIndex].value;
+            var inputObject = e.detail.location;
+            //console.log(inputObject);
+            var msg = {};
+            msg.tags = inputObject.locations;
+            var json = JSON.stringify(msg)
+
+            //console.log(json);
+            
+            //POST
+            $.ajax({
+
+                type: "POST",
+                url: "http://videotagging.azurewebsites.net/jobs/" + jobId + "/frames/" + inputObject.frameIndex,
+                dataType: "json",
+                data: json,
+                contentType: "application/json; charset=utf-8",
+                error: function(err) {
+                    //console.log(err); 
+                }
+            });   
+        });
+   </script>
+  </body>
+</html>

@@ -1,0 +1,836 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="optional-tags.html">
+<link rel="import" href="playback-control.html">
+
+<!--
+`<video-tagging>` control for video tagging.
+-->
+<dom-module id="video-tagging">
+
+  <template>
+    
+    <link rel="stylesheet" href="css/video-tagging.css" />
+    <link rel="stylesheet" href="css/imgareaselect-animated.css" />
+    <link rel="stylesheet" href="assets/icons/style.css">
+    
+    <div id="controlWrapper">
+      <playback-control id="playSpeedControl"></playback-control>
+      <div id='videoWrapper'>
+          <div id = "locationLabelDiv" style="width:40px;height:20px;" >
+              <span id = "locationLabelSpan"></span>
+              
+              <span id = "closeLocationImage" on-click="deleteLocation">X</span>
+          </div>
+              <canvas id="overlay"  on-click='videoClicked' class = "overlaystyle" >
+                      Your browser does not support the HTML5 canvas location.
+              </canvas>
+              <video id='vid'>
+                       Your browser does not support the video location.
+              </video>
+      </div>
+      <div id="videoControls">
+          <input id="seekBar" class="seek" type="range" min='0' value="0" step="any" required />
+          
+          <table id="videoControlsTable">
+            <tr>
+              <td class = "videoControlCell simpleControl">
+                <span id = "stepbwd" title="prev" class="icon-backward2 taggingControls" on-click='stepbwdclicked'></span>
+              </td>
+              <td class = "videoControlCell simpleControl">
+                <span id = "play-pause" title="play/pause" class="icon-play3 taggingControls" on-click='playclicked'></span>
+              </td>
+              <td class = "videoControlCell simpleControl">
+                <span id = "stepfwd" title="next" class="icon-forward3 taggingControls" on-click='stepfwdclicked'></span>
+              </td>
+              <td class = "videoControlCell simpleControl">
+                <span id = "nextuntagged"  title="first untagged frame" class="icon-next2 taggingControls" on-click='nextuntaggedclicked'></span>
+              </td>
+              <td class = "videoControlCell frameNumber">
+                <span id='frameText' class = "textElements" title="frame#"></span>
+              </td>
+              <td id="playbackCell" title="playback speed" class = "videoControlCell longControl">
+                <span id="playbackSpan"  class = "textElements" on-click="playbackSpeedClicked">x 1.0</span>
+              </td>
+              <td nowrap="nowrap" class = "videoControlCell simpleControl">
+                <span id="timeSpan" class = "textElements" ></span>
+              </td>
+              <td class = "videoControlCell simpleControl">
+                <span id = "mute" title="Mute"  class="icon-volume-mute2 taggingControls" on-click='muteclicked'></span>
+              </td>
+              <td class = "videoControlCell longControl">
+                  <input id="volumeSlider" class="volume" type="range" min=0 max = 1 value=.5 step= .1 required />
+              </td>
+            </tr>
+          </table>
+      </div>
+      <div id="videoTagControls">
+        
+          <div class = "optionalTags">
+            <div class = "optionalTagsWrapper">
+              <optional-tags id = "optionalTags" ></optional-tags>
+            </div>
+          </div>
+          <div class = "emptyFrame">
+              <span id = "emptyFrame" title="next frame"  class="icon-share taggingControls" on-click='emptyFrameClicked'></span>
+              <span id = "lockTag" title="lock tags" class="icon-pushpin taggingControls"  on-click='lockTagsClicked'></span>
+          </div>
+          <div style="clear: both">
+          </div>
+      </div> 
+</div> 
+</template>
+
+<script>
+
+  Polymer({
+
+    is: 'video-tagging',
+
+    properties: {
+
+      framerate: Number,
+      videoduration: Number,
+      videowidth: Number,
+      videoheight: Number,
+      locationshape: String,
+      locationtype: String,
+      multilocations: Number,
+      locationsize: Number, 
+      inputtagsarray:Object, 
+      inputFrames: Object,   
+      src: {
+        type: String,
+        value: '',
+        observer: 'videoSrcChanged'
+      }
+    },
+    // Element Lifecycle
+    ready: function() {
+      this.frames = {}; // Holds the data of the locations and their tags
+      this.seeking = false;//Flag for enabling control over the seek bar while the video is playing, see playingCallback function
+      this.selectedLocationId = 0;//Holds the current selected location number
+      this.lockTagsEnabled = false;
+      this.selectedTags = [];
+      this.x1, this.y1, this.x2, this.y2 = 0;//location coordinates
+      this.volumeStyle = document.createElement('style');
+      Polymer.dom(this.root).appendChild(this.volumeStyle);
+
+      //Divs and spans
+      this.controlWrapper= document.getElementById('controlWrapper');
+      this.videoWrapper= document.getElementById('videoWrapper');
+      this.videoControls = document.getElementById('videoControls');
+      this.overlay = document.getElementById('overlay');
+      this.video= document.getElementById('vid');
+      this.optionalTags= document.getElementById('optionalTags');
+      
+      this.locationLabelDiv = document.getElementById('locationLabelDiv');
+      this.locationLabelSpan = document.getElementById('locationLabelSpan');
+
+      this.timeSpan = document.getElementById("timeSpan");
+      this.lockTag = document.getElementById("lockTag");
+      this.frameText = document.getElementById("frameText");
+      this.playbackSpan = document.getElementById("playbackSpan");
+
+      // Buttons
+      this.playButton = document.getElementById("play-pause");
+      this.stepfwd = document.getElementById("stepfwd");
+      this.stepbwd = document.getElementById("stepbwd");
+      this.lockTag = document.getElementById("lockTag");
+      this.playSpeedControl = document.getElementById("playSpeedControl");
+
+      this.playbackCell = document.getElementById("playbackCell");
+      this.mute = document.getElementById("mute");
+      this.emptyFrame = document.getElementById("emptyFrame");
+      this.nextuntagged = document.getElementById("nextuntagged");
+      
+      // Sliders
+      this.seekBar = document.getElementById("seekBar");
+      this.volumeSlider = document.getElementById("volumeSlider");
+
+      this.playing = null;
+      this.ctx = this.overlay.getContext("2d");
+    },
+    
+     /**
+       * Events registration and handling
+       *
+       * @method attached
+       * Events registration and handling
+       */
+    attached: function() {
+
+      //Reset all variables to new src
+      var self = this;
+      this.video.addEventListener( "loadedmetadata", function (e) {
+
+            self.controlWrapper.style.display = "block";
+
+            //Position canvas on video
+            self.overlay.width = $('#vid').width();
+            self.overlay.height = $('#vid').height();
+            //var offset = $(self).offset();
+            self.overlay.style.top = self.video.offsetTop  + "px";
+            self.overlay.style.left = self.video.offsetLeft  + "px";
+            
+            //Init variables and controls
+            self.frames = self.inputFrames? self.inputFrames:{};
+            self.frameTime = 1/self.framerate;
+            self.lockTag.className = "icon-pushpin  taggingControls";
+            self.enableAreaSelect(self);
+            self.optionalTags.createTagControls(self.inputtagsarray);
+
+            //Init sliders
+            self.volumeSlider.value = .5;
+            self.volumeSlider.style.display = "inline-block";
+            self.volumeStyle.textContent =  '.volume::-webkit-slider-runnable-track{background-size:50% 100%}';
+            self.seekBar.max = self.video.duration;
+            initSliderStyles('.seek', self);
+
+            //lock tags is shown only in single location mode
+            self.lockTag.style.display = self.multilocations === "0"?"inline-block":"none";
+
+            self.playingCallback();
+
+      }, false );
+      
+      this.seekBar.addEventListener("mousedown", function() {
+            
+            self.seeking = true;
+          });
+      this.seekBar.addEventListener("mouseup", function() {
+            
+            self.seeking = false;
+          });
+
+      this.seekBar.addEventListener("input", function() {
+            self.seeking = false;
+            self.video.currentTime = self.seekBar.value;
+            self.playingCallback();
+
+          });
+      this.volumeSlider.addEventListener("change", function() {
+            self.video.volume = self.volumeSlider.value;
+            var max = self.volumeSlider.max;
+            var min = self.volumeSlider.min;
+            var currentValue = (max) ? (100*(self.volumeSlider.value - min)/(max - min)) : self.volumeSlider.value;
+            self.volumeStyle.textContent = '.volume::-webkit-slider-runnable-track{background-size:'+ currentValue +'% 100%} ';
+
+          });
+      this.addEventListener("playbackSelected", function(e) {
+            self.playback(e.detail.playbackValue, e.detail.playbackText);
+          });
+      this.addEventListener("ontagsubmitted", function(e) {
+              var arr = [];
+              arr.push(e.detail.tagid)
+              this.addTagsToLocation(arr);
+              this.sendLocationToHost();//Persist
+
+          });
+      this.addEventListener("ontagdeleted", function(e) {
+            
+              var locationId = this.selectedLocationId -1;//Revert to zero-based array
+              var location = this.frames[this.getCurrentFrame()][locationId];
+              for(var index = 0;index < location.tags.length;index++)
+              {
+                    if(location.tags[index] === e.detail.tagid)
+                    {
+                        location.tags.splice(index, 1);
+                        break;
+                    }
+              }
+              this.sendLocationToHost();
+          });
+      //Adjusts the canvas to the video
+      window.onresize = function(event) {
+          var topBefore = self.overlay.style.top;
+          var leftBefore = self.overlay.style.left;
+          self.overlay.style.top = self.video.offsetTop  + "px";
+          self.overlay.style.left = self.video.offsetLeft  + "px";
+          //How much the canvas moved
+          var diffTop = parseInt(self.overlay.style.top) - parseInt(topBefore);
+          var diffLeft = parseInt(self.overlay.style.left) - parseInt(leftBefore);
+
+          if(diffTop!==0 || diffLeft!== 0)//If there is selection and movement
+          {   
+              //Adjust div top and left according to canvas movement
+              //var div = document.getElementById(self.selectedLocationId); 
+              //div.style.top = parseInt(div.offsetTop) + diffTop + "px";
+              //div.style.left = parseInt(div.offsetLeft) + diffLeft + "px";
+              //self.positionLocationNameLabel(div);
+          }
+      };
+    },
+    
+
+    /**
+       * JQuery Area selector
+       * Based on JQuery plugin imgareaselect
+       * http://odyniec.net/projects/imgareaselect/usage.html
+       * 
+       * Allows selection of a rectangle
+       */
+    clearArea: function()
+    {
+        $('canvas#overlay').imgAreaSelect({
+                 
+                  show:false,
+                  hide:true
+            });
+    },
+    enableAreaSelect: function(self) {
+      $('canvas#overlay').imgAreaSelect({
+            disable: true,
+            show:false,
+            hide:true
+      });
+      if(this.locationtype.toLowerCase() === "area"){
+          var areaSelected = false;
+          
+          $('canvas#overlay').imgAreaSelect({
+                        disable: false, //enable/disable 
+                        handles: true, //grab handles when selecting the area
+                        aspectRatio: '1:1',
+                        maxWidth: self.overlay.offsetWidth, 
+                        maxHeight: self.overlay.offsetHeight,
+                        fadeSpeed: 200,
+                        
+                        onSelectEnd: function(img, selection){
+                      
+                              if (selection.width !== 0 && selection.height !== 0) {
+
+                                self.areaSelected = true;
+                                self.x1 = selection.x1;
+                                self.y1 = selection.y1;
+                                self.x2 = selection.x2;
+                                self.y2 = selection.y2;
+                                self.createLocation();
+                                self.clearArea(); 
+                              }
+                         },
+                         onSelectStart: function(img, selection){
+
+                              self.cleanAllLocationBorders();
+                         },
+                      }); 
+          }
+    },
+    
+
+
+    /**
+       * All functions related to locations management
+       * 
+       * @method positionLocationNameLabel
+       * Positions the div with the location number next to the location div.
+       * @param {div} The location div
+       */
+    //Locations management
+    positionLocationNameLabel: function(div){
+
+        this.locationLabelDiv.style.left = (div.offsetLeft + parseFloat(div.style.width, 10) - parseFloat(this.locationLabelDiv.style.width, 10)) + "px";
+
+        this.locationLabelDiv.style.top = (div.offsetTop - parseFloat(this.locationLabelDiv.style.height, 10)) + "px" ;
+
+        this.locationLabelSpan.innerHTML = div.id;
+        this.locationLabelDiv.style.display = "block";
+    },
+    createLocation: function(){
+
+        var location = this.addLocation(this.x1, this.y1, this.x2, this.y2);
+                      
+        this.drawLocation(this.x1, this.y1, this.x2, this.y2, location.name);
+        this.selectDiv(location.name);
+
+        if(this.lockTagsEnabled)
+        {   
+            //Get all selected tags and add them to current location automatically
+            //this.selectedTags was populated in this.lockTagsClicked
+            var arr = [];
+            for (i = 0; i < this.selectedTags.length; i++) {
+              
+              this.optionalTags.setSelected(this.selectedTags[i]);
+              arr.push(this.selectedTags[i].id)
+            }
+            this.addTagsToLocation(arr);
+            var self = this;
+            if(this.multilocations === "0")//Auto step functionality - Goes to next frame automatically
+            {
+                  setTimeout(function(){ self.stepfwdclicked(); }, 500);
+            }
+        }
+        this.sendLocationToHost();//Persist
+    },
+    addTagsToLocation: function(selectedTagsArray){
+          
+          var locationId = this.selectedLocationId -1;//Revert to zero-based array
+          var location = this.frames[this.getCurrentFrame()][locationId];
+          for (i = 0; i < selectedTagsArray.length; i++) {
+                    
+                  location.tags.push(selectedTagsArray[i]);
+            }
+    },
+    locationSelected: function(div) {
+          this.cleanAllLocationBorders();
+          if(div.id === this.selectedLocationId)//Unselect
+          {
+              this.optionalTags.toggleEnableButtons(false);
+              this.optionalTags.resetSelected();
+          }
+          else//select
+          {
+              div.style.border = "1px solid rgb(255, 0, 0)";
+              this.selectedLocationId = div.id;
+              this.locationLabelDiv.style.display = "block";
+
+              //Tags
+              this.optionalTags.toggleEnableButtons(true);
+              this.optionalTags.resetSelected();
+              var locations = this.frames[this.getCurrentFrame()];
+              if(locations !== undefined)
+              {
+                  var tags = this.frames[this.getCurrentFrame()][this.selectedLocationId - 1].tags;
+                  self.optionalTags.displaySelectedTags(tags);
+              }
+          }
+    },
+    deleteLocation: function(e) {
+          
+          var locations = this.frames[this.getCurrentFrame()];
+          locations.splice(this.selectedLocationId - 1, 1);
+          //Shift array left to cover removed item - Rename all locations which are higher than the deleted one,  
+          for (i = 0; i < locations.length; i++) {
+              var id = Number(locations[i].name)
+              if(id > this.selectedLocationId)
+              {
+                  locations[i].name = id - 1;
+              }
+          }
+          this.clearFrameElements();
+          this.showAllLocations();
+          this.sendLocationToHost();
+    },
+    /**
+       * @method sendLocationToHost
+       * Fires an event to send the array of locations.
+       * The host html page can listen to this event.
+       */
+    sendLocationToHost: function() {
+          var frameIndex = this.getCurrentFrame();
+          this.fire('onlocationchanged', {location: {frameIndex:frameIndex, locations:this.frames[frameIndex]}});
+    },
+    /**
+       * @method addDivToLocation
+       * Adds a transparent div to the location, the size of the location.
+       * Used for click events, hover, etc..
+       * @params {x1, y1, x2, y2} location coordinates.
+       * @param {locationId} The location id, which is the location index + 1.
+       */
+    addDivToLocation: function(x1, y1, x2, y2, locationId)
+    {
+            var offset = $(this).offset();
+            x1 = x1 + offset.left;
+            y1 = y1 + offset.top;
+            x2 = x2 + offset.left;
+            y2 = y2 + offset.top;
+
+            var div = document.createElement("div");
+            div.id = locationId;
+            div.className = "locationCanvas";
+
+            if(this.locationtype.toLowerCase() === "point")
+            {
+                  div.style.width = this.locationsize - 1 +  "px";//Compensate for 1px border
+                  div.style.height = this.locationsize - 1 +  "px";
+                  div.style.top = y1 - this.locationsize/2  +  "px";
+                  div.style.left = x1 - this.locationsize/2  +  "px";
+            }
+            if(this.locationtype.toLowerCase() === "area")
+            {
+                  div.style.width = x2 - x1  +  "px";
+                  div.style.height = y2 - y1   +  "px";
+                  div.style.top = y1  + "px";
+                  div.style.left = x1  + "px";
+            }
+            var self = this;
+            $( div )
+                      .click(function(e) {
+                         self.locationSelected(div);
+                      })
+            $( div )
+                      .mouseenter(function(e) {
+                          
+                          self.positionLocationNameLabel(this);
+                      })
+                      .mouseleave(function() {
+
+                        self.locationLabelDiv.style.display = "none";
+                        if(self.selectedLocationId === div.id){
+                              self.locationLabelDiv.style.display = "block";
+                        }
+                      });
+
+            Polymer.dom(this.$.videoWrapper).appendChild(div); 
+    },
+    /**
+       * @method cleanAllLocationBorders
+       * Removes all borders of locations
+       */
+    cleanAllLocationBorders: function()
+    {
+          $(this.videoWrapper).children(".locationCanvas").css('border-width', "0");
+          this.selectedLocationId = 0;
+    },
+    showAllLocations: function() {
+            this.clearFrameElements();//Clear canvas
+            this.cleanAllLocationBorders();//Clear selected locations
+            var offset = $(this).offset();
+            var frameIndex = this.getCurrentFrame();
+            var locations = this.frames[frameIndex];
+            
+            if(locations && locations.length > 0)
+            {
+              //Draw all locations for this frame
+              for (i = 0; i < locations.length; i++) {
+
+                  var location = locations[i];
+                  if(Object.keys(location).length === 0)//Frame was tagged as empty
+                  {
+                      this.indicateEmptyFrame(true);
+                      continue;
+                  }
+                  //Calculate x, y relative to current width and height          
+                  var widthRatio =  $('#vid').width() / location.width;
+                  var heightRatio =  $('#vid').height() / location.height ;
+                  var x1 = (location.x1 * widthRatio);
+                  var y1 = (location.y1 * heightRatio);
+                  var x2 = (location.x2 * widthRatio);
+                  var y2 = (location.y2 * heightRatio);
+
+                  x1 = (location.x1 * widthRatio);
+                  y1 = (location.y1 * heightRatio);
+                  x2 = (location.x2 * widthRatio);
+                  y2 = (location.y2 * heightRatio);
+                  this.drawLocation( x1, y1, x2, y2, location.name);
+
+                  if(locations.length === 1)//Only 1 location - select it and show tags
+                  {
+                      this.selectDiv(location.name)
+                  }
+              }
+            }
+    },
+    selectDiv: function(divId)
+    {
+        var div = document.getElementById(divId);//Gets the div that was created in draw
+        this.positionLocationNameLabel(div);
+        this.locationSelected(div);//Select new location automatically
+    },
+    /** 
+       * @method addLocation
+       * Adds a location to the array of locations per current frame.
+       * @params {x1, y1, x2, y2} location coordinates.
+       */
+    addLocation: function(x1, y1, x2, y2) {
+            
+            this.resetEmptyFrame();//Clear empty frame logic
+
+            var location = {};
+            location.x1 = x1;
+            location.y1 = y1;
+            location.x2 = x2;
+            location.y2 = y2;
+            location.width = $('#vid').width();
+            location.height = $('#vid').height();
+            location.type = this.locationtype;
+            location.locationshape = this.locationshape;
+            location.tags = [];
+            
+            var frameIndex = this.getCurrentFrame();      
+            var locations = this.frames[frameIndex];
+
+            if(this.multilocations == 1 && locations !== undefined)//The array is populated and can contain multiple locations
+            {
+                location.name = locations.length + 1;
+                this.frames[frameIndex].push(location);
+            }
+            else//Only one location allowed
+            {
+                this.clearFrameElements();
+                location.name = 1;
+                this.frames[frameIndex] = [];
+                this.frames[frameIndex].push(location);
+            }
+            return location; 
+    },
+    /** 
+       * @method drawLocation
+       * Uses HTML5 canvas to draw.
+       * @params {x1, y1, x2, y2} locationname.
+       */
+    drawLocation: function(x1, y1, x2, y2, locationname) {
+
+            this.ctx.strokeStyle = 'rgb(0,0,0)';
+            this.ctx.lineWidth = 1;
+            if(this.locationtype.toLowerCase() == "point")
+            {
+               var centerOffset = this.locationsize/2;
+
+                if(this.locationshape.toLowerCase() == "rectangle")
+                {
+                    this.ctx.strokeRect(x1 - centerOffset, y1 - centerOffset, this.locationsize, this.locationsize);
+                }
+                else if(this.locationshape.toLowerCase() == "circle")
+                {
+                    this.ctx.beginPath();
+                    this.ctx.arc(x1 , y1, this.locationsize, 0, 2*Math.PI, false);
+                    this.ctx.stroke();
+                    this.ctx.closePath();
+                }
+                else if(this.locationshape.toLowerCase() == "x")
+                {
+
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(x1 + centerOffset, y1 + centerOffset);
+                    this.ctx.lineTo(x1 - centerOffset, y1 - centerOffset);
+                    this.ctx.moveTo(x1 + centerOffset, y1 - centerOffset);
+                    this.ctx.lineTo(x1 - centerOffset, y1 + centerOffset);
+                    this.ctx.stroke();
+                    this.ctx.closePath();
+                }
+            }        
+            else if(this.locationtype.toLowerCase() == "area")
+            {
+                this.ctx.beginPath();
+                this.ctx.moveTo(x1, y1);
+                this.ctx.lineTo(x2 , y1);
+                this.ctx.moveTo(x2, y1);
+                this.ctx.lineTo(x2 , y2);
+                this.ctx.moveTo(x2, y2);
+                this.ctx.lineTo(x1 , y2);
+                this.ctx.moveTo(x1, y2);
+                this.ctx.lineTo(x1 , y1);
+                this.ctx.stroke();
+                this.ctx.closePath();
+            }
+            this.addDivToLocation(x1, y1, x2 , y2, locationname);
+    },
+    /** 
+       * @method emptyFrameClicked
+       * Creates an empty location array for the current frame, meaning that the frame is not * tagged, but has been reviewed.
+       */
+    emptyFrameClicked: function()
+    {
+        var frameIndex = this.getCurrentFrame();      
+        var locations = this.frames[frameIndex];
+        if(locations === undefined || locations.length === 0)
+        {
+            this.frames[frameIndex] = [{}];
+            this.indicateEmptyFrame(true);
+            this.sendLocationToHost();
+            if(this.lockTagsEnabled)
+            {
+                this.stepfwdclicked();
+            }
+        }
+    },
+    resetEmptyFrame: function()
+    {
+        var locations = this.frames[this.getCurrentFrame()];
+        //If there is an empty location
+        if(locations !== undefined && locations.length === 1 && Object.keys(locations[0]).length === 0)
+        {
+            //reset all for this frame
+            this.frames[this.getCurrentFrame()] = [];
+            this.clearFrameElements();
+        }
+    },
+
+
+    /**
+       * All functions related to frames management
+       * 
+       * @method clearFrameElements
+       * Clears all drawings and divs from the video area and resets tag controls.
+       */
+    clearFrameElements: function() {
+
+      //Clear drawings
+      this.ctx.clearRect(0, 0, this.overlay.width, this.overlay.height);
+      //Clear divs
+      $(this.videoWrapper).children(".locationCanvas").remove();
+      //reset tag buttons to not selected
+      this.optionalTags.resetSelected();
+      //hide location number
+      self.locationLabelDiv.style.display = "none";
+      //Clears the empty frame icon
+      this.indicateEmptyFrame(false);
+    },
+    getCurrentFrame: function() {
+      return Math.round(this.video.currentTime * this.framerate);
+    },
+    indicateEmptyFrame : function(selected)
+    {
+        if(selected)
+            this.emptyFrame.style.color = "rgb(255,255,255)";
+        else
+            this.emptyFrame.style.color = "rgb(89,89,89)";
+
+    },
+
+
+
+
+    /**
+       * Video management
+       *
+       */
+    muteclicked: function()
+    {
+          if(this.video.muted)
+          {
+              this.video.muted = false;
+              this.mute.className = "icon-volume-mute2 taggingControls padLeft";
+          }
+          else
+          {
+              this.video.muted = true;
+              this.mute.className = "icon-volume-medium taggingControls padLeft";
+          }
+    },
+    playback: function(val, text) {
+          if(val !== null)
+          {
+              this.video.playbackRate = val;
+              this.playbackSpan.innerHTML = text;
+          }
+          this.playSpeedControl.style.display = "none";
+    },
+    playbackSpeedClicked: function()
+    {
+          this.playSpeedControl.style.top = this.videoControls.offsetTop - $('#playSpeedControl').outerHeight()  + "px";
+          this.playSpeedControl.style.left = this.videoControls.offsetLeft + this.playbackCell.offsetLeft + ($('#playbackCell').outerWidth()/4)  + "px";
+          this.playSpeedControl.style.display = this.playSpeedControl.style.display === "block"?"none":"block";
+    },
+    playclicked: function() {
+          this.video.paused?this.playState():this.pauseState();
+    },
+    stepfwdclicked: function() {
+          this.pauseState();
+          this.video.currentTime = Math.min(this.video.duration, this.video.currentTime + this.frameTime);
+          this.playingCallback();
+    },
+    stepbwdclicked: function() {
+          this.pauseState();
+          if (this.video.currentTime > 0) {
+              //one frame back
+              this.video.currentTime -= this.frameTime;
+              this.playingCallback();
+          }
+    },
+    nextuntaggedclicked :function()
+    {
+          var frameIndex = this.getCurrentFrame();
+          
+          var frames = this.videoduration * this.framerate;
+          var framesForward = 1;
+          for (i = frameIndex; i < frames; i++) {
+
+                if(this.frames[i + 1] === undefined)//The next frame is a first occurence of a frame with no locations
+                {
+                      this.pauseState();
+                      this.video.currentTime += (this.frameTime * framesForward);
+                      this.playingCallback();
+                      break; 
+                }
+                framesForward++;
+            }
+    },
+    lockTagsClicked: function() {
+
+          var selTags = this.optionalTags.getSelectedTags();
+          if (!this.lockTagsEnabled && selTags.length > 0)
+          {
+              this.pauseState();
+              this.lockTagsEnabled = true;
+              this.lockTag.style.color = "rgb(255,255,255)";
+              this.selectedTags = selTags;
+              this.stepfwdclicked();
+          }
+          else
+          {
+              this.lockTagsEnabled = false;
+              this.lockTag.style.color = "rgb(89,89,89)";
+              this.selectedTags = [];
+              this.optionalTags.resetSelected();
+          }
+    },
+    videoSrcChanged: function(newValue, oldValue) { 
+
+          if(this.video)
+          {
+              this.video.src = newValue;
+
+          }
+     },
+    videoClicked: function(e) {
+            this.cleanAllLocationBorders(); 
+            if(this.locationtype.toLowerCase() !== "area")
+            {
+                var offset = $(this).offset();
+                this.x1 = (e.clientX - offset.left);
+                this.y1 = (e.clientY - offset.top);
+                this.x2 = null;
+                this.y2 = null;
+                console.log(this.x1 + " " + this.y1)
+                this.createLocation();
+            }            
+    },
+    playState: function() {
+        this.video.play();
+        
+        this.playButton.className  = "icon-pause2 taggingControls";
+        this.lockTag.className = "icon-pushpin taggingControls";
+        this.lockTagsEnabled = false;
+        var self = this;
+        
+        this.playing = setInterval(function() {
+            self.playingCallback();
+        }, 10);
+    },
+    pauseState: function() {
+
+            this.video.pause();
+            this.playButton.className  = "icon-play3 taggingControls";    
+            clearInterval(this.playing);
+    },
+    playingCallback: function() {
+            
+            this.frameText.innerHTML = this.getCurrentFrame();
+
+            var currentTime = Math.round(this.video.currentTime);
+            var remainingtTime = Math.round(this.video.duration - this.video.currentTime);
+
+            //Format using moment.js
+            currentTime = moment(currentTime, "seconds").format("HH:mm:ss");
+            remainingtTime = moment(remainingtTime, "seconds").format("HH:mm:ss");
+            this.timeSpan.innerHTML = currentTime + "  /  " + remainingtTime;
+            if(!this.seeking)
+            {
+                this.seekBar.value = this.video.currentTime;
+                //Fire event to update seek bar track
+                var evt = document.createEvent("Events");
+                evt.initEvent("seekbarchange", true, false);
+                this.seekBar.dispatchEvent(evt);
+            }
+            this.showAllLocations();
+    },
+});
+
+</script>
+<script src="../jquery/jquery.min.js"></script>
+
+<script src="js/jquery.imgareaselect.js"></script>
+<script src="../moment/moment.js"></script>
+<script src="js/sliderstyles.js"></script>
+
+</dom-module>

@@ -1,100 +1,50 @@
-var http = require('http');
+﻿
 var express = require('express');
-var bodyParser = require('body-parser')
-var db = require('./db');
+var path = require('path');
+var bodyParser = require('body-parser');
+var api = require('./routes/api');
 
-var port = process.env.PORT || 3003;
+var passport = require('passport');
+var flash    = require('connect-flash');
+var morgan       = require('morgan');
+var cookieParser = require('cookie-parser');
+var bodyParser   = require('body-parser');
+var session      = require('express-session');
+
+require('./auth/passport')(passport);
 
 var app = express();
+
+app.use(morgan('dev')); // log every request to the console
+
+app.use('/favicon.ico', function(req, res){
+    return res.end();
+});
+
+
+app.use(cookieParser()); // read cookies (needed for auth)
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 
-app.use(express.static(__dirname + '/public'));
 
-app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next();
+// required for passport
+app.use(session({ secret: 'mysecretsesson123456789' })); // session secret
+app.use(passport.initialize());
+app.use(passport.session()); // persistent login sessions
+app.use(flash()); // use connect-flash for flash messages stored in session
+
+app.use(require('./routes/login')(passport));
+app.use('/api', api(passport));
+
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(function (req, res) {
+    return res.status(404).json({ error: 'not found' });
 });
 
-app.get('/', function(req, res){
-    res.end('welcome to video tagging tool');
+app.set('port', process.env.PORT || 3000);
+
+var server = app.listen(app.get('port'), function() {
+    console.log('Express server listening on port ' + server.address().port);
 });
-
-// TODO: remove after Uzi fix
-app.post('/job', function(req, res){
-    db.createOrModifyJob(req.body, function(err, result){
-        if(err) return res.status(500).json({ error: err });
-        res.json(result);
-    });
-});
-
-app.post('/jobs', function(req, res){
-    db.createOrModifyJob(req.body, function(err, result){
-        if(err) return res.status(500).json({ error: err });
-        res.json(result);
-    });
-});
-
-
-app.get('/jobs/:id', function(req, res){
-    var id = req.params.id;
-    console.log('getting job id', id);
-    db.getJobDetails(id, function(err, resp) {
-        if(err) return res.status(500).json({ error: err });
-        console.log('resp:', resp);
-        res.json(resp);
-    });
-});
-
-app.post('/jobs/:id/frames/:index', function(req, res){
-    var options = {
-        tagsJson: req.body.tags
-    };
-    options.jobId = req.params.id;
-    options.frameIndex = req.params.index;
-
-    console.log('posing frame index', options.frameIndex, 'for job', options.jobId);
-    db.createOrModifyFrame(options, function(err, resp) {
-        if(err) return res.status(500).json({ error: err });
-        console.log('resp:', resp);
-        res.json(resp);
-    });
-});
-
-app.get('/users/:id/jobs', function(req, res){
-    var userId = req.params.id;
-    console.log('getting jobs for user id', userId);
-    db.getUserJobs(userId, function(err, resp) {
-        if(err) return res.status(500).json({ error: err });
-        console.log('resp:', resp);
-        res.json(resp);
-    });
-});
-
-app.get('/videos', function(req, res){
-    console.log('getting videos');
-    db.getVideos(function(err, resp) {
-        if(err) return res.status(500).json({ error: err });
-        console.log('resp:', resp);
-        res.json(resp);
-    });
-});
-
-app.get('/videos/:id/frames', function(req, res){
-    var id = req.params.id;
-    console.log('getting frames for video', id);
-    db.getVideoFrames(id, function(err, resp) {
-        if(err) return res.status(500).json({ error: err });
-        console.log('resp:', resp);
-        res.json(resp);
-    });
-});
-
-
-http.createServer(app).listen(port, function(err){
-    if (err) return console.error('error creating server', err);
-    console.log('listening on port', port);
-});
-
-
 
