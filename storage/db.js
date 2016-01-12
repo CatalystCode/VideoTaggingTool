@@ -32,12 +32,14 @@ function normalizeVideoRow(video) {
     video.Url = blob.getVideoUrlWithSas(video.Id);
     return video;
 }
+
 function normalizeFrameRow(frame) {
     if(frame.TagsJson)
         frame.Tags = JSON.parse(frame.TagsJson);
     delete frame.TagsJson;
     return frame;
 }
+
 function normalizeJobRow(job) {
     if(job.ConfigJson)
         job.Config = JSON.parse(job.ConfigJson);
@@ -71,7 +73,6 @@ function getJobDetails(id, cb) {
     });
 }
 
-
 function getUsers(cb) {
     return getDataSets({
         sproc: 'GetUsers',
@@ -96,8 +97,6 @@ function getUsers(cb) {
         return cb(null, newResult);
     });
 }
-
-
 
 function createOrModifyUser(req, cb) {
     connect(function (err, connection) {
@@ -135,7 +134,6 @@ function createOrModifyUser(req, cb) {
     });
 }
 
-
 function updateJobStatus(req, cb) {
     connect(function (err, connection) {
         if (err) return cb(err);
@@ -160,7 +158,6 @@ function updateJobStatus(req, cb) {
     });
 }
 
-
 function updateVideoUploaded(req, cb) {
     connect(function (err, connection) {
         if (err) return cb(err);
@@ -181,7 +178,6 @@ function updateVideoUploaded(req, cb) {
 
     });
 }
-
 
 function getJobstatuses(cb) {
     return getDataSets({
@@ -204,7 +200,6 @@ function getRoles(cb) {
         return cb(null, result);
     });
 }
-
 
 function getVideo(id, cb) {
     return getDataSets({
@@ -238,7 +233,6 @@ function getUserById(id, cb) {
     });
 }
 
-
 function getUserByEmail(email, cb) {
     return getDataSets({
         sproc: 'GetUserByEmail',
@@ -254,7 +248,6 @@ function getUserByEmail(email, cb) {
         return cb();
     });
 }
-
 
 function createOrModifyVideo(req, cb) {
     connect(function (err, connection) {
@@ -307,7 +300,6 @@ function createOrModifyVideo(req, cb) {
     });
 }
 
-
 function createOrModifyJob(req, cb) {
     connect(function(err, connection){
         if (err) return logError(err, cb);
@@ -351,7 +343,6 @@ function createOrModifyJob(req, cb) {
 
     });
 }
-
 
 function getDataSets(opts, cb) {
     connect(function(err, connection){
@@ -443,7 +434,6 @@ function getUserJobs(userId, cb) {
     });
 }
 
-
 function getAllJobs(cb) {
     return getDataSets({
         sproc: 'GetAllJobs',
@@ -497,7 +487,6 @@ function getVideoFrames(id, cb) {
     });
 }
 
-
 function getVideoFramesByJob(id, cb) {
     return getDataSets({
         sproc: 'GetVideoFramesByJob',
@@ -524,7 +513,6 @@ function getVideoFramesByJob(id, cb) {
     });
 }
 
-
 function getLabels(cb) {
     return getDataSets({
         sproc: 'GetLabels',
@@ -536,7 +524,6 @@ function getLabels(cb) {
         return cb(null, result);
     });
 }
-
 
 function getVideos(opts, cb) {
 

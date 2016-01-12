@@ -11,13 +11,11 @@ module.exports = function (passport) {
             successRedirect : '/#/jobs',
             failureRedirect : '/Login'
     }));
-    
- 
+
     router.get('/logout', function (req, res) {
         req.logout();
         res.redirect('/');
     });
-    
 
     router.get('/profile', isLoggedIn, function (req, res) {
         res.json(req.user);

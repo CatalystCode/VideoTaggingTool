@@ -21,7 +21,6 @@ function init(cb) {
     );
 }
 
-
 function upload(opts, cb) {
     init(function (err) {
         if (err) return cb(err);
@@ -71,7 +70,6 @@ function getVideoStream(opts, cb) {
         });
     });
 }
-
 
 function getVideoUrl(id) {
     return URL_FORMAT + '/' + id;

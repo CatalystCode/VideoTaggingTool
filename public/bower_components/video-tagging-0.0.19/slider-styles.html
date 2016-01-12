@@ -1,0 +1,129 @@
+<dom-module id="slider-styles">
+  <template>
+
+    <style>
+      	
+/*sliders*/
+/*Video slider*/
+.seek {
+  display: block;
+  
+  width:94%;
+  padding-left: 2em;
+  padding-right: 2em;
+  padding-top: 1em;
+  
+  border-radius: .25em;
+  background-color: transparent;
+  
+}
+.seek, 
+.seek::-webkit-slider-runnable-track, 
+.seek::-webkit-slider-thumb {
+  -webkit-appearance: none;
+}
+
+.seek::-webkit-slider-runnable-track {
+  background: linear-gradient(#C00000, #C00000) no-repeat rgb(89,89,89);
+  height: 3px;
+}
+
+
+
+.seek::-webkit-slider-thumb {
+  
+  border: none;
+  width: 1em;
+  height: 0.4em;
+  border-radius: 20%;
+  background: transparent;
+  display: block;
+}
+
+/*Volume slider*/
+.volume {
+  display: block;
+  border-radius: .25em;
+  background: transparent;
+}
+
+.volume, 
+.volume::-webkit-slider-runnable-track, 
+.volume::-webkit-slider-thumb {
+  -webkit-appearance: none;
+}
+.volume::-webkit-slider-runnable-track {
+  
+  
+  border-radius: 0.25em;
+  background: #fff;
+}
+.volume::-webkit-slider-runnable-track {
+  background-size: 50% 100%;
+}
+.volume::-webkit-slider-runnable-track {
+  background: linear-gradient(#C00000, #C00000) no-repeat rgb(89,89,89);
+  height: 3px;
+}
+input[type='range']::-moz-range-track {
+  width: 15.5em;
+  height: 0.5em;
+  border-radius: 0.25em;
+  background: #fff;
+}
+input[type='range']::-moz-range-track {
+  background: linear-gradient(#e44e4f, #e44e4f) no-repeat #fff;
+}
+input[type='range']::-ms-track {
+  border: none;
+  width: 15.5em;
+  height: 0.5em;
+  border-radius: 0.25em;
+  background: #fff;
+  color: transparent;
+}
+input[type='range']::-ms-fill-lower {
+  border-radius: 0.25em;
+  background: #e44e4f;
+}
+
+input[type='range']::-moz-range-track {
+  background-size: 50% 100%;
+}
+.volume::-webkit-slider-thumb {
+  margin-top: -0.125em;
+  border: none;
+  width: 0.75em;
+  height: 0.4em;
+  border-radius: 50%;
+  box-shadow: 0 0 0.125em #333;
+  background: #fff;
+}
+
+input[type='range']::-moz-range-thumb {
+  border: none;
+  width: 0.75em;
+  height: 0.75em;
+  border-radius: 50%;
+  box-shadow: 0 0 0.125em #333;
+  background: #fff;
+}
+input[type='range']::-ms-thumb {
+  border: none;
+  width: 0.75em;
+  height: 0.75em;
+  border-radius: 50%;
+  box-shadow: 0 0 0.125em #333;
+  background: #fff;
+}
+input[type='range']::-ms-tooltip {
+  display: none;
+}
+input[type='range']:focus {
+  outline: none;
+  
+}
+
+    </style> 
+  </template>
+</dom-module>

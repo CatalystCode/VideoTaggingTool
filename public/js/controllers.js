@@ -40,8 +40,7 @@ videoTaggingAppControllers
 }])
 
 .controller('AppController', ['$scope', '$rootScope', '$route', '$http', '$location', '$routeParams', 'state', function ($scope, $rootScope, $route, $http, $location, $routeParams, state) {
-    
-        
+
         $http({ method: 'GET', url: '/profile' })
         .success(function (user) {
             console.log('got user profile', user);
@@ -86,9 +85,7 @@ videoTaggingAppControllers
             $rootScope.error = '';
             $rootScope.info = '';
         }
-
     }])
-    
 
 .controller('JobsController', ['$scope', '$route', '$http', '$location', '$routeParams', function ($scope, $route, $http, $location, $routeParams) {
 
@@ -189,7 +186,6 @@ videoTaggingAppControllers
             $http({ method: 'GET', url: '/api/jobs/' + $routeParams.id })
             .success(function (result) {
                 console.log('jobData', result);
-              //  $scope.jobData = result;
                 $scope.jobId = result.job.Id;
                 $scope.selectedVideo = result.video;
                 $scope.selectedUser = result.user;
@@ -291,19 +287,6 @@ videoTaggingAppControllers
                     $scope.ajaxCompleted();
             });
         }
-        
-        function error(err) {
-            $scope.error = err;
-        }
-        
-        function info(msg) {
-            $scope.info = msg;
-        }
-        
-        function clearMessages() {
-            $scope.error = '';
-            $scope.info = '';
-        }
     }])
 
 .controller('UpsertUserController', ['$scope', '$http', '$location', '$routeParams', function ($scope, $http, $location, $routeParams) {
@@ -387,6 +370,7 @@ videoTaggingAppControllers
             var selectedFilters =  $("input:checkbox[name=filterLabel]:checked").map(function(){
                 return $(this).val();
             }).toArray();
+
             console.log('selected filters:', selectedFilters);
             var filter = selectedFilters.join(',');
 
@@ -503,10 +487,10 @@ videoTaggingAppControllers
             });
         }
 
-        window.addEventListener('onlocationchanged', tagHandler);
+        videoCtrl.addEventListener('onlocationchanged', tagHandler);
 
         $scope.$on('$destroy', function() {
-            window.removeEventListener('onlocationchanged', tagHandler);
+            videoCtrl.removeEventListener('onlocationchanged', tagHandler);
         })
     }])
 
@@ -666,7 +650,7 @@ videoTaggingAppControllers
                             $scope.$apply(function () {
                                 $scope.progress = null;
                             });
-                        }, 3000);
+                        }, 2000);
                     }
                 } else {
                     console.warn('Content Length not reported!');
@@ -688,7 +672,6 @@ videoTaggingAppControllers
     $scope.editUser = function () {
         $location.path('/users/' + this.user.Id);
     }
-
 
     $scope.addUser = function () {
         $location.path('/users/0');

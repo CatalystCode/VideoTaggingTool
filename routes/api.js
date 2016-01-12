@@ -6,7 +6,7 @@ var db = require('../storage/db');
 var blob = require('../storage/blob');
 
 
-module.exports = function (passport) {
+module.exports = function () {
  
     router.post('/jobs', AdminLoggedIn, function (req, res) {
         req.body.createdById = req.user.Id;
@@ -44,7 +44,6 @@ module.exports = function (passport) {
         var file;
         
         var form = new multiparty.Form({
-            maxFilesSize: 100000,
             encoding: 'utf8'
         });
         
@@ -193,7 +192,9 @@ module.exports = function (passport) {
             res.json(resp);
         });
     });
-    
+
+    // Not in use- can be used to stream the movie through the API if we
+    // want to force authentication & authorization
     router.get('/videos/:id/movie', EditorLoggedIn, function (req, res) {
         var id = req.params.id;
         console.log('getting video file', id);
@@ -290,16 +291,4 @@ function getLoggedInForRole(roles) {
         
         return next();
     }   
-}
-
-// route middleware to make sure a user is logged in
-function isLoggedIn(req, res, next) {
-    
-    // if user is authenticated in the session, carry on 
-    if (req.isAuthenticated())
-        return next();
-    
-    // if they aren't redirect them to the home page
-    //res.redirect('/');
-    return res.status(401).json({ error: 'user not logged in' });
 }
