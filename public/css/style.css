@@ -65,6 +65,27 @@ body {
   }
 }
 
+.row {
+  margin-left: 0px;
+}
+
+/* buttons */
+.btn-group>.btn:first-child:not(:last-child):not(.dropdown-toggle) {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    padding-left: 0px;
+}
+
+/* tables */
+.table>tbody>tr>td, 
+.table>tbody>tr>th, 
+.table>tfoot>tr>td, 
+.table>tfoot>tr>th, 
+.table>thead>tr>td, 
+.table>thead>tr>th {
+    padding: 8px 8px 8px 0px;
+}
+
 /* Responsive: Portrait tablets and up */
 @media screen and (min-width: 768px) {
   /* Remove the padding we set earlier */
@@ -77,7 +98,7 @@ body {
 }
 
 #content {
-    margin: 3em 1em 3em 1em;
+    width: 100%;
 }
 
 h1 {
@@ -97,7 +118,22 @@ th {
 }
 
 .container {
+  width: 100%;
+  padding: 0px;
+}
+
+.container-inner {
     width: 70%;
+    padding-left: 0px;
+    padding-right: 0px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.container-fluid {
+    width: 70%;
+    padding-left: 0px;
+    padding-right: 0px;
 }
 
 span[ng-click] {
