@@ -27,7 +27,7 @@ Please edit the file `storage/sql/schema.sql` and edit the last line with your n
 After doing that, use your favorite Sql tool (Sql management studio, Visual Studio) to connect to the Sql server and execute the schema.sql script.
 
 ## Configuration
-* Create a `/config/config.private.json` file with your configuration and secret keys when running locally. Use `config/sample.config.public.json` file as a reference.
+Create a `/config/config.private.json` file with your configuration and secret keys when running locally. Use `config/sample.config.public.json` file as a reference.
 You can start by copying this file to `/config/config.private.json` and then edit the content accordingly:
     * `sql.server`- your Sql server name
     * `sql.userName`- your Sql server name
@@ -39,7 +39,11 @@ You can start by copying this file to `/config/config.private.json` and then edi
     * `auth.google.clientSecret`- your google client secret
     * `auth.google.callbackURL`- your google client URL- this is the URL that will be called with the authentication token after the user provides his consent. Use `http://localhost:3000/.auth/login/google/callback` when working locally.
 
-Installing node modules and web app bower modules:
+> When deploying the app to the cloud, it is recommended to use the environment variables instead of the config file.
+> Take a look at `/config/index.js` file to get the names of the environment variables corresponding to the configuration items described above.
+
+
+## Installing node modules and web app bower modules:
 * Run `npm install` from the root directory
 * Run `bower install` from `public` directory (if you don’t have bower, install it by running `npm install bower -g`)
 
