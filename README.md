@@ -29,15 +29,15 @@ After doing that, use your favorite Sql tool (Sql management studio, Visual Stud
 ## Configuration
 Create a `/config/config.private.json` file with your configuration and secret keys when running locally. Use `config/sample.config.public.json` file as a reference.
 You can start by copying this file to `/config/config.private.json` and then edit the content accordingly:
-    * `sql.server`- your Sql server name
-    * `sql.userName`- your Sql server name
-    * `sql.password`- your Sql password
-    * `sql.options.database`- your Sql database name
-    * `storage.account`- your Azure storage account name
-    * `storage.key`- your Azure storage account key
-    * `auth.google.clientID`- your google client Id
-    * `auth.google.clientSecret`- your google client secret
-    * `auth.google.callbackURL`- your google client URL- this is the URL that will be called with the authentication token after the user provides his consent. Use `http://localhost:3000/.auth/login/google/callback` when working locally.
+* `sql.server`- your Sql server name
+* `sql.userName`- your Sql server name
+* `sql.password`- your Sql password
+* `sql.options.database`- your Sql database name
+* `storage.account`- your Azure storage account name
+* `storage.key`- your Azure storage account key
+* `auth.google.clientID`- your google client Id
+* `auth.google.clientSecret`- your google client secret
+* `auth.google.callbackURL`- your google client URL- this is the URL that will be called with the authentication token after the user provides his consent. Use `http://localhost:3000/.auth/login/google/callback` when working locally.
 
 > When deploying the app to the cloud, it is recommended to use the environment variables instead of the config file.
 > Take a look at `/config/index.js` file to get the names of the environment variables corresponding to the configuration items described above.
