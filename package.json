@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node server.js",
+    "start": "node server.js"
   },
   "description": "Tool for tagging videos frame by frame",
   "author": {
