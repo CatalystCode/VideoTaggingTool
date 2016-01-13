@@ -4,7 +4,6 @@
   "private": true,
   "scripts": {
     "start": "node server.js",
-    "initsql": "node storage/sql/deploy.js"
   },
   "description": "Tool for tagging videos frame by frame",
   "author": {
