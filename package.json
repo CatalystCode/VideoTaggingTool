@@ -3,15 +3,15 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
   },
   "description": "Tool for tagging videos frame by frame",
   "author": {
     "name": "Ami Turgman",
     "email": "ami.turgman@microsoft.com"
   },
-  "engines":{
-      "node": "0.10.32"
+  "engines": {
+    "node": "0.10.32"
   },
   "dependencies": {
     "azure-storage": "^0.7.0",
