@@ -3,15 +3,16 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "initsql": "node storage/sql/deploy.js"
   },
   "description": "Tool for tagging videos frame by frame",
   "author": {
     "name": "Ami Turgman",
     "email": "ami.turgman@microsoft.com"
   },
-  "engines":{
-      "node": "0.10.32"
+  "engines": {
+    "node": "0.10.32"
   },
   "dependencies": {
     "azure-storage": "^0.7.0",
@@ -27,6 +28,7 @@
     "multiparty": "^4.1.2",
     "passport": "^0.3.2",
     "passport-google-oauth": "^0.2.0",
+    "postgrator": "^2.5.0",
     "tedious": "^1.13.1"
   }
 }

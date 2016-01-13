@@ -1,0 +1,22 @@
+{
+    "sql": {
+        "server": "yourSqlServerName",
+        "userName": "yourSqlServerUsername",
+        "password": "yourSqlServerPassword",
+        "options": {
+            "database": "yourSqlDbName",
+            "encrypt": true
+        }
+    },
+    "storage": {
+        "account": "yourStorageAccount",
+        "key": "yourStorageAccountKey"
+    },
+    "auth" : {
+        "google": {
+            "clientID": "yourGoogleClientId",
+            "clientSecret": "yourGoogleClientSecret",
+            "callbackURL": "yourGoogleCallbackUrl"
+        }
+    }
+}
