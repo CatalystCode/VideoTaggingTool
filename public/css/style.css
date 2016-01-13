@@ -143,6 +143,36 @@ h1 {
     padding-left: 0px;
 }
 
+.btn-clear {
+  color: #3c3c3c;
+  background-color: #d5d5d5;
+  border: 0px;
+  border-radius: 0px;
+  }
+
+.btn-clear:hover {
+  color: #3c3c3c;
+  background-color: #a2a5a3;
+  border: 0px;
+  border-radius: 0px;
+}
+
+.alert-danger-clear {
+  color: #ff0000;
+  background-color: transparent;
+  padding-top: 0px;
+  border: 0px;
+  box-shadow: none;
+}
+
+.alert-success-clear {
+  color: #70ad47;
+  background-color: transparent;
+  padding-top: 0px;
+  border: 0px;
+  box-shadow: none;
+}
+
 /* tables */
 .table>tbody>tr>td, 
 .table>tbody>tr>th, 
