@@ -173,6 +173,32 @@ h1 {
   box-shadow: none;
 }
 
+/* button links & links */
+
+.btn-group > .btn-link {
+  padding : 0px 6px 0px 6px;
+  border-left: 1px solid #a2a5a3;
+  line-height: 1;
+}
+
+.btn-group > .btn-link:first-child {
+  padding : 0px 6px 0px 6px;
+  border-left: none;
+  line-height: 1;
+}
+
+a, a:visited, .btn-link {
+  color: #a2a5a3;
+  text-decoration: none;
+}
+
+a:hover, 
+.btn-link:hover, 
+.btn-link:focus {
+  color: #3c3c3c;
+  text-decoration: none;
+}
+
 /* tables */
 .table>tbody>tr>td, 
 .table>tbody>tr>th, 
