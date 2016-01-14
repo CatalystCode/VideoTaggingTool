@@ -143,7 +143,7 @@ h1 {
 }
 
 /* buttons */
-.btn-group>.btn:first-child:not(:last-child):not(.dropdown-toggle) {
+.btn-group>.btn:first-child:not(:last-child):not(.dropdown-toggle):not(.btn-clear) {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
     padding-left: 0px;
@@ -151,6 +151,7 @@ h1 {
 
 .btn-clear {
   color: #3c3c3c;
+  margin-right: 5px;
   background-color: #d5d5d5;
   border: 0px;
   border-radius: 0px;
