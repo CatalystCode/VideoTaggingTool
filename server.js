@@ -17,11 +17,6 @@ var app = express();
 
 app.use(morgan('dev')); // log every request to the console
 
-app.use('/favicon.ico', function(req, res){
-    return res.end();
-});
-
-
 app.use(cookieParser()); // read cookies (needed for auth)
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));

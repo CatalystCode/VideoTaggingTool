@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>video tagging</title>
+        
     <script src="bower_components/webcomponentsjs/webcomponents.js"></script>
 
     <script src="bower_components/angular/angular.min.js"></script>
@@ -47,11 +48,12 @@
         <nav class="navbar navbar-inverse" ng-controller="AppController">
             <div class="container-fluid">
                 <div class="navbar-header">
-                    <a class="navbar-brand" href="#/">video tagging</a> <br/>
+                    <a><img class="navbar-logo" src="images/logo-text.png" /></a>
+                    <!--<a class="navbar-brand" href="#/">video tagging</a>-->
                 </div>
 
                 <div>
-                    <ul class="nav navbar-nav">
+                    <ul class="nav navbar-nav navbar-left">
                         <li ng-hide="!user" ng-class="{active: $route.current.activetab == 'jobs'}"><a href="#/jobs">jobs</a></li>
                         <li ng-hide="!user || user.RoleName !== 'Admin'" ng-class="{active: $route.current.activetab == 'videos'}"><a href="#/videos">videos</a></li>
                         <li ng-hide="!user || user.RoleName !== 'Admin'" ng-class="{active: $route.current.activetab == 'users'}"><a href="#/users">users</a></li>

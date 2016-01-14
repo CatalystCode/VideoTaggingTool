@@ -22,7 +22,7 @@
             </div>
 
             <div class="form-group">
-                <label class="control-label col-sm-2" for="user">assign to</label>
+                <label class="control-label col-sm-2" for="user">owner</label>
                 <div class="col-sm-4">
                     <select class="form-control" name="user" id="user"
                             ng-options="user.Name for user in users track by user.Id"
@@ -103,16 +103,16 @@
 
             <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">
-                    <button type="submit" class="btn btn-default">submit</button>
+                    <button type="submit" class="btn btn-clear">submit</button>
                 </div>
             </div>
 
             <div class="form-group">
-                <div class="alert alert-danger col-sm-offset-2 col-sm-10" role="alert" ng-hide="!error">{{error}}</div>
+                <div class="alert alert-danger-clear col-sm-offset-2 col-sm-10" role="alert" ng-hide="!error">{{error}}</div>
             </div>
 
             <div class="form-group">
-                <div class="alert alert-success col-sm-offset-2 col-sm-10" role="alert" ng-hide="!info">{{info}}</div>
+                <div class="alert alert-success-clear col-sm-offset-2 col-sm-10" role="alert" ng-hide="!info">{{info}}</div>
             </div>
 
             
