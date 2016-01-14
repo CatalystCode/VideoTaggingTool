@@ -273,7 +273,9 @@ span[ng-click] {
     margin-right: 10px;
 }
 
-
+.job-settings>tbody>tr>td{
+    padding-left: 1em;
+}
 
 button:focus,
 button:active,

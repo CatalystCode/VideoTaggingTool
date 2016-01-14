@@ -52,7 +52,7 @@
                     <!--<td>{{ job.Config && job.Config.labels && job.Config.labels.join(',') }}</td> -->
                     <td>
                         <span class="glyphicon" ng-class="{'glyphicon glyphicon-resize-small' : this.toggle, 'glyphicon glyphicon-resize-full': !this.toggle}" ng-click="this.toggle = !this.toggle" title="job settings"></span>
-                        <table class="table table-bordered" ng-class="{'ng-hide' : !toggle}">
+                        <table class="table table-bordered job-settings" ng-class="{'ng-hide' : !toggle}">
                             <tr><td>location type</td><td>{{ job.Config.locationtype }}</td></tr>
                             <tr><td>location shape</td><td>{{ job.Config.locationshape }}</td></tr>
                             <tr><td>multi-locations</td><td>{{ job.Config.multilocations ? 'true' : 'false'}}</td></tr>
