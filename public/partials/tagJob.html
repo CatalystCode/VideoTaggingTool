@@ -11,8 +11,8 @@
         </div>
 
         <div class="buttons btn-group" role="group" style="margin-top: 2em;">
-            <button ng-hide="!user" ng-click="updateJobStatus('Pending')" type="button" class="btn btn-default">send for review</button>
-            <button ng-hide="!user || user.RoleName !== 'Admin'" ng-click="updateJobStatus('Approved')" type="button" class="btn btn-default">approve</button>
+            <button ng-hide="!user" ng-click="updateJobStatus('Pending')" type="button" class="btn btn-clear">send for review</button>
+            <button ng-hide="!user || user.RoleName !== 'Admin'" ng-click="updateJobStatus('Approved')" type="button" class="btn btn-clear">approve</button>
         </div>
 
         <div class="row">
