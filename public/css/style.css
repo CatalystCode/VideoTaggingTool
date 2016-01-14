@@ -7,10 +7,6 @@ h1 {
   color: #3c3c3c;
 }
 
-.navbar-inverse {
-  border-radius: 0px;   
-}
-
 .footer {
   padding-top: 10px;
   padding-bottom: 40px;
@@ -57,11 +53,20 @@ h1 {
   border-radius: 0 0 5px 5px;
 }
 .nav {
-  padding-top: 15px;
+  padding-top: 25px;
 }
+
 .nav li {
   display: inline;
   padding: 0px 3px 0px 7px;
+}
+.navbar-inverse {
+  border-radius: 0px;   
+}
+
+.navbar-left  li {
+    border-left: solid 1px #a2a5a3;
+    line-height: 0.5;
 }
 .navbar-left  li:first-child {
     border-left: none;
@@ -70,7 +75,8 @@ h1 {
     position: relative;
     display: block;
     text-align: center;
-    padding: 3px;
+    padding: 0px 3px 0px 3px;
+    line-height: 1;
 }
 
 .navbar-inverse .navbar-nav > .active > a, 
