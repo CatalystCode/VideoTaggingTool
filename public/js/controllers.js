@@ -19,10 +19,10 @@ videoTaggingAppControllers
     });
         
     $rootScope.jobSetup = {
-        locationTypes: { values: ['Area', 'Point'], default: 'Area' },
-        locationShapes: { values: ['Rectangle', 'Circle'], default: 'Rectangle' },
-        multiLocations: { values: [{ id: '0', name: 'False' }, { id: '1', name: 'True' }], default: '1' },
-        locationSizes: { values: Array.apply(null, Array(100)).map(function (item, i) { return i + 1 }), default: 20 }
+        regionTypes: { values: ['Rectangle', 'Point'], default: 'Rectangle' },
+        regionShapes: { values: ['X', 'Square'], default: 'Square' },
+        multiRegions: { values: [{ id: '0', name: 'False' }, { id: '1', name: 'True' }], default: '1' },
+        regionSizes: { values: Array.apply(null, Array(100)).map(function (item, i) { return i + 1 }), default: 20 }
     };
 
     $rootScope.jobStatuses = {
@@ -175,10 +175,10 @@ videoTaggingAppControllers
         var defaultId = -1;
         $scope.jobId = defaultId;
 
-        $scope.locationtype = $scope.jobSetup.locationTypes.default;
-        $scope.locationshape = $scope.jobSetup.locationShapes.default;
-        $scope.multilocations = $scope.jobSetup.multiLocations.default;
-        $scope.locationsize = $scope.jobSetup.locationSizes.default;
+        $scope.regiontype = $scope.jobSetup.regionTypes.default;
+        $scope.regionshape = $scope.jobSetup.regionShapes.default;
+        $scope.multiregions = $scope.jobSetup.multiRegions.default;
+        $scope.regionsize = $scope.jobSetup.regionSizes.default;
         $scope.selectedStatus = { Id: $scope.jobStatuses['Active'] };
 
         if ($routeParams.id != 0) {
@@ -194,10 +194,10 @@ videoTaggingAppControllers
                 $scope.description = result.job.Description;
                 
                 $scope.config = result.job.Config;
-                $scope.locationtype = result.job.Config.locationtype;
-                $scope.locationshape = result.job.Config.locationshape;
-                $scope.multilocations = result.job.Config.multilocations;
-                $scope.locationsize = result.job.Config.locationsize;
+                $scope.regiontype = result.job.Config.regiontype;
+                $scope.regionshape = result.job.Config.regionshape;
+                $scope.multiregions = result.job.Config.multiregions;
+                $scope.regionsize = result.job.Config.regionsize;
 
                 $scope.tags = result.job.Config && result.job.Config.tags && result.job.Config.tags.join(', ');
                 $scope.ajaxCompleted();
@@ -244,10 +244,10 @@ videoTaggingAppControllers
             if(!$scope.selectedUser || !$scope.selectedUser.Id) return $scope.showError('user was not provided');
             if(!$scope.description) return $scope.showError('description was not provided');
             if(!$scope.selectedStatus || !$scope.selectedStatus.Id) return $scope.showError('status was not provided');
-            if(!$scope.locationtype) return $scope.showError('locationtype was not provided');
-            if(!$scope.locationshape) return $scope.showError('locationshape was not provided');
-            if(!$scope.multilocations) return $scope.showError('multilocations was not provided');
-            if(!$scope.locationsize) return $scope.showError('locationsize was not provided');
+            if(!$scope.regiontype) return $scope.showError('regiontype was not provided');
+            if(!$scope.regionshape) return $scope.showError('regionshape was not provided');
+            if(!$scope.multiregions) return $scope.showError('multiregions was not provided');
+            if(!$scope.regionsize) return $scope.showError('regionsize was not provided');
 
             var data = {
                 videoId: $scope.selectedVideo.Id,
@@ -255,10 +255,10 @@ videoTaggingAppControllers
                 description: $scope.description,
                 statusId: $scope.selectedStatus.Id,
                 configJson: {
-                    locationtype: $scope.locationtype,
-                    locationshape: $scope.locationshape,
-                    multilocations: $scope.multilocations,
-                    locationsize: $scope.locationsize,
+                    regiontype: $scope.regiontype,
+                    regionshape: $scope.regionshape,
+                    multiregions: $scope.multiregions,
+                    regionsize: $scope.regionsize,
                     tags: ($scope.tags && $scope.tags.split(',').map(function (tag) { return tag.trim(); })) || ''
                 }
             };
@@ -433,16 +433,17 @@ videoTaggingAppControllers
                 videoCtrl.videoheight = jobData.video.Height;
                 videoCtrl.framerate = jobData.video.FramesPerSecond;
 
-                videoCtrl.locationshape = jobData.job.Config.locationshape;
-                videoCtrl.locationtype = jobData.job.Config.locationtype;
-                videoCtrl.multilocations = jobData.job.Config.multilocations;
-                videoCtrl.locationsize = jobData.job.Config.locationsize;
+                videoCtrl.regionshape = jobData.job.Config.regionshape;
+                videoCtrl.regiontype = jobData.job.Config.regiontype;
+                videoCtrl.multiregions = jobData.job.Config.multiregions;
+                videoCtrl.regionsize = jobData.job.Config.regionsize;
 
                 videoCtrl.inputtagsarray = jobData.job.Config.tags;
 
                 $http({ method: 'GET', url: '/api/jobs/' + $routeParams.id + '/frames' })
                     .success(function (result) {
-                        videoCtrl.inputFrames = result.frames;
+                        videoCtrl.inputframes = result.frames;
+                        console.log(videoCtrl.inputframes)
                         videoCtrl.src = '';
                         console.log('video url', jobData.video.Url);
                         videoCtrl.src = jobData.video.Url;
@@ -471,11 +472,9 @@ videoTaggingAppControllers
 
         function tagHandler(e) {
             console.log('handler called');
-            var inputObject = e.detail.location;
-
+            var inputObject = e.detail.frame;
             var msg = {};
-            msg.tags = inputObject.locations;
-            
+            msg.tags = inputObject.regions;
             $http({ method: 'POST', url: '/api/jobs/' + jobId + '/frames/' + inputObject.frameIndex, data: msg })
             .success(function (result) {
                     console.log('frame saved successfully');
@@ -487,10 +486,10 @@ videoTaggingAppControllers
             });
         }
 
-        videoCtrl.addEventListener('onlocationchanged', tagHandler);
+        videoCtrl.addEventListener('onregionchanged', tagHandler);
 
         $scope.$on('$destroy', function() {
-            videoCtrl.removeEventListener('onlocationchanged', tagHandler);
+            videoCtrl.removeEventListener('onregionchanged', tagHandler);
         })
     }])
 
