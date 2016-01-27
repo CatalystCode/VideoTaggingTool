@@ -1,0 +1,85 @@
+<!doctype html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>Video Tagging</title>
+    <link rel="import" href="video-tagging.html">
+  </head>
+  <body>
+    <div style="float:right;margin-right:400px">
+      <select id="jobslist" onChange="jobSelectionChanged()">
+            <option>Select Job...</option>
+            <option value="1">Job1</option>
+            <option value="2">Job2</option>
+      </select>
+    </div>
+    <div >
+        <div style="width:40%;margin:100px 0 0 200px">
+            <video-tagging id='video-tagging'></video-tagging>
+        </div>
+    </div>
+   <script>
+
+    var jobList = [];
+    var job1 = {};
+    job1.Config = {"regiontype":"Rectangle", "multiregions":"0"};
+    job1.Config.tags = ["horse","bird","brown","white"];
+    job1.DurationSeconds = 30.07;
+    job1.FramesPerSecond = 29.97;
+    job1.Height = 480;
+    job1.Width = 640;
+    job1.Description = "Job1";
+    job1.id = 1;
+    job1.video = "WF.mp4";
+
+    var job2 = {};
+    job2.Config = {"regionshape":"square", "regiontype":"Point", "regionsize":"40", "multiregions":"1"};
+    job2.Config.tags = ["horse","bird","brown","white"];
+    job2.DurationSeconds = 643;
+    job2.FramesPerSecond = 29;
+    job2.Height = 576;
+    job2.Width = 1024;
+    job2.Description = "Job2";
+    job2.id = 2;
+    job2.video = "WF1.mp4";
+
+    jobList.push(job1)
+    jobList.push(job2)
+
+    function jobSelectionChanged(){
+        var sel = document.getElementById("jobslist");
+        if(sel.options[sel.selectedIndex].value == "Select Job..."){
+            return;
+        }
+        //Get job by id 
+        var jobId = sel.options[sel.selectedIndex].value;
+        var job = $.grep(jobList, function(e){ return e.id === parseInt(jobId)})
+
+        var videotagging = document.getElementById('video-tagging');
+                
+        videotagging.videoduration = job[0].DurationSeconds;
+        videotagging.videowidth = job[0].Width;
+        videotagging.videoheight = job[0].Height;
+        videotagging.framerate = job[0].FramesPerSecond;
+
+        var jobConfig = job[0].Config;
+        videotagging.regionshape = jobConfig.regionshape;
+        videotagging.regiontype = jobConfig.regiontype;
+        videotagging.multiregions = jobConfig.multiregions;
+        videotagging.regionsize = jobConfig.regionsize;
+        videotagging.inputtagsarray = jobConfig.tags;
+        
+        videotagging.src = job[0].video;
+    }
+    
+    document.getElementById('video-tagging').addEventListener('onregionchanged', function (e) {
+            
+            //Persist
+            console.log(e)
+        });
+   </script>
+
+  </body>
+</html>

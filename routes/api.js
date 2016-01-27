@@ -237,9 +237,15 @@ module.exports = function () {
     router.get('/videos/:id/frames', EditorLoggedIn, function (req, res) {
         var id = req.params.id;
         console.log('getting frames for video', id);
-        db.getVideoFrames(id, function (err, resp) {
+        db.getVideo(id, function (err, video) {
             if (err) return logError(err, res);
-            res.json(resp);
+            db.getVideoFrames(id, function (err, resp) {
+                if (err) return logError(err, res);
+                res.setHeader("Content-Type", "application/json");
+                res.setHeader("Content-Disposition", "attachment;filename=" + video.Name + ".tags.json");
+                res.setHeader("Content-Transfer-Encoding", "utf-8");
+                res.json(resp);
+            });
         });
     });
 
@@ -247,11 +253,9 @@ module.exports = function () {
         console.log('getting all labels');
         db.getLabels(function (err, resp) {
             if (err) return res.status(500).json({ error: err });
-            //console.log('resp:', resp);
             res.json(resp);
         });
     });
-
 
     return router;
 }

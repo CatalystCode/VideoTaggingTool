@@ -411,6 +411,12 @@ videoTaggingAppControllers
             $location.path('/jobs/0').search({'videoId': videoId });
         }
 
+        $scope.download = function () {
+            var videoId = this.video.Id;
+            var url = '/api/videos/' + videoId + '/frames';
+            window.open(url, '_blank');
+        }
+
         $scope.filter = function() {
             getVideos();
         }
