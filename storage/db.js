@@ -475,7 +475,7 @@ function getVideoFrames(id, cb) {
                 var frame = normalizeFrameRow(result.frames[i]);
                 newResult.frames.push({
                     frameIndex: frame.FrameIndex,
-                    tags: frame.Tags
+                    frameTags: frame.Tags
                 });
             }
         }
