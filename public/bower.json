@@ -24,7 +24,8 @@
     "jquery": "~2.1.4",
     "underscore": "~1.8.3",
     "bootstrap-tokenfield": "~0.12.1",
-    "jquery-ui": "~1.11.4"
+    "jquery-ui": "~1.11.4",
+    "video-tagging": "~0.0.24"
   },
   "resolutions": {
     "bootstrap": "~3.3.6",

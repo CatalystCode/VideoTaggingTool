@@ -20,7 +20,6 @@ videoTaggingAppControllers
         
     $rootScope.jobSetup = {
         regionTypes: { values: ['Rectangle', 'Point'], default: 'Rectangle' },
-        regionShapes: { values: ['X', 'Square'], default: 'Square' },
         multiRegions: { values: [{ id: '0', name: 'False' }, { id: '1', name: 'True' }], default: '1' },
         regionSizes: { values: Array.apply(null, Array(100)).map(function (item, i) { return i + 1 }), default: 20 }
     };
@@ -176,7 +175,6 @@ videoTaggingAppControllers
         $scope.jobId = defaultId;
 
         $scope.regiontype = $scope.jobSetup.regionTypes.default;
-        $scope.regionshape = $scope.jobSetup.regionShapes.default;
         $scope.multiregions = $scope.jobSetup.multiRegions.default;
         $scope.regionsize = $scope.jobSetup.regionSizes.default;
         $scope.selectedStatus = { Id: $scope.jobStatuses['Active'] };
@@ -195,7 +193,6 @@ videoTaggingAppControllers
                 
                 $scope.config = result.job.Config;
                 $scope.regiontype = result.job.Config.regiontype;
-                $scope.regionshape = result.job.Config.regionshape;
                 $scope.multiregions = result.job.Config.multiregions;
                 $scope.regionsize = result.job.Config.regionsize;
 
@@ -245,7 +242,6 @@ videoTaggingAppControllers
             if(!$scope.description) return $scope.showError('description was not provided');
             if(!$scope.selectedStatus || !$scope.selectedStatus.Id) return $scope.showError('status was not provided');
             if(!$scope.regiontype) return $scope.showError('regiontype was not provided');
-            if(!$scope.regionshape) return $scope.showError('regionshape was not provided');
             if(!$scope.multiregions) return $scope.showError('multiregions was not provided');
             if(!$scope.regionsize) return $scope.showError('regionsize was not provided');
 
@@ -256,7 +252,6 @@ videoTaggingAppControllers
                 statusId: $scope.selectedStatus.Id,
                 configJson: {
                     regiontype: $scope.regiontype,
-                    regionshape: $scope.regionshape,
                     multiregions: $scope.multiregions,
                     regionsize: $scope.regionsize,
                     tags: ($scope.tags && $scope.tags.split(',').map(function (tag) { return tag.trim(); })) || ''
@@ -439,7 +434,6 @@ videoTaggingAppControllers
                 videoCtrl.videoheight = jobData.video.Height;
                 videoCtrl.framerate = jobData.video.FramesPerSecond;
 
-                videoCtrl.regionshape = jobData.job.Config.regionshape;
                 videoCtrl.regiontype = jobData.job.Config.regiontype;
                 videoCtrl.multiregions = jobData.job.Config.multiregions;
                 videoCtrl.regionsize = jobData.job.Config.regionsize;
