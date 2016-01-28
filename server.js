@@ -37,7 +37,7 @@ app.use(function (req, res) {
     return res.status(404).json({ error: 'not found' });
 });
 
-app.set('port',  3000);
+app.set('port', process.env.PORT || 3000);
 
 var server = app.listen(app.get('port'), function() {
     console.log('Express server listening on port ' + server.address().port);
