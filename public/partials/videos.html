@@ -1,0 +1,75 @@
+﻿
+<section ng-controller="VideosController">
+    <div id="videos">
+        <h1>videos <img src="../images/ajax-loader.gif" ng-show='ajax'></h1>
+
+        <div class="Container">
+            <div class="row" style="margin-bottom:2em">
+
+                <div class="buttons">
+                    <span ng-click="addVideo()" class="glyphicon glyphicon-plus pull-right" title="add video"></span>
+
+                    <div class="btn-group" role="group">
+                        <button ng-class="{active: btnAllOrUnassigned === '0'}" ng-click="filterFetch(0)" type="button" class="btn btn-link">all</button>
+                        <button ng-class="{active: btnAllOrUnassigned === '1'}" ng-click="filterFetch(1)" type="button" class="btn btn-link">unassigned</button>
+                    </div>
+
+                    <div class="clearfix"></div>
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col-xs-2 form-group video-filters">
+                    <span class="glyphicon glyphicon-filter"></span>
+                    <div class="checkbox" ng-repeat="label in labels">
+                        <label><input type="checkbox" ng-model='label.selected' ng-change="filter()" name="filterLabel" value="{{ label.Id }}">{{ label.Name }}</label>
+                    </div>
+                </div>
+
+                <div class="col-xs-10">
+                    <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>action</th>
+                        <th>id</th>
+                        <th>title</th>
+                        <th>width</th>
+                        <th>height</th>
+                        <th nowrap>duration (secs)</th>
+                        <th>FPS</th>
+                        <th>labels</th>
+                        <th>download</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    <tr ng-repeat="video in videos">
+                        <td>
+                            <span ng-click="editVideo()" class="glyphicon glyphicon-edit" title="edit video"></span>
+                            <span ng-click="createJob()" class="glyphicon glyphicon-refresh" title="create job for this video"> </span>
+                        </td>
+                        <td>{{ video.Id }}</td>
+                        <td>
+                            <a ng-show="video.VideoUploaded" href="{{ video.Url }}" target="_blank">{{ video.Name }}</a>
+                            <span ng-show="!video.VideoUploaded">{{ video.Name }}</span>
+                        </td>
+                        <td>{{ video.Width }}</td>
+                        <td>{{ video.Height }}</td>
+                        <td>{{ video.DurationSeconds.toFixed(2)}}</td>
+                        <td>{{ video.FramesPerSecond.toFixed(2) }}</td>
+                        <td>
+                            <span ng-repeat="label in video.Labels">
+                                    <span class="label label-default">{{ label }}</span>
+                            </span>
+                        </td>
+                        <td><span ng-click="download()" class="glyphicon glyphicon-download"></span></td>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+  
+</section>

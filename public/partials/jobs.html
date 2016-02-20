@@ -1,0 +1,71 @@
+﻿
+<section ng-controller="JobsController">
+    <div>
+        <h1>jobs <img src="../images/ajax-loader.gif" ng-show='ajax'></h1>
+
+
+        <div class="buttons">
+            <span ng-hide="user.RoleName !== 'Admin'" ng-click="addJob()" class="glyphicon glyphicon-plus pull-right" title="add job"></span>
+
+            <div class="btn-group" role="group">
+                <button ng-hide="user.RoleName !== 'Admin'" ng-class="{active: btnMeOrAll === 'all'}" ng-click="filterFetch('all')" type="button" class="btn btn-link">all</button>
+                <button ng-class="{active: btnMeOrAll === 'me'}" ng-click="filterFetch('me')" type="button" class="btn btn-link">assigned to me</button>
+            </div>
+
+            <div class="btn-group" role="group">
+                <button ng-class="{active: btnStatus === 'all'}"  ng-click="filter('all')" type="button" class="btn btn-link">all ({{ count() }})</button>
+                <button ng-class="{active: btnStatus === status.Name}" ng-click="filter(status.Name)" ng-repeat="status in jobStatuses" type="button" class="btn btn-link text-lowercase">{{ status.Name }} ({{ count(status.Id) }})</button>
+            </div>
+
+            <div class="clearfix"></div>
+        </div>
+
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>action</th>
+                    <th>id</th>
+                    <th>description</th>
+                    <th>status</th>
+                    <th nowrap>creation date</th>
+                    <th nowrap>created by</th>
+                    <th>owner</th>
+                    <th>approved</th>
+                    <th>video</th>
+                    <th nowrap>settings</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="job in jobs">
+                    <td nowrap>
+                        <span ng-click="editJob()" ng-hide="user.RoleName !== 'Admin'" class="glyphicon glyphicon-edit" title="edit job"></span>
+                        <span ng-click="tagJob()" class="glyphicon glyphicon-tag" title="tag job"></span>
+                    </td>
+                    <td>{{ job.JobId }}</td>
+                    <td>{{ job.Description }}</td>
+                    <td>{{ job.StatusName }}</td>
+                    <td>{{ job.CreateDate | date:'dd-MM-yyyy' }}</td>
+                    <td>{{ job.CreatedByName }}</td>
+                    <td>{{ job.UserName }}</td>
+                    <td>{{ job.ReviewedByName }}</td>
+                    <td>{{ job.VideoName }}</td>
+                    <!--<td>{{ job.Config && job.Config.labels && job.Config.labels.join(',') }}</td> -->
+                    <td>
+                        <span class="glyphicon" ng-class="{'glyphicon glyphicon-resize-small' : this.toggle, 'glyphicon glyphicon-resize-full': !this.toggle}" ng-click="this.toggle = !this.toggle" title="job settings"></span>
+                        <table class="table table-bordered job-settings" ng-class="{'ng-hide' : !toggle}">
+                            <tr><td>region type</td><td>{{ job.Config.regiontype }}</td></tr>
+                            <tr><td>multi-regions</td><td>{{ job.Config.multiregions ? 'true' : 'false'}}</td></tr>
+                            <tr><td>region size</td><td>{{ job.Config.regionsize }}</td></tr>
+                            <tr><td>tags</td><td>{{ job.Config && job.Config.tags && job.Config.tags.join(', ') }}</td></tr>
+                        </table>
+
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+
+  
+</section>

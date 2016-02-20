@@ -1,0 +1,36 @@
+﻿
+<section ng-controller="UsersController">
+    <div>
+        <h1>users <img src="../images/ajax-loader.gif" ng-show='ajax'></h1>
+
+        <div class="buttons">
+            <span ng-click="addUser()" class="glyphicon glyphicon-plus pull-right" title="add user"> </span>
+            <div class="clearfix"></div>
+        </div>
+
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>action</th>
+                    <th>id</th>
+                    <th>name</th>
+                    <th>email</th>
+                    <th>role</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <tr ng-repeat="user in users">
+                    <td><span ng-click="editUser()" class="glyphicon glyphicon-edit" title="edit user"></span>
+                    <td>{{ user.Id }}</td>
+                    <td>{{ user.Name }}</a></td>
+                    <td>{{ user.Email }}</td>
+                    <td class="text-lowercase">{{ user.RoleName }}</td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+  
+</section>

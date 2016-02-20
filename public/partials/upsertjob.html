@@ -1,0 +1,115 @@
+﻿
+<section ng-controller="UpsertJobController">
+    <div>
+        <h1>{{ description }} <img src="../images/ajax-loader.gif" ng-show='ajax'></h1>
+        <form class="form-horizontal" role="form" ng-submit="submit()">
+
+            <div class="form-group" ng-show="jobId != -1">
+                <label class="control-label col-sm-2">id</label>
+                <div class="col-sm-2">
+                    <span class="form-control" id="id" disabled>{{jobId}}</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="video">video</label>
+                <div class="col-sm-4">
+                    <select class="form-control" name="video" id="video"
+                            ng-options="video.Name for video in videos track by video.Id"
+                            ng-model="selectedVideo"
+                            ng-selected="video.Id == selectedVideo.Id"></select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="user">owner</label>
+                <div class="col-sm-4">
+                    <select class="form-control" name="user" id="user"
+                            ng-options="user.Name for user in users track by user.Id"
+                            ng-model="selectedUser"
+                            ng-selected="user.Id == selectedUser.Id"></select>
+                </div>
+            </div>
+        
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="status">status</label>
+                <div class="col-sm-3">
+
+                    <select class="form-control" name="status" id="status"
+                            ng-options="status.Name for status in jobStatuses track by status.Id"
+                            ng-model="selectedStatus"
+                            ng-selected="status.Id == selectedStatus.id"></select>
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="description">description</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="description" placeholder="Enter description" ng-model="description">
+                </div>
+            </div>
+         
+
+            <div class="form-group">
+                <label class="control-label col-sm-2">settings</label>
+                <div class="col-sm-10">
+                    <div class="form-group">
+                        <label class="control-label col-sm-2" for="regionType">region type</label>
+                        <div class="col-sm-3">
+                            <select class="form-control" name="regiontype" id="regiontype"
+                                    ng-options="opt as opt for opt in jobSetup.regionTypes.values"
+                                    ng-model="regiontype"
+                                    ng-selected="opt == regiontype"></select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-2" for="multiregions">multi regions</label>
+                        <div class="col-sm-3">
+                            <select class="form-control" ng-model="multiregions" name="multiregions" id="multiregions">
+                                <option ng-repeat="o in jobSetup.multiRegions.values" ng-selected="{{o.id==multiregions}}" value="{{o.id}}">
+                                    {{o.name}}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-2" for="regionsize">Location Size</label>
+                        <div class="col-sm-3">
+                            <select class="form-control" ng-model="regionsize" name="regionsize" id="regionsize">
+                                <option ng-repeat="o in jobSetup.regionSizes.values" ng-selected="{{o==regionsize}}" value="{{o}}">
+                                    {{o}}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-2" for="tags">tags (comma separated)</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="tags" ng-model="tags">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-clear">submit</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="alert alert-danger-clear col-sm-offset-2 col-sm-10" role="alert" ng-hide="!error">{{error}}</div>
+            </div>
+
+            <div class="form-group">
+                <div class="alert alert-success-clear col-sm-offset-2 col-sm-10" role="alert" ng-hide="!info">{{info}}</div>
+            </div>
+
+            
+        </form>
+
+    </div>
+
+  
+</section>

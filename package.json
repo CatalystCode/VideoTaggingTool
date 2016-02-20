@@ -1,0 +1,32 @@
+{
+  "name": "VideoTaggingTool",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node server.js"
+  },
+  "description": "Tool for tagging videos frame by frame",
+  "author": {
+    "name": "Ami Turgman",
+    "email": "ami.turgman@microsoft.com"
+  },
+  "engines": {
+    "node": "0.10.32"
+  },
+  "dependencies": {
+    "azure-storage": "^0.7.0",
+    "body-parser": "~1.8.1",
+    "bower": "^1.7.2",
+    "connect-flash": "^0.1.1",
+    "cookie-parser": "^1.4.0",
+    "debug": "~2.0.0",
+    "express": "~4.9.0",
+    "express-session": "^1.12.1",
+    "googleapis": "^2.1.7",
+    "morgan": "^1.6.1",
+    "multiparty": "^4.1.2",
+    "passport": "^0.3.2",
+    "passport-google-oauth": "^0.2.0",
+    "tedious": "^1.13.1"
+  }
+}

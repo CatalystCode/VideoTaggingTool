@@ -1,0 +1,93 @@
+﻿
+<section ng-controller="UpsertVideoController">
+    <div>
+        <h1><img src="../images/ajax-loader.gif" ng-show='ajax'></h1>
+        <form class="form-horizontal" role="form" ng-submit="submit()">
+
+            <div class="form-group" ng-show="videoId != -1">
+                <label class="control-label col-sm-2" for="id">id</label>
+
+                <div class="col-sm-2">
+                    <span class="form-control" id="id" disabled>{{videoId}}</span>
+                    <span ng-show="videoUploaded"><a ng-hide="videoId === '[new]'" href="{{url}}" target="_blank">preview</a></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="name">title</label>
+                <div class="col-sm-3">
+                    <input type="text" class="form-control" id="name" placeholder="Enter name" ng-model="name">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="height">Height</label>
+                <div class="col-sm-3">
+                    <input type="text" class="form-control" id="height" placeholder="Enter height" ng-model="height">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="width">width</label>
+                <div class="col-sm-3">
+                    <input type="text" class="form-control" id="width" placeholder="Enter width" ng-model="width">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="duration">duration (Seconds)</label>
+                <div class="col-sm-3">
+                    <input type="text" class="form-control" id="duration" placeholder="Enter duration" ng-model="duration">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="fps">frames per second</label>
+                <div class="col-sm-3">
+                    <input type="text" class="form-control" id="fps" placeholder="Enter frames per second" ng-model="framesPerSecond">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="tokenfield">Labels</label>
+                <div class="tokenfield col-sm-6">
+                    <input type="text" class="form-control" id="tokenfield" value="" ng-model="videoLabels" />
+                    HINT: Type ',' after a new tag to add it
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-clear">submit</button>
+                </div>
+            </div>
+        </form>
+
+        <div ng-hide="videoId === -1" style="margin-top: 5em;">
+            <form id="uploadVideoForm" class="form-horizontal" role="form" ng-submit="submitVideo()">
+
+                <div class="form-group">
+                    <label class="control-label col-sm-2" for="inputImage">video</label>
+                    <div class="col-sm-5">
+                        <input class="filestyle" id="inputImage" name="inputImage" type="file" accept="image/gif, image/jpeg, image/png, video/mp4">
+                    </div>
+                    <div class="col-sm-3">
+                        <button type="submit" class="btn btn-clear">upload</button>
+                        <span ng-hide="!progress">{{ progress }}%</span>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+
+
+        <div class="row">
+            <div class="alert alert-danger-clear col-sm-offset-2 col-sm-10" role="alert" ng-hide="!error">{{error}}</div>
+        </div>
+
+        <div class="row">
+            <div class="alert alert-success-clear col-sm-offset-2 col-sm-10" role="alert" ng-hide="!info">{{info}}</div>
+        </div>
+    </div>
+
+</section>

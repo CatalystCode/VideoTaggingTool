@@ -1,0 +1,89 @@
+﻿<!DOCTYPE html>
+<html lang="he" ng-app="VideoTaggingApp">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>video tagging</title>
+        
+    <script src="bower_components/webcomponentsjs/webcomponents.js"></script>
+
+    <script src="bower_components/angular/angular.min.js"></script>
+    <link href="bower_components/angular/angular-csp.css" rel="stylesheet" />
+    <script src="bower_components/angular-route/angular-route.min.js"></script>
+    <script src="bower_components/angular-sanitize/angular-sanitize.min.js"></script>
+
+
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap-theme.min.css">
+
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+
+
+
+    <link href="css/style.css" rel="stylesheet" />
+    
+    <script src="./js/controllers.js"></script>
+    <script src="./js/app.js"></script>
+
+
+    <link rel="import" href="bower_components/video-tagging/video-tagging.html">
+
+    <script type="text/javascript" src="bower_components/jquery-ui/jquery-ui.js"></script>
+    <link rel="stylesheet" href="bower_components/jquery-ui/themes/smoothness/jquery-ui.css" type="text/css">
+
+    <script src="bower_components/bootstrap-tokenfield/dist/bootstrap-tokenfield.js"></script>
+    <link rel="stylesheet" href="bower_components/bootstrap-tokenfield/dist/css/bootstrap-tokenfield.css">
+    <link rel="stylesheet" href="bower_components/bootstrap-tokenfield/dist/css/tokenfield-typeahead.css">
+
+
+    <script type="text/javascript" src="bower_components/bootstrap-tokenfield/docs-assets/js/typeahead.bundle.min.js" charset="UTF-8"></script>
+
+
+</head>
+<body>
+  
+    <div class="container">
+
+        <nav class="navbar navbar-inverse" ng-controller="AppController">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a><img class="navbar-logo" src="images/logo-text.png" /></a>
+                    <!--<a class="navbar-brand" href="#/">video tagging</a>-->
+                </div>
+
+                <div>
+                    <ul class="nav navbar-nav navbar-left">
+                        <li ng-hide="!user" ng-class="{active: $route.current.activetab == 'jobs'}"><a href="#/jobs">jobs</a></li>
+                        <li ng-hide="!user || user.RoleName !== 'Admin'" ng-class="{active: $route.current.activetab == 'videos'}"><a href="#/videos">videos</a></li>
+                        <li ng-hide="!user || user.RoleName !== 'Admin'" ng-class="{active: $route.current.activetab == 'users'}"><a href="#/users">users</a></li>
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li ng-hide="!user"><a href="#/">
+                            <img ng-src="{{ user.ImageUrl }}" class="profile-image img-circle text-lowercase" style="position: relative; top: -5px; float: left; left: -5px; width: 30px; height: 30px;"> {{user.Name}}
+
+                           ({{user.RoleName}})</a></li>
+                        <li ng-hide="!user"><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> log out</a></li>
+                        <li ng-hide="user"><a href="/login"><span class="glyphicon glyphicon-log-out"></span> log in</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container-inner">
+            <div id="content" class="ng-view"></div>
+    
+            <footer class="footer">
+                <ul class="list-inline">
+                    <li><a href="#/about">about</a></li>
+                    <li><a href="#/contact">contact us</a></li>
+                    <li><a href="#/terms">terms of use</a></li>
+                </ul>
+            </footer>
+        </div>
+
+
+    </div>
+
+</body>
+</html>                                		
