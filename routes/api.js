@@ -5,7 +5,6 @@ var path = require('path');
 var db = require('../storage/db');
 var blob = require('../storage/blob');
 
-
 module.exports = function () {
  
     router.post('/jobs', AdminLoggedIn, function (req, res) {
@@ -37,51 +36,22 @@ module.exports = function () {
         });
     });
     
-    router.post('/videos/:id', AdminLoggedIn, function (req, res) {
-        var id = req.params.id;
-        console.log('uploading video', id);
-        
-        var file;
-        
-        var form = new multiparty.Form({
-            encoding: 'utf8'
-        });
-        
-        form.on('field', function (name, value) {
-            console.log('field', name, value);
-        });
-        
-        form.on('part', function (part) {
-            if (!part.filename) {
-                part.read();
-                return console.info('no file provided');
-            }
-            
-            var contentType = part.headers['content-type'];
-            
-            blob.upload({
-                name: id,
-                stream: part,
-                size: part.byteCount,
-                contentType: contentType
-            }, function (err, result) {
-                if (err) return logError(err, res);
-
-                db.updateVideoUploaded({id: id}, function(err) {
-                    if (err) return logError(err, res);
-                    return res.json(result);
-                });
-
-            });
-        });
-        
-        form.on('error', function (err) {
-            return logError(err, res);
-        });
-        
-        form.parse(req);
+    router.get('/videos/:id/url', AdminLoggedIn, function (req, res) { 
+      var id = req.params.id;
+      console.log('getting url for blob', id);
+      var url = blob.getVideoUrlWithSasWrite(id);
+      return res.json({ url: url });
     });
     
+    router.post('/videos/:id', AdminLoggedIn, function (req, res) {
+      var id = req.params.id;
+      console.log('video uploaded', id);
+        
+      db.updateVideoUploaded({id: id}, function(err) {
+          if (err) return logError(err, res);
+          return res.json({ status: "OK" });
+      });
+    });
 
     // TODO: check job belong to editor / Admin mode, if Approved check user is Admin
     router.post('/jobs/:id/status', EditorLoggedIn, function (req, res) {
@@ -93,7 +63,6 @@ module.exports = function () {
             res.json(resp);
         });
     });
-    
 
     router.get('/jobs/statuses', function (req, res) {
         console.log('getting jobs statuses');
@@ -120,7 +89,6 @@ module.exports = function () {
             res.json(resp);
         });
     });
-
 
     // TODO: check job belong to editor / Admin mode
     router.get('/jobs/:id', EditorLoggedIn, function (req, res) {
