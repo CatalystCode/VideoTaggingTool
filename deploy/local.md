@@ -25,7 +25,7 @@ After creating your DB, you'll need to run a Sql script that will deploy the DB 
 
 ![screenshot](https://github.com/CatalystCode/VideoTaggingTool/raw/master/deploy/img/img115.png)
 
-  * Use your favorite SQL Server client UI to connect to the SQL server. I'm using Sql Server Management Studio, you can also use Visual Studio in case you're using Windows. In case of other OS, look for Sql Server UI Client.
+  * Use your favorite SQL Server client UI to connect to the SQL server. I'm using [Sql Server Management Studio] (https://msdn.microsoft.com/en-us/library/mt238290.aspx). You can also use Visual Studio in case you're using Windows. In case of other OS, look for Sql Server UI Client that can run on your OS. [DBeaver] (http://dbeaver.jkiss.org/download/) is a nice option for MacOS / Ubuntu.
   * Use the SQL server settings, as defined when you created the SQL server. Click the `SQL Server` --> `Settings` to get the SQL server host name, and use the user and password you defined with the SQL Server Authentication scheme:
   
 ![screenshot](https://github.com/CatalystCode/VideoTaggingTool/raw/master/deploy/img/img110.png)

@@ -29,7 +29,7 @@ You should now see all resources:
 3. Next step will be to setup the environment to host the website:
   * First we need to enable access to the Sql server from your machine IP, so that you can connect and create the schema. Click `videotaggingsrv` --> `All Settings` --> `Firewall` and add your IP. For the sake of the demo, I'm enabling all IP range. Save your changes.
 ![screenshot](https://github.com/CatalystCode/VideoTaggingTool/raw/master/deploy/img/img115.png)
-  * Use your favorite SQL Server client UI to connect to the SQL server. I'm using Sql Server Management Studio, you can also use Visual Studio in case you're using Windows. In case of other OS, look for Sql Server UI Client.
+  * Use your favorite SQL Server client UI to connect to the SQL server. I'm using [Sql Server Management Studio] (https://msdn.microsoft.com/en-us/library/mt238290.aspx). You can also use Visual Studio in case you're using Windows. In case of other OS, look for Sql Server UI Client that can run on your OS. [DBeaver] (http://dbeaver.jkiss.org/download/) is a nice option for MacOS / Ubuntu.
   * Use the SQL server settings, as defined when you created the SQL server. Click the `SQL Server` --> `Settings` to get the SQL server host name, and use the user and password you defined with the SQL Server Authentication scheme:
 ![screenshot](https://github.com/CatalystCode/VideoTaggingTool/raw/master/deploy/img/img110.png)
 4. After connecting, you'll see the database that was provisioned for you. Right-click and select `New Query`:
