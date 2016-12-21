@@ -1,0 +1,464 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "alertrules_CPUHigh_video_tagging_sp_name": {
+            "defaultValue": "CPUHigh video-tagging-sp",
+            "type": "String"
+        },
+        "alertrules_ForbiddenRequests_video_tagging_demo_name": {
+            "defaultValue": "ForbiddenRequests video-tagging-demo",
+            "type": "String"
+        },
+        "alertrules_LongHttpQueue_video_tagging_sp_name": {
+            "defaultValue": "LongHttpQueue video-tagging-sp",
+            "type": "String"
+        },
+        "alertrules_ServerErrors_video_tagging_demo_name": {
+            "defaultValue": "ServerErrors video-tagging-demo",
+            "type": "String"
+        },
+        "autoscalesettings_video_tagging_sp_video_tagging_demo_rg_name": {
+            "defaultValue": "video-tagging-sp-video-tagging-demo-rg",
+            "type": "String"
+        },
+        "components_video_tagging_demo_name": {
+            "defaultValue": "video-tagging-demo",
+            "type": "String"
+        },
+        "servers_videotaggingsrv_name": {
+            "defaultValue": "videotaggingsrv",
+            "type": "String"
+        },
+        "storageAccounts_videotaggingdemo_name": {
+            "defaultValue": "videotaggingdemo",
+            "type": "String"
+        },
+        "serverfarms_video_tagging_sp_name": {
+            "defaultValue": "video-tagging-sp",
+            "type": "String"
+        },
+        "sites_video_tagging_demo_name": {
+            "defaultValue": "video-tagging-demo",
+            "type": "String"
+        },
+        "databases_master_name": {
+            "defaultValue": "videotaggingsrv/master",
+            "type": "String"
+        },
+        "databases_videoTaggingDemoDb_name": {
+            "defaultValue": "videotaggingsrv/videoTaggingDemoDb",
+            "type": "String"
+        },
+        "firewallRules_all_name": {
+            "defaultValue": "videotaggingsrv/all",
+            "type": "String"
+        },
+        "firewallRules_AllowAllWindowsAzureIps_name": {
+            "defaultValue": "videotaggingsrv/AllowAllWindowsAzureIps",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "comments": "Generalized from resource: '/subscriptions/73a4ea93-d914-424d-9e64-28adf397e8e3/resourceGroups/video-tagging-demo-rg/providers/microsoft.insights/alertrules/CPUHigh video-tagging-sp'.",
+            "type": "microsoft.insights/alertrules",
+            "name": "[parameters('alertrules_CPUHigh_video_tagging_sp_name')]",
+            "apiVersion": "2014-04-01",
+            "location": "East US",
+            "tags": {
+                "hidden-link:/subscriptions/73a4ea93-d914-424d-9e64-28adf397e8e3/resourcegroups/video-tagging-demo-rg/providers/Microsoft.Web/serverfarms/video-tagging-sp": "Resource"
+            },
+            "properties": {
+                "name": "[parameters('alertrules_CPUHigh_video_tagging_sp_name')]",
+                "description": "The average CPU is high across all the instances of video-tagging-sp",
+                "condition": {
+                    "odata.type": "Microsoft.Azure.Management.Insights.Models.ThresholdRuleCondition",
+                    "dataSource": {
+                        "odata.type": "Microsoft.Azure.Management.Insights.Models.RuleMetricDataSource",
+                        "resourceUri": "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_video_tagging_sp_name'))]",
+                        "metricName": "CpuPercentage"
+                    },
+                    "threshold": 90,
+                    "windowSize": "PT15M"
+                },
+                "action": {
+                    "odata.type": "Microsoft.Azure.Management.Insights.Models.RuleEmailAction",
+                    "sendToServiceOwners": true,
+                    "customEmails": []
+                }
+            },
+            "resources": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_video_tagging_sp_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/73a4ea93-d914-424d-9e64-28adf397e8e3/resourceGroups/video-tagging-demo-rg/providers/microsoft.insights/alertrules/ForbiddenRequests video-tagging-demo'.",
+            "type": "microsoft.insights/alertrules",
+            "name": "[parameters('alertrules_ForbiddenRequests_video_tagging_demo_name')]",
+            "apiVersion": "2014-04-01",
+            "location": "East US",
+            "tags": {
+                "hidden-link:/subscriptions/73a4ea93-d914-424d-9e64-28adf397e8e3/resourceGroups/video-tagging-demo-rg/providers/Microsoft.Web/sites/video-tagging-demo": "Resource"
+            },
+            "properties": {
+                "name": "[parameters('alertrules_ForbiddenRequests_video_tagging_demo_name')]",
+                "description": "video-tagging-demo has some requests that are forbidden, status code 403.",
+                "condition": {
+                    "odata.type": "Microsoft.Azure.Management.Insights.Models.ThresholdRuleCondition",
+                    "dataSource": {
+                        "odata.type": "Microsoft.Azure.Management.Insights.Models.RuleMetricDataSource",
+                        "resourceUri": "[resourceId('Microsoft.Web/sites', parameters('sites_video_tagging_demo_name'))]",
+                        "metricName": "Http403"
+                    },
+                    "windowSize": "PT5M"
+                },
+                "action": {
+                    "odata.type": "Microsoft.Azure.Management.Insights.Models.RuleEmailAction",
+                    "sendToServiceOwners": true,
+                    "customEmails": []
+                }
+            },
+            "resources": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_video_tagging_demo_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/73a4ea93-d914-424d-9e64-28adf397e8e3/resourceGroups/video-tagging-demo-rg/providers/microsoft.insights/alertrules/LongHttpQueue video-tagging-sp'.",
+            "type": "microsoft.insights/alertrules",
+            "name": "[parameters('alertrules_LongHttpQueue_video_tagging_sp_name')]",
+            "apiVersion": "2014-04-01",
+            "location": "East US",
+            "tags": {
+                "hidden-link:/subscriptions/73a4ea93-d914-424d-9e64-28adf397e8e3/resourcegroups/video-tagging-demo-rg/providers/Microsoft.Web/serverfarms/video-tagging-sp": "Resource"
+            },
+            "properties": {
+                "name": "[parameters('alertrules_LongHttpQueue_video_tagging_sp_name')]",
+                "description": "The HTTP queue for the instances of video-tagging-sp has a large number of pending requests.",
+                "condition": {
+                    "odata.type": "Microsoft.Azure.Management.Insights.Models.ThresholdRuleCondition",
+                    "dataSource": {
+                        "odata.type": "Microsoft.Azure.Management.Insights.Models.RuleMetricDataSource",
+                        "resourceUri": "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_video_tagging_sp_name'))]",
+                        "metricName": "HttpQueueLength"
+                    },
+                    "threshold": 100,
+                    "windowSize": "PT5M"
+                },
+                "action": {
+                    "odata.type": "Microsoft.Azure.Management.Insights.Models.RuleEmailAction",
+                    "sendToServiceOwners": true,
+                    "customEmails": []
+                }
+            },
+            "resources": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_video_tagging_sp_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/73a4ea93-d914-424d-9e64-28adf397e8e3/resourceGroups/video-tagging-demo-rg/providers/microsoft.insights/alertrules/ServerErrors video-tagging-demo'.",
+            "type": "microsoft.insights/alertrules",
+            "name": "[parameters('alertrules_ServerErrors_video_tagging_demo_name')]",
+            "apiVersion": "2014-04-01",
+            "location": "East US",
+            "tags": {
+                "hidden-link:/subscriptions/73a4ea93-d914-424d-9e64-28adf397e8e3/resourceGroups/video-tagging-demo-rg/providers/Microsoft.Web/sites/video-tagging-demo": "Resource"
+            },
+            "properties": {
+                "name": "[parameters('alertrules_ServerErrors_video_tagging_demo_name')]",
+                "description": "video-tagging-demo has some server errors, status code 5xx.",
+                "condition": {
+                    "odata.type": "Microsoft.Azure.Management.Insights.Models.ThresholdRuleCondition",
+                    "dataSource": {
+                        "odata.type": "Microsoft.Azure.Management.Insights.Models.RuleMetricDataSource",
+                        "resourceUri": "[resourceId('Microsoft.Web/sites', parameters('sites_video_tagging_demo_name'))]",
+                        "metricName": "Http5xx"
+                    },
+                    "windowSize": "PT5M"
+                },
+                "action": {
+                    "odata.type": "Microsoft.Azure.Management.Insights.Models.RuleEmailAction",
+                    "sendToServiceOwners": true,
+                    "customEmails": []
+                }
+            },
+            "resources": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_video_tagging_demo_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/73a4ea93-d914-424d-9e64-28adf397e8e3/resourceGroups/video-tagging-demo-rg/providers/microsoft.insights/autoscalesettings/video-tagging-sp-video-tagging-demo-rg'.",
+            "type": "microsoft.insights/autoscalesettings",
+            "name": "[parameters('autoscalesettings_video_tagging_sp_video_tagging_demo_rg_name')]",
+            "apiVersion": "2014-04-01",
+            "location": "East US",
+            "tags": {
+                "hidden-link:/subscriptions/73a4ea93-d914-424d-9e64-28adf397e8e3/resourcegroups/video-tagging-demo-rg/providers/Microsoft.Web/serverfarms/video-tagging-sp": "Resource"
+            },
+            "properties": {
+                "profiles": [
+                    {
+                        "name": "Default",
+                        "capacity": {
+                            "minimum": "1",
+                            "maximum": "2",
+                            "default": "1"
+                        },
+                        "rules": [
+                            {
+                                "metricTrigger": {
+                                    "metricName": "CpuPercentage",
+                                    "metricNamespace": "",
+                                    "metricResourceUri": "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_video_tagging_sp_name'))]",
+                                    "timeGrain": "PT1M",
+                                    "statistic": "Average",
+                                    "timeWindow": "PT10M",
+                                    "timeAggregation": "Average",
+                                    "operator": "GreaterThan",
+                                    "threshold": 80
+                                },
+                                "scaleAction": {
+                                    "direction": "Increase",
+                                    "type": "ChangeCount",
+                                    "value": "1",
+                                    "cooldown": "PT10M"
+                                }
+                            },
+                            {
+                                "metricTrigger": {
+                                    "metricName": "CpuPercentage",
+                                    "metricNamespace": "",
+                                    "metricResourceUri": "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_video_tagging_sp_name'))]",
+                                    "timeGrain": "PT1M",
+                                    "statistic": "Average",
+                                    "timeWindow": "PT1H",
+                                    "timeAggregation": "Average",
+                                    "operator": "LessThan",
+                                    "threshold": 60
+                                },
+                                "scaleAction": {
+                                    "direction": "Decrease",
+                                    "type": "ChangeCount",
+                                    "value": "1",
+                                    "cooldown": "PT1H"
+                                }
+                            }
+                        ]
+                    }
+                ],
+                "enabled": true,
+                "name": "[parameters('autoscalesettings_video_tagging_sp_video_tagging_demo_rg_name')]",
+                "targetResourceUri": "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_video_tagging_sp_name'))]"
+            },
+            "resources": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_video_tagging_sp_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/73a4ea93-d914-424d-9e64-28adf397e8e3/resourceGroups/video-tagging-demo-rg/providers/microsoft.insights/components/video-tagging-demo'.",
+            "type": "microsoft.insights/components",
+            "kind": "web",
+            "name": "[parameters('components_video_tagging_demo_name')]",
+            "apiVersion": "2014-04-01",
+            "location": "South Central US",
+            "tags": {
+                "hidden-link:/subscriptions/73a4ea93-d914-424d-9e64-28adf397e8e3/resourceGroups/video-tagging-demo-rg/providers/Microsoft.Web/sites/video-tagging-demo": "Resource"
+            },
+            "properties": {
+                "ApplicationId": "[parameters('components_video_tagging_demo_name')]"
+            },
+            "resources": [],
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/73a4ea93-d914-424d-9e64-28adf397e8e3/resourceGroups/video-tagging-demo-rg/providers/Microsoft.Sql/servers/videotaggingsrv'.",
+            "type": "Microsoft.Sql/servers",
+            "kind": "v12.0",
+            "name": "[parameters('servers_videotaggingsrv_name')]",
+            "apiVersion": "2014-04-01-preview",
+            "location": "West Europe",
+            "properties": {
+                "administratorLogin": "video",
+                "administratorLoginPassword": null,
+                "version": "12.0"
+            },
+            "resources": [],
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/73a4ea93-d914-424d-9e64-28adf397e8e3/resourceGroups/video-tagging-demo-rg/providers/Microsoft.Storage/storageAccounts/videotaggingdemo'.",
+            "type": "Microsoft.Storage/storageAccounts",
+            "sku": {
+                "name": "Standard_RAGRS",
+                "tier": "Standard"
+            },
+            "kind": "Storage",
+            "name": "[parameters('storageAccounts_videotaggingdemo_name')]",
+            "apiVersion": "2016-01-01",
+            "location": "westeurope",
+            "tags": {},
+            "properties": {},
+            "resources": [],
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/73a4ea93-d914-424d-9e64-28adf397e8e3/resourceGroups/video-tagging-demo-rg/providers/Microsoft.Web/serverfarms/video-tagging-sp'.",
+            "type": "Microsoft.Web/serverfarms",
+            "sku": {
+                "name": "S1",
+                "tier": "Standard",
+                "size": "S1",
+                "family": "S",
+                "capacity": 1
+            },
+            "kind": "app",
+            "name": "[parameters('serverfarms_video_tagging_sp_name')]",
+            "apiVersion": "2015-08-01",
+            "location": "West Europe",
+            "properties": {
+                "name": "[parameters('serverfarms_video_tagging_sp_name')]",
+                "numberOfWorkers": 1
+            },
+            "resources": [],
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/73a4ea93-d914-424d-9e64-28adf397e8e3/resourceGroups/video-tagging-demo-rg/providers/Microsoft.Web/sites/video-tagging-demo'.",
+            "type": "Microsoft.Web/sites",
+            "kind": "app",
+            "name": "[parameters('sites_video_tagging_demo_name')]",
+            "apiVersion": "2015-08-01",
+            "location": "West Europe",
+            "tags": {
+                "hidden-related:/subscriptions/73a4ea93-d914-424d-9e64-28adf397e8e3/resourcegroups/video-tagging-demo-rg/providers/Microsoft.Web/serverfarms/video-tagging-sp": "empty"
+            },
+            "properties": {
+                "name": "[parameters('sites_video_tagging_demo_name')]",
+                "hostNames": [
+                    "video-tagging-demo.azurewebsites.net"
+                ],
+                "enabledHostNames": [
+                    "video-tagging-demo.azurewebsites.net",
+                    "video-tagging-demo.scm.azurewebsites.net"
+                ],
+                "hostNameSslStates": [
+                    {
+                        "name": "[concat(parameters('sites_video_tagging_demo_name'),'.azurewebsites.net')]",
+                        "sslState": 0,
+                        "thumbprint": null,
+                        "ipBasedSslState": 0
+                    },
+                    {
+                        "name": "[concat(parameters('sites_video_tagging_demo_name'),'.scm.azurewebsites.net')]",
+                        "sslState": 0,
+                        "thumbprint": null,
+                        "ipBasedSslState": 0
+                    }
+                ],
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_video_tagging_sp_name'))]"
+            },
+            "resources": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_video_tagging_sp_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/73a4ea93-d914-424d-9e64-28adf397e8e3/resourceGroups/video-tagging-demo-rg/providers/Microsoft.Sql/servers/videotaggingsrv/databases/master'.",
+            "type": "Microsoft.Sql/servers/databases",
+            "kind": "v12.0,system",
+            "name": "[parameters('databases_master_name')]",
+            "apiVersion": "2014-04-01-preview",
+            "location": "West Europe",
+            "properties": {
+                "databaseId": "40ac7445-7543-4bad-8a3a-b7f61e9dd74e",
+                "edition": "System",
+                "status": "Online",
+                "serviceLevelObjective": "System0",
+                "collation": "SQL_Latin1_General_CP1_CI_AS",
+                "maxSizeBytes": "5368709120",
+                "creationDate": "2016-02-18T14:06:23.083Z",
+                "currentServiceObjectiveId": "29dd7459-4a7c-4e56-be22-f0adda49440d",
+                "requestedServiceObjectiveId": "29dd7459-4a7c-4e56-be22-f0adda49440d",
+                "requestedServiceObjectiveName": "System0",
+                "sampleName": null,
+                "defaultSecondaryLocation": "North Europe",
+                "earliestRestoreDate": null,
+                "elasticPoolName": null,
+                "containmentState": 2,
+                "readScale": "Disabled"
+            },
+            "resources": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_videotaggingsrv_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/73a4ea93-d914-424d-9e64-28adf397e8e3/resourceGroups/video-tagging-demo-rg/providers/Microsoft.Sql/servers/videotaggingsrv/databases/videoTaggingDemoDb'.",
+            "type": "Microsoft.Sql/servers/databases",
+            "kind": "v12.0,user",
+            "name": "[parameters('databases_videoTaggingDemoDb_name')]",
+            "apiVersion": "2014-04-01-preview",
+            "location": "West Europe",
+            "properties": {
+                "databaseId": "0621a0c6-724c-4a79-8f35-75535c005e87",
+                "edition": "Standard",
+                "status": "Online",
+                "serviceLevelObjective": "S0",
+                "collation": "SQL_Latin1_General_CP1_CI_AS",
+                "maxSizeBytes": "268435456000",
+                "creationDate": "2016-02-18T14:07:01.313Z",
+                "currentServiceObjectiveId": "f1173c43-91bd-4aaa-973c-54e79e15235b",
+                "requestedServiceObjectiveId": "f1173c43-91bd-4aaa-973c-54e79e15235b",
+                "requestedServiceObjectiveName": "S0",
+                "sampleName": null,
+                "defaultSecondaryLocation": "North Europe",
+                "earliestRestoreDate": "2016-11-16T00:00:00Z",
+                "elasticPoolName": null,
+                "containmentState": 2,
+                "readScale": "Disabled"
+            },
+            "resources": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_videotaggingsrv_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/73a4ea93-d914-424d-9e64-28adf397e8e3/resourceGroups/video-tagging-demo-rg/providers/Microsoft.Sql/servers/videotaggingsrv/firewallRules/all'.",
+            "type": "Microsoft.Sql/servers/firewallRules",
+            "kind": "v12.0",
+            "name": "[parameters('firewallRules_all_name')]",
+            "apiVersion": "2014-04-01-preview",
+            "location": "West Europe",
+            "properties": {
+                "startIpAddress": "0.0.0.0",
+                "endIpAddress": "255.255.255.255"
+            },
+            "resources": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_videotaggingsrv_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/73a4ea93-d914-424d-9e64-28adf397e8e3/resourceGroups/video-tagging-demo-rg/providers/Microsoft.Sql/servers/videotaggingsrv/firewallRules/AllowAllWindowsAzureIps'.",
+            "type": "Microsoft.Sql/servers/firewallRules",
+            "kind": "v12.0",
+            "name": "[parameters('firewallRules_AllowAllWindowsAzureIps_name')]",
+            "apiVersion": "2014-04-01-preview",
+            "location": "West Europe",
+            "properties": {
+                "startIpAddress": "0.0.0.0",
+                "endIpAddress": "0.0.0.0"
+            },
+            "resources": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_videotaggingsrv_name'))]"
+            ]
+        }
+    ]
+}
