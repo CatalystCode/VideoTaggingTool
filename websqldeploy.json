@@ -181,7 +181,7 @@
         {
           "apiVersion": "2016-03-01",
           "type": "config",
-          "name": "webconfig",
+          "name": "connectionstrings",
           "dependsOn": [
             "[variables('webSiteName')]"
           ],
@@ -192,16 +192,16 @@
               "type": "SQLAzure"
             },
             "appSettings": [
-             {
-                "Name": "SCM_SITEEXTENSIONS_FEED_URL",
-                "Value": "http://www.siteextensions.net/api/v2/"
-             }
+              {
+                "Name": "key",
+                "Value": "value"
+              }
             ]
           }
         },
         {
           "apiVersion": "2015-08-01",
-          "name": "sourcecontrol",
+          "name": "web",
           "type": "sourcecontrols",
           "dependsOn": [
             "[variables('webSiteName')]"
