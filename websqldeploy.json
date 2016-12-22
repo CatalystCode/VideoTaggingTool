@@ -44,26 +44,33 @@
         "description": "The password of the admin user of the SQL Server"
       }
     },
-    "repoURL": {
+    "GOOGLE_CLIENT_ID":{
       "type": "string",
-      "defaultValue": "https://github.com/CatalystCode/VideoTaggingTool.git",
       "metadata": {
-        "description": "The URL for the GitHub repository that contains the project to deploy."
+        "description": "The client id for google authentication."
       }
     },
-    "branch": {
+    "GOOGLE_CLIENT_SECRET":{
       "type": "string",
-      "defaultValue": "master",
       "metadata": {
-        "description": "The branch of the GitHub repository to use."
+        "description": "The client secret for google authentication."
+      }
+    },
+    "GOOGLE_CALLBACK_URL":{
+      "type": "string",
+      "metadata": {
+        "description": "The callback url for google authentication."
       }
     }
   },
   "variables": {
     "hostingPlanName": "[concat('hostingplan', uniqueString(resourceGroup().id))]",
     "webSiteName": "[concat('webSite', uniqueString(resourceGroup().id))]",
+    "repoURL": "https://github.com/CatalystCode/VideoTaggingTool.git",
+    "branch": "master",
     "sqlserverName": "[concat('sqlserver', uniqueString(resourceGroup().id))]",
-    "databaseName": "sampledb"
+    "databaseName": "video_tagging_db"
+
   },
   "resources": [
     {
@@ -154,10 +161,15 @@
             "[variables('webSiteName')]"
           ],
           "properties": {
-            "DefaultConnection": {
-              "value": "[concat('Data Source=tcp:', reference(concat('Microsoft.Sql/servers/', variables('sqlserverName'))).fullyQualifiedDomainName, ',1433;Initial Catalog=', variables('databaseName'), ';User Id=', parameters('sqlAdministratorLogin'), '@', reference(concat('Microsoft.Sql/servers/', variables('sqlserverName'))).fullyQualifiedDomainName, ';Password=', parameters('sqlAdministratorLoginPassword'), ';')]",
-              "type": "SQLAzure"
-            }
+            "DB_SERVER":"reference(concat('Microsoft.Sql/servers/', variables('sqlserverName'))).fullyQualifiedDomainName",
+            "DB_NAME":"variables('databaseName')",
+            "DB_USER":"parameters('sqlAdministratorLogin')",
+            "DB_PASSWORD":"parameters('sqlAdministratorLoginPassword')",
+            "STORAGE_ACCOUNT":"",
+            "STORAGE_KEY":"",
+            "GOOGLE_CLIENT_ID":"[parameters('GOOGLE_CLIENT_ID')]",
+            "GOOGLE_CLIENT_SECRET":"[parameters('GOOGLE_CLIENT_SECRET')]",
+            "GOOGLE_CALLBACK_URL":"[parameters('GOOGLE_CALLBACK_URL')]"
           }
         },
         {
@@ -168,8 +180,8 @@
             "[variables('webSiteName')]"
           ],
           "properties": {
-            "RepoUrl": "[parameters('repoURL')]",
-            "branch": "[parameters('branch')]",
+            "RepoUrl": "[variables('repoURL')]",
+            "branch": "[variables('branch')]",
             "IsManualIntegration": true
           }
         }
