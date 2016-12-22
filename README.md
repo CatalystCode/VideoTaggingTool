@@ -23,7 +23,10 @@ The server side code isn't aware of this data. It is just being used as a pipe b
 * Follow [these](deploy/azure.md) instructions to deploy the app on Azure.
 * Follow [these](deploy/local.md) instructions to run the app locally.
 
-[![Deploy to Azure](http://azuredeploy.net/deploybutton.png)](https://azuredeploy.net/)
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Faribornstein%2Fvideotaggingtool%2Fmaster%2Fazuredeploy.json" target="_blank">
+https://github.com///blob/master/azuredeploy.json
+    <img src="http://azuredeploy.net/deploybutton.png"/>
+</a>
 
 # License
 [MIT](LICENSE)
