@@ -181,16 +181,18 @@
         {
           "apiVersion": "2016-03-01",
           "type": "config",
-          "name": "connectionstrings",
+          "name": "web",
           "dependsOn": [
             "[variables('webSiteName')]"
-          ],
-          
+          ],   
           "properties": {
-            "DefaultConnection": {
-              "value": "[concat('Data Source=tcp:', reference(concat('Microsoft.Sql/servers/', variables('sqlserverName'))).fullyQualifiedDomainName, ',1433;Initial Catalog=', variables('databaseName'), ';User Id=', parameters('sqlAdministratorLogin'), '@', reference(concat('Microsoft.Sql/servers/', variables('sqlserverName'))).fullyQualifiedDomainName, ';Password=', parameters('sqlAdministratorLoginPassword'), ';')]",
-              "type": "SQLAzure"
-            },
+            "connectionStrings": [
+			 {
+					"ConnectionString":"[concat('Data Source=tcp:', reference(concat('Microsoft.Sql/servers/', variables('sqlserverName'))).fullyQualifiedDomainName, ',1433;Initial Catalog=', variables('databaseName'), ';User Id=', parameters('sqlAdministratorLogin'), '@', reference(concat('Microsoft.Sql/servers/', variables('sqlserverName'))).fullyQualifiedDomainName, ';Password=', parameters('sqlAdministratorLoginPassword'), ';')]",
+					"Name": "DefaultConnection",
+					"Type": "SQLAzure"
+			 }
+			],
             "appSettings": [
               {
                 "Name": "key",
