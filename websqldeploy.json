@@ -44,6 +44,19 @@
         "description": "The password of the admin user of the SQL Server"
       }
     },
+    "storageAccountType": {
+      "type": "string",
+      "defaultValue": "Standard_LRS",
+      "allowedValues": [
+        "Standard_LRS",
+        "Standard_GRS",
+        "Standard_ZRS",
+        "Premium_LRS"
+      ],
+      "metadata": {
+        "description": "Storage Account type"
+      }
+    },
     "GOOGLE_CLIENT_ID":{
       "type": "string",
       "metadata": {
@@ -69,8 +82,8 @@
     "repoURL": "https://github.com/CatalystCode/VideoTaggingTool.git",
     "branch": "master",
     "sqlserverName": "[concat('sqlserver', uniqueString(resourceGroup().id))]",
-    "databaseName": "video_tagging_db"
-
+    "databaseName": "video_tagging_db",
+    "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'standardsa')]"
   },
   "resources": [
     {
@@ -121,6 +134,18 @@
       ]
     },
     {
+      "type": "Microsoft.Storage/storageAccounts",
+      "name": "[variables('storageAccountName')]",
+      "apiVersion": "2016-01-01",
+      "location": "[resourceGroup().location]",
+      "sku": {
+          "name": "[parameters('storageAccountType')]"
+      },
+      "kind": "Storage", 
+      "properties": {
+      }
+    },
+    {
       "apiVersion": "2016-03-01",
       "name": "[variables('hostingPlanName')]",
       "type": "Microsoft.Web/serverfarms",
@@ -160,17 +185,36 @@
           "dependsOn": [
             "[variables('webSiteName')]"
           ],
+          
           "properties": {
-            "DB_SERVER":"reference(concat('Microsoft.Sql/servers/', variables('sqlserverName'))).fullyQualifiedDomainName",
-            "DB_NAME":"variables('databaseName')",
-            "DB_USER":"parameters('sqlAdministratorLogin')",
-            "DB_PASSWORD":"parameters('sqlAdministratorLoginPassword')",
-            "STORAGE_ACCOUNT":"",
-            "STORAGE_KEY":"",
-            "GOOGLE_CLIENT_ID":"[parameters('GOOGLE_CLIENT_ID')]",
-            "GOOGLE_CLIENT_SECRET":"[parameters('GOOGLE_CLIENT_SECRET')]",
-            "GOOGLE_CALLBACK_URL":"[parameters('GOOGLE_CALLBACK_URL')]"
+            "DefaultConnection": {
+              "value": "[concat('Data Source=tcp:', reference(concat('Microsoft.Sql/servers/', variables('sqlserverName'))).fullyQualifiedDomainName, ',1433;Initial Catalog=', variables('databaseName'), ';User Id=', parameters('sqlAdministratorLogin'), '@', reference(concat('Microsoft.Sql/servers/', variables('sqlserverName'))).fullyQualifiedDomainName, ';Password=', parameters('sqlAdministratorLoginPassword'), ';')]",
+              "type": "SQLAzure"
+            }
           }
+        },
+        {
+          "apiVersion": "2015-08-01",
+          "type": "config",
+          "name": "appsettings",
+          "dependsOn": [
+            "[variables('webSiteName')]"
+          ],
+          
+            "tags": {
+                "displayName": "WebAppSettings"
+            },
+            "properties": {
+                "DB_SERVER":"reference(concat('Microsoft.Sql/servers/', variables('sqlserverName'))).fullyQualifiedDomainName",
+                "DB_NAME":"variables('databaseName')",
+                "DB_USER":"parameters('sqlAdministratorLogin')",
+                "DB_PASSWORD":"parameters('sqlAdministratorLoginPassword')",
+                "STORAGE_ACCOUNT":"[variables('storageAccountName')]",
+                "STORAGE_KEY":"[listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value]",
+                "GOOGLE_CLIENT_ID":"[parameters('GOOGLE_CLIENT_ID')]",
+                "GOOGLE_CLIENT_SECRET":"[parameters('GOOGLE_CLIENT_SECRET')]",
+                "GOOGLE_CALLBACK_URL":"[parameters('GOOGLE_CALLBACK_URL')]"
+            }
         },
         {
           "apiVersion": "2015-08-01",
@@ -414,7 +458,12 @@
     "sqlSvrFqdn": {
       "type": "string",
       "value": "[reference(concat('Microsoft.Sql/servers/', variables('sqlserverName'))).fullyQualifiedDomainName]"
+    },
+    "storageAccountName": {
+      "type": "string",
+      "value": "[variables('storageAccountName')]"
     }
+
   }
 
 }
