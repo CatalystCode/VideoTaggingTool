@@ -179,39 +179,49 @@
       },
       "resources": [
         {
-          "apiVersion": "2016-03-01",
-          "type": "config",
-          "name": "web",
-          "dependsOn": [
-            "[variables('webSiteName')]"
-          ],   
-          "properties": {
-            "connectionStrings": [
-			 {
-					"ConnectionString":"[concat('Data Source=tcp:', reference(concat('Microsoft.Sql/servers/', variables('sqlserverName'))).fullyQualifiedDomainName, ',1433;Initial Catalog=', variables('databaseName'), ';User Id=', parameters('sqlAdministratorLogin'), '@', reference(concat('Microsoft.Sql/servers/', variables('sqlserverName'))).fullyQualifiedDomainName, ';Password=', parameters('sqlAdministratorLoginPassword'), ';')]",
-					"Name": "DefaultConnection",
-					"Type": "SQLAzure"
-			 }
-			],
-            "appSettings": [
-              {
-                "Name": "key",
-                "Value": "value"
-              }
-            ]
-          }
-        },
-        {
           "apiVersion": "2015-08-01",
           "name": "web",
           "type": "sourcecontrols",
           "dependsOn": [
-            "[variables('webSiteName')]"
+            "[resourceId('Microsoft.Web/Sites', variables('webSiteName'))]"
           ],
           "properties": {
             "RepoUrl": "[variables('repoURL')]",
             "branch": "[variables('branch')]",
             "IsManualIntegration": true
+          }
+        },
+        {
+          "apiVersion": "2016-03-01",
+          "name": "appsettings",
+          "type": "config",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/Sites', variables('webSiteName'))]"
+          ],
+          "properties": {
+            "DB_SERVER":"[reference(concat('Microsoft.Sql/servers/', variables('sqlserverName'))).fullyQualifiedDomainName]",
+            "DB_NAME":"[variables('databaseName')]",
+            "DB_USER":"[parameters('sqlAdministratorLogin')]",
+            "DB_PASSWORD":"[parameters('sqlAdministratorLoginPassword')]",
+            "STORAGE_ACCOUNT":"[variables('storageAccountName')]",
+            "STORAGE_KEY":"[listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value]",
+            "GOOGLE_CLIENT_ID":"[parameters('GOOGLE_CLIENT_ID')]",
+            "GOOGLE_CLIENT_SECRET":"[parameters('GOOGLE_CLIENT_SECRET')]",
+            "GOOGLE_CALLBACK_URL":"[parameters('GOOGLE_CALLBACK_URL')]"
+          }
+        },
+        {
+          "apiVersion": "2016-03-01",
+          "type": "config",
+          "name": "connectionstrings",
+          "dependsOn": [
+            "[variables('webSiteName')]"
+          ],
+          "properties": {
+            "DefaultConnection": {
+              "value": "[concat('Data Source=tcp:', reference(concat('Microsoft.Sql/servers/', variables('sqlserverName'))).fullyQualifiedDomainName, ',1433;Initial Catalog=', variables('databaseName'), ';User Id=', parameters('sqlAdministratorLogin'), '@', reference(concat('Microsoft.Sql/servers/', variables('sqlserverName'))).fullyQualifiedDomainName, ';Password=', parameters('sqlAdministratorLoginPassword'), ';')]",
+              "type": "SQLAzure"
+            }
           }
         }
       ]
