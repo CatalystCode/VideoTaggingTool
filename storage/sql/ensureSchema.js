@@ -38,7 +38,7 @@ if (!process.env.DB_NAME || !process.env.DB_USER || !process.env.DB_SERVER, !pro
 
       //insert admin user
       var insertAdmin =  'sqlcmd -U %DB_USER% -S %DB_SERVER% -P %DB_PASSWORD% -d %DB_NAME% -Q ' + '"INSERT INTO [dbo].[Users] ([Name] ,[Email] ,[RoleId]) VALUES (\'User Name\' ,\'%DB_EMAIL%\' ,2)"';
-      child_process.exec(createdb_command, null, function (error, stdout, stderr) {
+      child_process.exec(insertAdmin, null, function (error, stdout, stderr) {
       
         if (error) return console.error('Error inserting admin', error);
         return console.info('DB schema deployed successfully');
