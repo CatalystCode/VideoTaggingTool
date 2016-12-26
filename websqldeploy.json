@@ -32,16 +32,22 @@
         "description": "Describes plan's instance count"
       }
     },
+    "sqlAdministratorEmail":{
+      "type": "string",
+      "metadata": {
+        "description": "The admin email for the Database."
+      }
+    },
     "sqlAdministratorLogin": {
       "type": "string",
       "metadata": {
-        "description": "The admin user of the SQL Server"
+        "description": "The admin user of the SQL Server and Database"
       }
     },
     "sqlAdministratorLoginPassword": {
       "type": "securestring",
       "metadata": {
-        "description": "The password of the admin user of the SQL Server"
+        "description": "The password of the admin user of the SQL Server and and Database"
       }
     },
     "storageAccountType": {
@@ -79,7 +85,7 @@
   "variables": {
     "hostingPlanName": "[concat('hostingplan', uniqueString(resourceGroup().id))]",
     "webSiteName": "[concat('webSite', uniqueString(resourceGroup().id))]",
-    "repoURL": "https://github.com/CatalystCode/VideoTaggingTool.git",
+    "repoURL": "https://github.com/aribornstein/VideoTaggingTool.git",
     "branch": "master",
     "sqlserverName": "[concat('sqlserver', uniqueString(resourceGroup().id))]",
     "databaseName": "video_tagging_db",
@@ -167,7 +173,8 @@
       "type": "Microsoft.Web/sites",
       "location": "[resourceGroup().location]",
       "dependsOn": [
-        "[variables('hostingPlanName')]"
+        "[variables('hostingPlanName')]",
+        "[variables('databaseName')]"
       ],
       "tags": {
         "[concat('hidden-related:', resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName')))]": "empty",
@@ -201,6 +208,7 @@
           "properties": {
             "DB_SERVER":"[reference(concat('Microsoft.Sql/servers/', variables('sqlserverName'))).fullyQualifiedDomainName]",
             "DB_NAME":"[variables('databaseName')]",
+            "DB_EMAIL":"[parameters('sqlAdministratorEmail')]",
             "DB_USER":"[parameters('sqlAdministratorLogin')]",
             "DB_PASSWORD":"[parameters('sqlAdministratorLoginPassword')]",
             "STORAGE_ACCOUNT":"[variables('storageAccountName')]",

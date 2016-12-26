@@ -107,3 +107,30 @@
     }
   ]
 }
+
+
+        {
+          "apiVersion": "2015-08-01",
+          "type": "config",
+          "name": "appsettings",
+          "dependsOn": [
+            "[variables('webSiteName')]"
+          ],
+          
+            "tags": {
+                "displayName": "WebAppSettings"
+            },
+            "properties": {
+                "DB_SERVER":"reference(concat('Microsoft.Sql/servers/', variables('sqlserverName'))).fullyQualifiedDomainName",
+                "DB_NAME":"variables('databaseName')",
+                "DB_USER":"parameters('sqlAdministratorLogin')",
+                "DB_PASSWORD":"parameters('sqlAdministratorLoginPassword')",
+                "STORAGE_ACCOUNT":"[variables('storageAccountName')]",
+                "STORAGE_KEY":"[listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value]",
+                "GOOGLE_CLIENT_ID":"[parameters('GOOGLE_CLIENT_ID')]",
+                "GOOGLE_CLIENT_SECRET":"[parameters('GOOGLE_CLIENT_SECRET')]",
+                "GOOGLE_CALLBACK_URL":"[parameters('GOOGLE_CALLBACK_URL')]"
+            }
+        },
+
+        azure group deployment create -g ari-arm-test -f websqldeploy.json -e websqldeploy.parameters.json

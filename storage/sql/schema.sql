@@ -964,5 +964,4 @@ INSERT INTO [dbo].[JobStatus] ([Id] ,[Name] ,[Description]) VALUES (3 ,'Approved
 GO
 
 
--- Add First User
-INSERT INTO [dbo].[Users] ([Name] ,[Email] ,[RoleId]) VALUES ('User Name' ,'user@gmail.com' ,2) -- 1 for Editor, 2 for Admin
+
