@@ -23,7 +23,7 @@ The server side code isn't aware of this data. It is just being used as a pipe b
 * Follow [these](deploy/azure.md) instructions to deploy the app on Azure.
 * Follow [these](deploy/local.md) instructions to run the app locally.
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Faribornstein%2Fvideotaggingtool%2Fmaster%2Fwebsqldeploy.json" target="_blank">
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Faribornstein%2Fvideotaggingtool%2Fmaster%2Fazuredeploy.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
 </a>
 
