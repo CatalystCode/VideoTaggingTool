@@ -3,84 +3,79 @@
   "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "skuName": {
-      "type": "string",
-      "defaultValue": "S1",
-      "allowedValues": [
-        "F1",
-        "D1",
-        "B1",
-        "B2",
-        "B3",
-        "S1",
-        "S2",
-        "S3",
-        "P1",
-        "P2",
-        "P3",
-        "P4"
-      ],
-      "metadata": {
-        "description": "Describes plan's pricing tier and instance size. Check details at https://azure.microsoft.com/en-us/pricing/details/app-service/"
-      }
-    },
-    "skuCapacity": {
-      "type": "int",
-      "defaultValue": 1,
-      "minValue": 1,
-      "metadata": {
-        "description": "Describes plan's instance count"
-      }
-    },
-    "sqlAdministratorEmail":{
+    "Admin_Email":{
       "type": "string",
       "metadata": {
         "description": "The admin email for the Database."
       }
     },
-    "sqlAdministratorLogin": {
+    "Admin_Username": {
       "type": "string",
+      "defaultValue": "Admin",
       "metadata": {
         "description": "The admin user of the SQL Server and Database"
       }
     },
-    "sqlAdministratorLoginPassword": {
+    "Admin_Password": {
       "type": "securestring",
       "metadata": {
         "description": "The password of the admin user of the SQL Server and and Database"
       }
     },
-    "storageAccountType": {
-      "type": "string",
-      "defaultValue": "Standard_LRS",
-      "allowedValues": [
-        "Standard_LRS",
-        "Standard_GRS",
-        "Standard_ZRS",
-        "Premium_LRS"
-      ],
-      "metadata": {
-        "description": "Storage Account type"
-      }
-    },
-    "GOOGLE_CLIENT_ID":{
-      "type": "string",
-      "metadata": {
-        "description": "The client id for google authentication."
-      }
-    },
-    "GOOGLE_CLIENT_SECRET":{
-      "type": "string",
-      "metadata": {
-        "description": "The client secret for google authentication."
-      }
-    },
-    "GOOGLE_CALLBACK_URL":{
-      "type": "string",
-      "metadata": {
-        "description": "The callback url for google authentication."
-      }
+    "App_Tier": {
+    "type": "string",
+    "defaultValue": "S1",
+    "allowedValues": [
+      "F1",
+      "D1",
+      "B1",
+      "B2",
+      "B3",
+      "S1",
+      "S2",
+      "S3",
+      "P1",
+      "P2",
+      "P3",
+      "P4"
+    ],
+    "metadata": {
+      "description": "Describes plan's pricing tier and instance size. Check details at https://azure.microsoft.com/en-us/pricing/details/app-service/"
     }
+  },
+  "App_Capacity": {
+    "type": "int",
+    "defaultValue": 1,
+    "minValue": 1,
+    "metadata": {
+      "description": "Describes plan's instance count"
+    }
+  },
+  "Storage_Account_Tier": {
+    "type": "string",
+    "defaultValue": "Standard_LRS",
+    "allowedValues": [
+      "Standard_LRS",
+      "Standard_GRS",
+      "Standard_ZRS",
+      "Premium_LRS"
+    ],
+    "metadata": {
+      "description": "Storage Account type"
+    }
+  },
+  "GOOGLE_CLIENT_ID":{
+    "type": "string",
+    "metadata": {
+      "description": "The client id for google authentication."
+    }
+  },
+  "GOOGLE_CLIENT_SECRET":{
+    "type": "string",
+    "metadata": {
+      "description": "The client secret for google authentication."
+    }
+  }
   },
   "variables": {
     "hostingPlanName": "[concat('hostingplan', uniqueString(resourceGroup().id))]",
@@ -101,8 +96,8 @@
       },
       "apiVersion": "2014-04-01",
       "properties": {
-        "administratorLogin": "[parameters('sqlAdministratorLogin')]",
-        "administratorLoginPassword": "[parameters('sqlAdministratorLoginPassword')]",
+        "administratorLogin": "[parameters('Admin_Username')]",
+        "administratorLoginPassword": "[parameters('Admin_Password')]",
         "version": "12.0"
       },
       "resources": [
@@ -145,7 +140,7 @@
       "apiVersion": "2016-01-01",
       "location": "[resourceGroup().location]",
       "sku": {
-          "name": "[parameters('storageAccountType')]"
+          "name": "[parameters('Storage_Account_Tier')]"
       },
       "kind": "Storage", 
       "properties": {
@@ -160,8 +155,8 @@
         "displayName": "HostingPlan"
       },
       "sku": {
-        "name": "[parameters('skuName')]",
-        "capacity": "[parameters('skuCapacity')]"
+        "name": "[parameters('App_Tier')]",
+        "capacity": "[parameters('App_Capacity')]"
       },
       "properties": {
         "name": "[variables('hostingPlanName')]"
@@ -208,14 +203,14 @@
           "properties": {
             "DB_SERVER":"[reference(concat('Microsoft.Sql/servers/', variables('sqlserverName'))).fullyQualifiedDomainName]",
             "DB_NAME":"[variables('databaseName')]",
-            "DB_EMAIL":"[parameters('sqlAdministratorEmail')]",
-            "DB_USER":"[parameters('sqlAdministratorLogin')]",
-            "DB_PASSWORD":"[parameters('sqlAdministratorLoginPassword')]",
+            "DB_EMAIL":"[parameters('Admin_Email')]",
+            "DB_USER":"[parameters('Admin_Username')]",
+            "DB_PASSWORD":"[parameters('Admin_Password')]",
             "STORAGE_ACCOUNT":"[variables('storageAccountName')]",
             "STORAGE_KEY":"[listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value]",
             "GOOGLE_CLIENT_ID":"[parameters('GOOGLE_CLIENT_ID')]",
             "GOOGLE_CLIENT_SECRET":"[parameters('GOOGLE_CLIENT_SECRET')]",
-            "GOOGLE_CALLBACK_URL":"[parameters('GOOGLE_CALLBACK_URL')]"
+            "GOOGLE_CALLBACK_URL":"[concat('https://',concat(variables('webSiteName'),'.azurewebsites.net/.auth/login/google/callback'))]"
           }
         },
         {
@@ -227,7 +222,7 @@
           ],
           "properties": {
             "DefaultConnection": {
-              "value": "[concat('Data Source=tcp:', reference(concat('Microsoft.Sql/servers/', variables('sqlserverName'))).fullyQualifiedDomainName, ',1433;Initial Catalog=', variables('databaseName'), ';User Id=', parameters('sqlAdministratorLogin'), '@', reference(concat('Microsoft.Sql/servers/', variables('sqlserverName'))).fullyQualifiedDomainName, ';Password=', parameters('sqlAdministratorLoginPassword'), ';')]",
+              "value": "[concat('Data Source=tcp:', reference(concat('Microsoft.Sql/servers/', variables('sqlserverName'))).fullyQualifiedDomainName, ',1433;Initial Catalog=', variables('databaseName'), ';User Id=', parameters('Admin_Username'), '@', reference(concat('Microsoft.Sql/servers/', variables('sqlserverName'))).fullyQualifiedDomainName, ';Password=', parameters('Admin_Password'), ';')]",
               "type": "SQLAzure"
             }
           }
