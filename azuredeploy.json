@@ -3,17 +3,17 @@
   "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "Admin_Username": {
+      "type": "string",
+      "defaultValue": "VideoTaggingAdmin",
+      "metadata": {
+        "description": "The admin user of the SQL Server and Database"
+      }
+    },
     "Admin_Email":{
       "type": "string",
       "metadata": {
         "description": "The admin email for the Database."
-      }
-    },
-    "Admin_Username": {
-      "type": "string",
-      "defaultValue": "Admin",
-      "metadata": {
-        "description": "The admin user of the SQL Server and Database"
       }
     },
     "Admin_Password": {
